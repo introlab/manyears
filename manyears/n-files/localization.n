@@ -1,0 +1,100 @@
+#!/usr/bin/env batchflow
+<?xml version="1.0"?>
+<Document category="AUDIBLE:tests">
+  <Network type="subnet" name="MAIN">
+    <Node name="node_Constant_1" type="Constant" x="-181.000000" y="74.000000">
+      <Parameter name="VALUE" type="subnet_param" value="ARG1" description=""/>
+    </Node>
+    <Node name="node_MAIN_LOOP_1" type="MAIN_LOOP" x="241.000000" y="83.000000">
+      <Parameter name="SPEED_OF_SOUND" type="float" value="343" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
+      <Parameter name="DOWHILE" type="int" value="" description=""/>
+    </Node>
+    <Node name="node_LoadFile_1" type="LoadFile" x="-35.000000" y="123.000000">
+      <Parameter name="FILENAME" type="subnet_param" value="ARG3" description="No description available"/>
+    </Node>
+    <Node name="node_URLStream_1" type="URLStream" x="-54.000000" y="76.000000">
+      <Parameter name="FLAGS" type="string" value="r" description="Flags for opening the stream (r, w, rw)"/>
+    </Node>
+    <Node name="node_NOP_1" type="NOP" x="539.000000" y="82.000000"/>
+    <Node name="node_OutputStream_1" type="OutputStream" x="-45.000000" y="175.000000">
+      <Parameter name="TYPE" type="string" value="" description="Type of stream: stream, fd, or FILE (default stream)"/>
+    </Node>
+    <Node name="node_Constant_2" type="Constant" x="-180.000000" y="179.000000">
+      <Parameter name="VALUE" type="subnet_param" value="ARG2" description=""/>
+    </Node>
+    <Link from="node_LoadFile_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="MIC_POS"/>
+    <Link from="node_Constant_1" output="VALUE" to="node_URLStream_1" input="INPUT"/>
+    <Link from="node_URLStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="INPUT"/>
+    <Link from="node_MAIN_LOOP_1" output="OUTPUT" to="node_NOP_1" input="INPUT"/>
+    <Link from="node_Constant_2" output="VALUE" to="node_OutputStream_1" input="INPUT"/>
+    <Link from="node_OutputStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="OUTPUT_STREAM"/>
+    <NetOutput name="OUTPUT" node="node_NOP_1" terminal="OUTPUT" object_type="any" description="The output = The input"/>
+  </Network>
+  <Network type="iterator" name="MAIN_LOOP">
+    <Node name="node_Localize_1" type="LocalizeBeam" x="51.000000" y="144.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
+      <Parameter name="LENGTH" type="int" value="1024" description=""/>
+      <Parameter name="SPEED_OF_SOUND" type="subnet_param" value="SPEED_OF_SOUND" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="subnet_param" value="SAMPLING_RATE" description="Sampling Rate (Hz)"/>
+      <Parameter name="REVERB_LEVEL" type="float" value="0.1" description="Level of instantaneous reverberation attenuation (between 0 and 1)"/>
+      <Parameter name="REVERB_DECAY" type="float" value="0.4" description="Reverberation decay (per frame)"/>
+    </Node>
+    <Node name="node_AudioStream_1" type="AudioStream" x="-396.000000" y="144.000000">
+      <Parameter name="LENGTH" type="int" value="8192" description=""/>
+      <Parameter name="ADVANCE" type="int" value="4096" description=""/>
+      <Parameter name="ENCODING" type="string" value="LIN16" description=""/>
+      <Parameter name="STREAM_TYPE" type="string" value="" description=""/>
+      <Parameter name="REWIND" type="bool" value="" description=""/>
+    </Node>
+    <Node name="node_SoundMap_1" type="SoundMap" x="281.000000" y="144.000000"/>
+    <Node name="node_SourceDetect_1" type="SourceDetect" x="510.000000" y="136.000000"/>
+    <Node name="node_NOP_1" type="NOP" x="-165.000000" y="259.000000"/>
+    <Node name="node_EqualGains_2" type="EqualGains" x="-163.000000" y="136.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
+      <Parameter name="GAINS" type="object" value="&lt;Vector&lt;float&gt;   1.00531  0.63716  0.86715  0.65750  1.48937  0.90189  1.07071  0.93074 &gt;" description=""/>
+    </Node>
+    <Node name="node_NOP_2" type="NOP" x="1061.000000" y="189.000000"/>
+    <Node name="node_Save_1" type="Save" x="673.000000" y="266.000000">
+      <Parameter name="PRETTY_PRINT" type="bool" value="true" description="If we want to print human readable output (and Matlab)"/>
+    </Node>
+    <Node name="node_NOP_3" type="NOP" x="500.000000" y="222.000000"/>
+    <Node name="node_NilObject_1" type="NilObject" x="431.000000" y="41.000000"/>
+    <Node name="node_Print_1" type="Print" x="1145.000000" y="89.000000"/>
+    <Node name="node_IF_1" type="IF" x="966.000000" y="197.000000">
+      <Parameter name="PULL_ANYWAY" type="bool" value="" description="If true, the IF statement pulls also on the branch not taken"/>
+    </Node>
+    <Node name="node_Length_1" type="Length" x="722.000000" y="158.000000"/>
+    <Node name="node_Equal_1" type="Equal" x="850.000000" y="169.000000"/>
+    <Node name="node_Constant_1" type="Constant" x="699.000000" y="183.000000">
+      <Parameter name="VALUE" type="int" value="0" description="The value"/>
+    </Node>
+    <Node name="node_MarieDataLocalisation_1" type="MarieDataLocalisation" x="856.000000" y="72.000000"/>
+    <Link from="node_Localize_1" output="OUTPUT" to="node_SoundMap_1" input="INPUT"/>
+    <Link from="node_Localize_1" output="OUTPUT" to="node_SourceDetect_1" input="SOURCES"/>
+    <Link from="node_SoundMap_1" output="OUTPUT" to="node_SourceDetect_1" input="PROB_MAP"/>
+    <Link from="node_NOP_1" output="OUTPUT" to="node_Localize_1" input="MIC_POS"/>
+    <Link from="node_EqualGains_2" output="OUTPUT" to="node_Localize_1" input="INPUT"/>
+    <Link from="node_AudioStream_1" output="AUDIO" to="node_EqualGains_2" input="INPUT"/>
+    <Link from="node_NOP_3" output="OUTPUT" to="node_Save_1" input="STREAM"/>
+    <Link from="node_Print_1" output="OUTPUT" to="node_NOP_2" input="INPUT"/>
+    <Link from="node_Length_1" output="OUTPUT" to="node_Equal_1" input="INPUT1"/>
+    <Link from="node_Equal_1" output="OUTPUT" to="node_IF_1" input="COND"/>
+    <Link from="node_Constant_1" output="VALUE" to="node_Equal_1" input="INPUT2"/>
+    <Link from="node_SourceDetect_1" output="OUTPUT" to="node_Length_1" input="INPUT"/>
+    <Link from="node_SourceDetect_1" output="OUTPUT" to="node_IF_1" input="ELSE"/>
+    <Link from="node_IF_1" output="OUTPUT" to="node_Save_1" input="OBJECT"/>
+    <Link from="node_NilObject_1" output="VALUE" to="node_IF_1" input="THEN"/>
+    <Link from="node_MarieDataLocalisation_1" output="DATA_LOCALISATION" to="node_Print_1" input="INPUT"/>
+    <Link from="node_Save_1" output="OUTPUT" to="node_MarieDataLocalisation_1" input="SourceInfoVector"/>
+    <Link from="node_NilObject_1" output="VALUE" to="node_MarieDataLocalisation_1" input="DATA_LOCALISATION"/>
+    <NetCondition name="CONDITION" node="node_AudioStream_1" terminal="NOT_EOF"/>
+    <NetInput name="INPUT" node="node_AudioStream_1" terminal="INPUT" object_type="any" description="No description available"/>
+    <NetInput name="MIC_POS" node="node_NOP_1" terminal="INPUT" object_type="any" description="The input"/>
+    <NetOutput name="OUTPUT" node="node_NOP_2" terminal="OUTPUT" object_type="any" description="The output = The input"/>
+    <NetInput name="OUTPUT_STREAM" node="node_NOP_3" terminal="INPUT" object_type="any" description="The input"/>
+  </Network>
+  <Parameter name="ARG1" type="string" value="test8f.sw"/>
+  <Parameter name="ARG3" type="int" value=""/>
+  <Parameter name="ARG2" type="int" value=""/>
+</Document>

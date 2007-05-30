@@ -1,0 +1,189 @@
+dnl Process this file with autoconf to produce a configure script. -*-m4-*-
+
+AC_INIT(src/LocalizeBeam.cc)
+
+MANYEARS_MAJOR_VERSION=0
+MANYEARS_MINOR_VERSION=1
+MANYEARS_MICRO_VERSION=0
+MANYEARS_VERSION=$MANYEARS_MAJOR_VERSION.$MANYEARS_MINOR_VERSION.$MANYEARS_MICRO_VERSION
+MANYEARS_INTERFACE_AGE=0
+MANYEARS_BINARY_AGE=0
+
+
+AC_SUBST(MANYEARS_MAJOR_VERSION)
+AC_SUBST(MANYEARS_MINOR_VERSION)
+AC_SUBST(MANYEARS_MICRO_VERSION)
+AC_SUBST(MANYEARS_INTERFACE_AGE)
+AC_SUBST(MANYEARS_BINARY_AGE)
+AC_SUBST(MANYEARS_VERSION)
+
+# libtool versioning
+LT_RELEASE=$MANYEARS_MAJOR_VERSION.$MANYEARS_MINOR_VERSION
+LT_CURRENT=`expr $MANYEARS_MICRO_VERSION - $MANYEARS_INTERFACE_AGE`
+LT_REVISION=$MANYEARS_INTERFACE_AGE
+LT_AGE=`expr $MANYEARS_BINARY_AGE - $MANYEARS_INTERFACE_AGE`
+AC_SUBST(LT_RELEASE)
+AC_SUBST(LT_CURRENT)
+AC_SUBST(LT_REVISION)
+AC_SUBST(LT_AGE)
+
+# For automake.
+VERSION=$MANYEARS_VERSION
+PACKAGE=ManyEars
+
+CXXFLAGS="-O3 -msse"
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION, no-define)
+
+
+
+AM_MAINTAINER_MODE
+AC_CANONICAL_HOST
+AC_DISABLE_STATIC
+AM_PROG_LIBTOOL
+
+AM_C_PROTOTYPES
+AC_PROG_CXX
+AC_PROG_F77
+AC_LANG_CPLUSPLUS
+AC_PROG_MAKE_SET
+AC_C_BIGENDIAN
+
+AC_INST_EXTENSIONS
+
+
+dnl AC_FLOWDESIGNER_CHECKS
+dnl LDFLAGS=`flowdesigner-config config libflow audio_blocks --libs`
+dnl CXXFLAGS=`flowdesigner-config config libflow audio_blocks --cflags`
+
+AC_PATH_PROG(FLOWDESIGNER_CONFIG,flowdesigner-config,no,$PATH:$FLOWDESIGNER_HOME/bin)
+if test "$FLOWDESIGNER_CONFIG" = no; then
+	AC_MSG_ERROR( Cannot find flowdesigner-config, trying old overflow-config)
+	AC_PATH_PROG(FLOWDESIGNER_CONFIG,overflow-config,no,$PATH:$VFLOW_HOME/bin)
+	if test "$FLOWDESIGNER_CONFIG" = no; then
+		AC_MSG_ERROR( Cannot find overflow-config)
+	fi
+fi
+
+FLOWDESIGNER_LIB=`$FLOWDESIGNER_CONFIG --libs libflow audio_blocks`
+FLOWDESIGNER_INCLUDE=`$FLOWDESIGNER_CONFIG --cflags config libflow audio_blocks| sed 's/\"/\\\"/g'`
+FLOWDESIGNER_DATA=`$FLOWDESIGNER_CONFIG  --datadir`
+FLOWDESIGNER_BIN=`$FLOWDESIGNER_CONFIG --bindir`
+
+AC_SUBST(FLOWDESIGNER_LIB)
+AC_SUBST(FLOWDESIGNER_INCLUDE)
+AC_SUBST(FLOWDESIGNER_DATA)
+AC_SUBST(FLOWDESIGNER_BIN)
+
+
+dnl Checks for QT
+
+AC_ARG_ENABLE(qt,[ --disable-qt  Disable QT support],[disable_qt=yes],[disable_qt=no])
+
+QT_FOUND=""
+
+if test "$disable_qt" = "yes"; then
+    AC_MSG_RESULT([QT disabled : "$disable_qt"])
+else
+        AC_MSG_CHECKING(for qt)
+	temp_LIBS=$LIBS
+	temp_CXXFLAGS=$CXXFLAGS
+	AC_ARG_WITH(qt, [  --with-qt              Where qt is installed (/usr)], MYQT_DIR="$withval")
+	if test -n "$MYQT_DIR"; then
+	   LIBS="-L$MYQT_DIR/lib -lqt-mt"
+	   #CXXFLAGS="-I$MYQT_DIR/include"
+	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
+	   if test -n "$QT_FOUND"; then
+	       QT_LIBS="-L$MYQT_DIR/lib -lqt-mt"
+	       QT_INCLUDES="-I$MYQT_DIR/include"
+	       AC_MSG_RESULT(yes)
+	       QT_FOUND="yes"
+	    fi
+	fi
+	
+	dnl test in QT_DIR
+	if test "$QT_FOUND" = "" && test -n "$QTDIR"; then
+	   LIBS="$QTDIR/lib -lqt-mt"
+	   #CXXFLAGS="-I$QTDIR/include"
+	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
+	   if test -n "$QT_FOUND"; then
+	      QT_LIBS="-L$QTDIR/lib -lqt-mt"
+	      QT_INCLUDES="-I$QTDIR/include"
+	      AC_MSG_RESULT(found in QT_DIR)
+	      QT_FOUND="yes"
+	   fi
+	fi
+	
+	dnl test in stantdard location
+	if test "$QT_FOUND" = ""; then
+	   LIBS="-L/usr/lib -lqt-mt"
+	   #CXXFLAGS="-I/usr/include/qt3"
+	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
+	   if test -n "$QT_FOUND"; then
+	      QT_LIBS="-L/usr/lib -lqt-mt"
+	      QT_INCLUDES="-I/usr/include/qt3"
+	      AC_MSG_RESULT(found in /usr)
+	      QT_FOUND="yes"
+	   fi
+        fi
+	   
+		   
+	if test "$QT_FOUND" = ""; then
+             QT_FOUND="no"
+             AC_MSG_RESULT(no)
+	fi
+	if test "$QT_FOUND" = "yes"; then
+	     dnl run qmake in workspaceViewer
+	     dnl AC_CONFIG_COMMANDS([workspaceViewer/Makefile],[echo running qmake in workspaceViewer/;cd workspaceViewer/;qmake -o Makefile workspaceViewer.pro;cd -])
+	     echo "Removed qmake commands"	     
+        fi
+	
+	LIBS=$temp_LIBS
+	CXXFLAGS=$CXXFLAGS
+fi	
+
+AM_CONDITIONAL(WITH_QT, test -n "$QT_FOUND")
+AC_SUBST(QT_LIBS)
+AC_SUBST(QT_INCLUDES)
+dnl End test for QT
+
+
+
+
+
+
+
+AC_PATH_PROG(XML2_CONFIG,xml2-config,no,$PATH)
+if test "$XML2_CONFIG" = no; then
+	AC_MSG_ERROR( Cannot find xml2-config)
+	exit
+fi
+
+XML2_INCLUDE=`$XML2_CONFIG --cflags`
+XML2_LIB=`$XML2_CONFIG --libs`
+
+AC_SUBST(XML2_INCLUDE)
+AC_SUBST(XML2_LIB)
+
+dnl Look for prefix, if not specified, use FlowDesigner default toolbox prefix
+if test "x$prefix" = "xNONE"; then
+  prefix=$FLOWDESIGNER_DATA/$PACKAGE                      
+else
+  dnl this will work, but we should maybe change the variable name
+  OVERFLOW_DATA=$prefix
+fi
+
+AC_OUTPUT([Makefile config/Makefile n-files/Makefile src/Makefile GUI/Makefile])
+
+dnl Notification message for the user to know which flags will be used for compilation
+dnl should use AC_MSG_NOTICE(), but that's apparently not defined in autoconf 2.13
+AC_MSG_RESULT([])
+AC_MSG_RESULT([*************************************************************])
+AC_MSG_RESULT([])
+AC_MSG_RESULT([$PACKAGE will be built on a $build system to run])
+AC_MSG_RESULT([on a $host system, with the following options:])
+AC_MSG_RESULT([])
+
+
+AC_MSG_RESULT([$PACKAGE will be installed in : $prefix])
+
+echo You can now type 'make; make install' to compile and install ManyEars

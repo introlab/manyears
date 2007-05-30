@@ -1,0 +1,46 @@
+#!/usr/bin/env batchflow
+<?xml version="1.0"?>
+<Document category="AUDIBLE:tests">
+  <Network type="subnet" name="MAIN">
+    <Node name="node_InputStream_1" type="InputStream" x="-67.000000" y="74.000000">
+      <Parameter name="TYPE" type="String" value="" description=""/>
+      <Parameter name="RETRY" type="int" value="" description=""/>
+    </Node>
+    <Node name="node_Constant_1" type="Constant" x="-181.000000" y="74.000000">
+      <Parameter name="VALUE" type="subnet_param" value="ARG1" description=""/>
+    </Node>
+    <Node name="node_MAIN_LOOP_1" type="MAIN_LOOP" x="69.000000" y="74.000000">
+      <Parameter name="DOWHILE" type="int" value="" description=""/>
+    </Node>
+    <Link from="node_Constant_1" output="VALUE" to="node_InputStream_1" input="INPUT"/>
+    <Link from="node_InputStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="INPUT"/>
+    <NetOutput name="OUTPUT" node="node_MAIN_LOOP_1" terminal="OUTPUT" object_type="any" description="No description available"/>
+  </Network>
+  <Network type="iterator" name="MAIN_LOOP">
+    <Node name="node_Localize_1" type="LocalizeBeam" x="54.000000" y="144.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
+      <Parameter name="LENGTH" type="int" value="1024" description=""/>
+      <Parameter name="SPEED_OF_SOUND" type="float" value="" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="int" value="" description="Sampling Rate (Hz)"/>
+      <Parameter name="REVERB_LEVEL" type="float" value="0.2" description="Level of instantaneous reverberation attenuation (between 0 and 1)"/>
+      <Parameter name="REVERB_DECAY" type="float" value="0.4" description="Reverberation decay (per frame)"/>
+    </Node>
+    <Node name="node_AudioStream_1" type="AudioStream" x="-258.000000" y="152.000000">
+      <Parameter name="LENGTH" type="int" value="8192" description=""/>
+      <Parameter name="ADVANCE" type="int" value="4096" description=""/>
+      <Parameter name="ENCODING" type="string" value="LIN16" description=""/>
+      <Parameter name="STREAM_TYPE" type="string" value="" description=""/>
+      <Parameter name="REWIND" type="bool" value="" description=""/>
+    </Node>
+    <Node name="node_SoundMap_1" type="SoundMap" x="190.000000" y="176.000000"/>
+    <Node name="node_SourceDetect_1" type="SourceDetect" x="443.000000" y="151.000000"/>
+    <Link from="node_AudioStream_1" output="AUDIO" to="node_Localize_1" input="INPUT"/>
+    <Link from="node_Localize_1" output="OUTPUT" to="node_SoundMap_1" input="INPUT"/>
+    <Link from="node_Localize_1" output="OUTPUT" to="node_SourceDetect_1" input="SOURCES"/>
+    <Link from="node_SoundMap_1" output="OUTPUT" to="node_SourceDetect_1" input="PROB_MAP"/>
+    <NetCondition name="CONDITION" node="node_AudioStream_1" terminal="NOT_EOF"/>
+    <NetInput name="INPUT" node="node_AudioStream_1" terminal="INPUT" object_type="any" description="No description available"/>
+    <NetOutput name="OUTPUT" node="node_SourceDetect_1" terminal="OUTPUT" object_type="any" description="No description available"/>
+  </Network>
+  <Parameter name="ARG1" type="string" value="test8g.sw"/>
+</Document>

@@ -1,0 +1,57 @@
+#!/usr/bin/env batchflow
+<?xml version="1.0"?>
+<Document category="AUDIBLE:tests">
+  <Network type="subnet" name="MAIN">
+    <Node name="node_Constant_1" type="Constant" x="-181.000000" y="74.000000">
+      <Parameter name="VALUE" type="subnet_param" value="ARG1" description=""/>
+    </Node>
+    <Node name="node_MAIN_LOOP_1" type="MAIN_LOOP" x="145.000000" y="81.000000">
+      <Parameter name="SPEED_OF_SOUND" type="float" value="343" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
+      <Parameter name="DOWHILE" type="int" value="" description=""/>
+    </Node>
+    <Node name="node_LoadFile_1" type="LoadFile" x="-35.000000" y="123.000000">
+      <Parameter name="FILENAME" type="subnet_param" value="ARG3" description="No description available"/>
+    </Node>
+    <Node name="node_URLStream_1" type="URLStream" x="-54.000000" y="75.000000">
+      <Parameter name="FLAGS" type="string" value="r" description="Flags for opening the stream (r, w, rw)"/>
+    </Node>
+    <Link from="node_LoadFile_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="MIC_POS"/>
+    <Link from="node_Constant_1" output="VALUE" to="node_URLStream_1" input="INPUT"/>
+    <Link from="node_URLStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="INPUT"/>
+    <NetOutput name="OUTPUT" node="node_MAIN_LOOP_1" terminal="OUTPUT" object_type="any" description="No description available"/>
+  </Network>
+  <Network type="iterator" name="MAIN_LOOP">
+    <Node name="node_Localize_1" type="LocalizeBeam" x="51.000000" y="144.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
+      <Parameter name="LENGTH" type="int" value="1024" description=""/>
+      <Parameter name="SPEED_OF_SOUND" type="subnet_param" value="SPEED_OF_SOUND" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="subnet_param" value="SAMPLING_RATE" description="Sampling Rate (Hz)"/>
+      <Parameter name="REVERB_LEVEL" type="float" value="0.3" description="Level of instantaneous reverberation attenuation (between 0 and 1)"/>
+      <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
+    </Node>
+    <Node name="node_AudioStream_1" type="AudioStream" x="-396.000000" y="144.000000">
+      <Parameter name="LENGTH" type="int" value="8192" description=""/>
+      <Parameter name="ADVANCE" type="int" value="4096" description=""/>
+      <Parameter name="ENCODING" type="string" value="LIN16" description=""/>
+      <Parameter name="STREAM_TYPE" type="string" value="" description=""/>
+      <Parameter name="REWIND" type="bool" value="" description=""/>
+    </Node>
+    <Node name="node_NOP_1" type="NOP" x="-165.000000" y="259.000000"/>
+    <Node name="node_EqualGains_2" type="EqualGains" x="-163.000000" y="136.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
+      <Parameter name="GAINS" type="object" value="&lt;Vector&lt;float&gt;   1.00531  0.63716  0.86715  0.65750  1.48937  0.90189  1.07071  0.93074 &gt;" description=""/>
+    </Node>
+    <Node name="node_SourceTrack_1" type="SourceTrack" x="309.000000" y="122.000000"/>
+    <Link from="node_NOP_1" output="OUTPUT" to="node_Localize_1" input="MIC_POS"/>
+    <Link from="node_EqualGains_2" output="OUTPUT" to="node_Localize_1" input="INPUT"/>
+    <Link from="node_AudioStream_1" output="AUDIO" to="node_EqualGains_2" input="INPUT"/>
+    <Link from="node_Localize_1" output="OUTPUT" to="node_SourceTrack_1" input="INPUT"/>
+    <NetCondition name="CONDITION" node="node_AudioStream_1" terminal="NOT_EOF"/>
+    <NetInput name="INPUT" node="node_AudioStream_1" terminal="INPUT" object_type="any" description="No description available"/>
+    <NetInput name="MIC_POS" node="node_NOP_1" terminal="INPUT" object_type="any" description="The input"/>
+    <NetOutput name="OUTPUT" node="node_SourceTrack_1" terminal="OUTPUT" object_type="Vector&lt;ObjectRef&gt;" description="Map of all sounds"/>
+  </Network>
+  <Parameter name="ARG1" type="string" value="test8f.sw"/>
+  <Parameter name="ARG3" type="int" value=""/>
+</Document>

@@ -1,0 +1,101 @@
+The ManyEars project was setup to provide source code for AUDIBLE project. It 
+provides FlowDesigner building-blocks for microphone array processing. This 
+includes sound source localisation, tracking and separation.
+
+Description of the algorithms
+=============================
+
+The algorithms included in this software are described in the following papers:
+* J.-M. Valin, S. Yamamoto, J. Rouat, F. Michaud, K. Nakadai, H.G. Okuno, "Robust Recognition of Simultaneous Speech By a Mobile Robot", To appear in IEEE Transactions on Robotics.
+* J.-M. Valin, F. Michaud, J. Rouat, Robust Localization and Tracking of Simultaneous Moving Sound Sources Using Beamforming and Particle Filtering. Robotics and Autonomous Systems Journal (Elsevier), Vol. 55, No. 3, pp. 216-228, 2007.
+* J.-M. Valin, Auditory System For a Mobile Robot. PhD Thesis, 102 pp., 2005.
+
+These papers (and related ones) can be downloaded from:
+http://people.xiph.org/~jm/
+http://www.gel.usherbrooke.ca/laborius/publications.html
+
+Installing and Running Decibel project
+======================================
+
+Hardware configuration
+======================
+
+Recommended hardware:
+- HDSP RME PCMCIA card
+- Multiface box
+- Connexion cable between the card 
+- Electrical Power adapter
+- 
+- 8 microphones and 8 cables
+- 1 microphone interface card
+- 1 cable to connect the interface card to the Multiface (DB-9 to 8 jack 1/4)
+- Power cable splitter
+
+* NOTE any other 8-channel soundcard can be used (e.g. M-Audio Delta 1010LT).
+
+RME Driver
+----------
+
+The driver for the RME is directly in the kernel (suggest a least kernel 2.6.8)
+
+A firmware must be loaded in card at the initialisation. The firmware is
+contained in the alsa-firmware package, which is available at the alsa-project
+website. The firmware also need a specific loader which is in the alsa-tool
+package, in the hdsploader directory, also available from the alsa project. 
+These two must be compiled.
+(The usual "configure; make; make install" works and the files will be 
+installed in the /usr/local prefix.)
+
+
+Software installation
+=====================
+
+Dependencies
+------------
+
+- fftw3 (fftw3f library for floating point)
+- FlowDesigner
+
+Usefull tools
+-------------
+flac
+sox
+audacity
+
+Compiling the FlowDesigner toolbox
+----------------------------------
+
+CXXFLAGS="-march=pentium3 -O3" ./autogen.sh (with optional parameters)
+make
+make install
+
+parameters:
+
+Note: replace -march=pentium3 with your real architecture
+
+Tools
+-----
+
+To adust the input volume, the package alsa-tool contains the software
+hsdpmixer. This install instruction are the same as hdsploader. It depends
+on libfltk1.1-dev.
+
+
+Running the software
+====================
+
+Raw file example:
+./separation_spl_coque.n my_raw_file some_base_name robot_mic_pos.mat
+
+where my_raw_file needs to be a raw file, 16-bit/sample (machine endianness),
+8 channels, 48 kHz sampling rate. robot_mic_pos.mat contains the position of
+microphones in 3D, with (x, y, z) coordinates. The z axis needs to be the
+vertical and points downwards (the others are arbitrary).
+
+FLAC file:
+flac --force-raw-format --endian=little --sign=signed -cd fichier_audio.flac | ./separation_spl_coque.n /dev/stdin robot_mic_pos.mat
+
+The position of all sources is printer on stdout with these (main) fields:
+<time> <source ID> <x pos> <y pos> <z pos>
+(x y and z are normalized to have a length of 1)
+
