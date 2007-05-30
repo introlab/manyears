@@ -236,7 +236,7 @@ public:
        Vector<float> &frame = object_cast<Vector<float> >(accum[id][frameNum]);
        datasize += frame.size();
     }
-    datasize = (datasize+FRAMERATE_DIVISOR-1) / FRAMERATE_DIVISOR;
+    datasize = 2 * ((datasize+FRAMERATE_DIVISOR-1) / FRAMERATE_DIVISOR);
     //unsigned long datasize = accum[id].size() * (1024 / FRAMERATE_DIVISOR + 1);
     //cerr<<"writeWavHeader : datasize =  "<<datasize<<endl;
     constructWavHeader(out,datasize);    
