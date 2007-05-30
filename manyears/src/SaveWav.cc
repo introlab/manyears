@@ -189,7 +189,7 @@ public:
 
         // constants for the canonical WAVE format
         const int fmtChunkLength = 16;                      // length of fmt contents
-        const int waveHeaderLength = 44;                    // from "WAVE" to sample data       
+        const int waveHeaderLength = 36;                    // from "WAVE" to sample data       
     
         
     
