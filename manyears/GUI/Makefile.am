@@ -2,6 +2,9 @@
 # Disable automatic dependency tracking if using other tools than gcc and gmake
 #AUTOMAKE_OPTIONS = no-dependencies
 
+override bindir=${FLOWDESIGNER_BIN}
+
+
 EXTRA_DIST = DefaultImage.xpm
 if WITH_QT
 

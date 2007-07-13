@@ -2,7 +2,7 @@
 <?xml version="1.0"?>
 <Document category="AUDIBLE:tests">
   <Network type="subnet" name="MAIN">
-    <Node name="node_Constant_1" type="Constant" x="-187.000000" y="73.000000">
+    <Node name="node_Constant_1" type="Constant" x="-342.000000" y="46.000000">
       <Parameter name="VALUE" type="subnet_param" value="ARG1" description=""/>
     </Node>
     <Node name="node_MAIN_LOOP_1" type="MAIN_LOOP" x="145.000000" y="81.000000">
@@ -10,15 +10,23 @@
       <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
       <Parameter name="DOWHILE" type="int" value="" description=""/>
     </Node>
-    <Node name="node_LoadFile_1" type="LoadFile" x="-65.000000" y="158.000000">
+    <Node name="node_LoadFile_1" type="LoadFile" x="-247.000000" y="97.000000">
       <Parameter name="FILENAME" type="subnet_param" value="ARG3" description="No description available"/>
     </Node>
-    <Node name="node_URLStream_1" type="URLStream" x="-58.000000" y="74.000000">
+    <Node name="node_URLStream_1" type="URLStream" x="-213.000000" y="47.000000">
       <Parameter name="FLAGS" type="string" value="r" description="Flags for opening the stream (r, w, rw)"/>
+    </Node>
+    <Node name="node_Constant_2" type="Constant" x="-339.000000" y="147.000000">
+      <Parameter name="VALUE" type="subnet_param" value="AUDIOSERVER_STREAM" description=""/>
+    </Node>
+    <Node name="node_URLStream_2" type="URLStream" x="-210.000000" y="148.000000">
+      <Parameter name="FLAGS" type="string" value="w" description="Flags for opening the stream (r, w, rw)"/>
     </Node>
     <Link from="node_LoadFile_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="MIC_POS"/>
     <Link from="node_URLStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="INPUT"/>
     <Link from="node_Constant_1" output="VALUE" to="node_URLStream_1" input="INPUT"/>
+    <Link from="node_Constant_2" output="VALUE" to="node_URLStream_2" input="INPUT"/>
+    <Link from="node_URLStream_2" output="OUTPUT" to="node_MAIN_LOOP_1" input="AUDIOVIEWER_STREAM"/>
     <NetOutput name="OUTPUT" node="node_MAIN_LOOP_1" terminal="OUTPUT" object_type="any" description="No description available"/>
   </Network>
   <Network type="iterator" name="MAIN_LOOP">
@@ -52,7 +60,17 @@
       <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
     </Node>
     <Node name="node_SaveWav_1" type="SaveWav" x="887.000000" y="116.000000">
-      <Parameter name="BASENAME" type="string" value="source_" description="Base string for file names"/>
+      <Parameter name="BASENAME" type="string" value="log/source_" description="Base string for file names"/>
+    </Node>
+    <Node name="node_Save_1" type="Save" x="680.000000" y="33.000000">
+      <Parameter name="PRETTY_PRINT" type="bool" value="false" description="If we want to print human readable output (and Matlab)"/>
+    </Node>
+    <Node name="node_NOP_2" type="NOP" x="381.000000" y="39.000000"/>
+    <Node name="node_TextProbe_1" type="TextProbe" x="514.000000" y="77.000000">
+      <Parameter name="BREAK_AT" type="int" value="-1" description="If set, the probe runs until (count = BREAK_AT)"/>
+      <Parameter name="SHOW" type="bool" value="true" description="Whether or not to show the the data by default"/>
+      <Parameter name="SKIP" type="int" value="50" description="Count increment for each &quot;Next&quot;"/>
+      <Parameter name="PROBE_NAME" type="string" value="" description="Name (title) of the probe"/>
     </Node>
     <Link from="node_EqualGains_1" output="OUTPUT" to="node_Localize_1" input="INPUT"/>
     <Link from="node_AudioStream_1" output="AUDIO" to="node_EqualGains_1" input="INPUT"/>
@@ -62,13 +80,18 @@
     <Link from="node_Localize_1" output="NOISE" to="node_SeparGSS_1" input="NOISE"/>
     <Link from="node_SourceTrack_1" output="OUTPUT" to="node_SeparGSS_1" input="SOURCES"/>
     <Link from="node_NOP_1" output="OUTPUT" to="node_SeparGSS_1" input="MIC_POS">-204 286 418 285 418 185 490 183.5 </Link>
-    <Link from="node_SourceTrack_1" output="OUTPUT" to="node_SaveWav_1" input="SRC_POS"/>
     <Link from="node_SeparGSS_1" output="OUTPUT" to="node_SaveWav_1" input="SOURCES"/>
+    <Link from="node_TextProbe_1" output="OUTPUT" to="node_Save_1" input="OBJECT"/>
+    <Link from="node_SourceTrack_1" output="OUTPUT" to="node_TextProbe_1" input="INPUT"/>
+    <Link from="node_Save_1" output="OUTPUT" to="node_SaveWav_1" input="SRC_POS"/>
+    <Link from="node_NOP_2" output="OUTPUT" to="node_Save_1" input="STREAM"/>
     <NetCondition name="CONDITION" node="node_AudioStream_1" terminal="NOT_EOF"/>
     <NetInput name="INPUT" node="node_AudioStream_1" terminal="INPUT" object_type="any" description="No description available"/>
     <NetInput name="MIC_POS" node="node_NOP_1" terminal="INPUT" object_type="any" description="The input"/>
     <NetOutput name="OUTPUT" node="node_SaveWav_1" terminal="OUTPUT" object_type="Map&lt;int,ObjectRef&gt;" description="Same as input"/>
+    <NetInput name="AUDIOVIEWER_STREAM" node="node_NOP_2" terminal="INPUT" object_type="any" description="The input"/>
   </Network>
   <Parameter name="ARG1" type="string" value="tcp:localhost:2313"/>
-  <Parameter name="ARG3" type="string" value="../config/cube_mic_pos.mat"/>
+  <Parameter name="ARG3" type="string" value="config/cube_mic_pos.mat"/>
+  <Parameter name="AUDIOSERVER_STREAM" type="string" value="tcp:localhost:30011"/>
 </Document>

@@ -5,7 +5,8 @@
 # Disable automatic dependency tracking if using other tools than gcc and gmake
 #AUTOMAKE_OPTIONS = no-dependencies
 
-SUBDIRS = src n-files config
+SUBDIRS = src n-files config GUI
 
 DIST_SUBDIRS = src n-files config GUI
 
+bin_SCRIPTS = start_manyears.sh

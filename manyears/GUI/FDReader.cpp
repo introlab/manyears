@@ -25,42 +25,42 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 using namespace std;
 
 
-FDReader::FDReader(std::string hostname, int port)
-        :    m_hostname(hostname), m_port(port)
+FDReader::FDReader(int port, int backlog)
+        :    QServerSocket(port, backlog)
 {
-    //must be called first
-    qInitNetworkProtocols();
-
-    m_socket = new QSocket(this);
-    
-    //Connect signals
-    connect(m_socket, SIGNAL(readyRead()), this, SLOT(dataReady()));
-
-    cerr<<"FDReader::FDReader connecting to host : "<<m_hostname<<" port "<<m_port<<endl;
-    m_socket->connectToHost(m_hostname.c_str(),m_port);
-
-
+    cout<<"FDReader::FDReader(int,int) starting socket server on port "<<port<<endl;
 }
 
 FDReader::~FDReader()
 {
-    if  (m_socket)
-        delete m_socket;      
+
+	//Delete all incoming sockets
+	for (unsigned int i = 0; i < m_sockets.size(); i++)
+	{
+		delete m_sockets[i];
+	}  
 }
 
 void FDReader::dataReady()
 {
 
     //std::cerr<<"FDReader::dataReady()"<<std::endl;
+
+    //Scan for each socket.
+    for (unsigned int s = 0; s < m_sockets.size(); s++)
+    {
+
     //QByteArray array = m_http->readAll();
     //std::cerr<<"FDReader::dataReady() got bytes :"<<array.size()<<std::endl;
     stringstream inputStream;
     
-    unsigned long size = m_socket->bytesAvailable();
+    unsigned long size = m_sockets[s]->bytesAvailable();
     
+    if (size <= 0) continue;
+
     char buffer[size];
     
-    m_socket->readBlock(buffer,size);   
+    m_sockets[s]->readBlock(buffer,size);   
     
     //cerr<<"FDReader::dataReady got bytes : "<<size<<endl;	
 
@@ -84,7 +84,7 @@ void FDReader::dataReady()
         }         
 	
 	
-	//cerr<<"FDReader::dataReady emit putData signal with nbsources:"<<output.size()<<endl;
+	//cout<<"FDReader::dataReady emit putData signal with nbsources:"<<output.size()<<endl;
         emit putData(output);      
     }
     catch(FD::BaseException *e)
@@ -95,8 +95,28 @@ void FDReader::dataReady()
     catch(...)
     {
         cerr<<"Unknown exception in :"<<__FILE__<<":"<<__LINE__<<endl;
-    }      
+    }
+    }
+ 	     
+}
 
+void FDReader::newConnection ( int socket )
+{
+	cout<<"FDReader::newConnection : new network connection on socket "<<socket<<endl;
+
+	//Create a new socket
+	QSocket *newSocket = new QSocket();
+
+	//Set the socket for reading
+	newSocket->setSocket(socket);
+
+	//Connect signals
+	connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataReady()));
+
+	//push socket in vector
+	m_sockets.push_back(newSocket);
+
+	
 }
 
 

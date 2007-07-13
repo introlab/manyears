@@ -18,9 +18,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _FDREADER_H_
 #define _FDREADER_H_
 
-#include <qurloperator.h> 
-#include <qnetwork.h>
-#include <qhttp.h>
+#include <qserversocket.h> 
 #include <qsocket.h> 
 #include <string>
 #include <sstream>
@@ -30,15 +28,20 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 class SourceInfo;
 
-class FDReader : public QObject {
+class FDReader : public QServerSocket {
      
      Q_OBJECT;
      
      public:
-	  FDReader(std::string hostname="localhost", int port=30011);
+
+	  FDReader(int port=30011, int backlog=1);
+
 	  ~FDReader();
+
+	virtual void newConnection ( int socket );
 	     	  
      public slots:
+
 	  void dataReady();
 	  
      signals:
@@ -49,8 +52,7 @@ class FDReader : public QObject {
 	    
      protected:  
 
-      QSocket *m_socket;
-	  std::string m_hostname;
-	  int m_port;
+      std::vector<QSocket*> m_sockets;
+
 };
 #endif

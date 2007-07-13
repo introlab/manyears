@@ -5,10 +5,11 @@
 # Disable automatic dependency tracking if using other tools than gcc and gmake
 #AUTOMAKE_OPTIONS = no-dependencies
 
-override includedir=${prefix}/lib/flowdesigner/toolbox/ManyEars
-override datadir=${prefix}/lib/flowdesigner/toolbox/ManyEars
-override libdir=${prefix}/lib/flowdesigner/toolbox/ManyEars
-#override bindir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+#override includedir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+#override datadir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+#override libdir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+
+override bindir=${FLOWDESIGNER_BIN}
 
 
 lib_LTLIBRARIES = libmanyears.la 
@@ -37,6 +38,7 @@ libmanyears_la_SOURCES =	\
 	EqualGains.cc \
 	SeparGSS.cc \
 	SaveWav.cc \
+	SaveSpeex.cc \
 	SourceTrack.cc \
 	SourceInfo.cc \
 	particles.cc 

@@ -193,10 +193,11 @@ void TrackAudioWidget::playClicked(int source_id)
 
     //TODO: play file...
     QProcess *process = new QProcess(this);
-    process->addArgument("speex_play.sh");
-    process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav.spx"));
-    process->addArgument("localhost");   
-    process->addArgument("2314");          
+    process->addArgument("mplayer");
+    process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav"));
+    
+	//process->addArgument("localhost");   
+    //process->addArgument("2314");          
     
     if (!process->start())
     {

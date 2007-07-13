@@ -78,6 +78,8 @@ void *savespeex_rec_thread(void *data);
 
 class SaveSpeex : public BufferedNode {
   
+  protected:
+
   friend void *savespeex_rec_thread(void *data);
    
   int sourcesID;
@@ -88,7 +90,7 @@ class SaveSpeex : public BufferedNode {
   int port;
   map<int, ostream*> m_socketStreams;
   map<int, ostream*> m_fileStreams;
-  //map<int, int> start_pos;
+  map<int, int> start_pos;
 
   map<int, Vector<ObjectRef> > m_frameAccumulator;
   map<int, int> m_accumulatorLastCount;
@@ -147,15 +149,20 @@ public:
             
             //The 3 is the decimation for 16kHz
             //6 is for 8kHz
-            for (k=0,i=0/*start_pos[id]*/;i<frame.size();i+=FRAMERATE_DIVISOR)
+            for (k=0,i=start_pos[id];i<frame.size();i+=FRAMERATE_DIVISOR)
             {
-                buff[k++] = 10 * short(frame[i]);          
+                float tmp = 3 * frame[i];
+                if (tmp > 32767)
+                   tmp = 32767;
+                else if (tmp < -32767)
+                   tmp = -32767;
+                buff[k++] = short(.5+floor(tmp));
             }
         
         
-            //start_pos[id] = i-frame.size();    
+            start_pos[id] = i-frame.size();    
             int nb_samples = k;
-            cerr<<"Writing decimated size : "<<sizeof(short)*nb_samples<<endl;
+            
             out.write((const char *)buff, sizeof(short)*nb_samples);          
         }
     
@@ -184,40 +191,40 @@ public:
 
         // constants for the canonical WAVE format
         const int fmtChunkLength = 16;                      // length of fmt contents
-        const int waveHeaderLength = 44;                    // from "WAVE" to sample data       
+        const int waveHeaderLength = 36;                    // from "WAVE" to sample data       
     
         
     
-        unsigned long   wholeLength     = waveHeaderLength + dataLength;    //size of the wave with header
-        unsigned long   chunkLength     = fmtChunkLength;           //chunk header length
+        unsigned int   wholeLength     = waveHeaderLength + dataLength;    //size of the wave with header
+        unsigned int   chunkLength     = fmtChunkLength;           //chunk header length
         unsigned short formatType      = 1;                 //format PCM
         unsigned short numChannels     = 1;                 //1 channel = mono
-        unsigned long   sampleRate     = 48000 / FRAMERATE_DIVISOR;     //8 - 16 kHZ
+        unsigned int   sampleRate     = 48000 / FRAMERATE_DIVISOR;     //8 - 16 kHZ
         
         unsigned short bitsPerSample  = 16;                 //Bits per channel
         unsigned short blockAlign  = (bitsPerSample / 8) * numChannels;     //Bytes per sample
-        unsigned long  bytesPerSecond = sampleRate * blockAlign;        //Bytes per second
+        unsigned int  bytesPerSecond = sampleRate * blockAlign;        //Bytes per second
         
         //unsigned long     dataLength                  //length of the USEFUL data
                             
         out.write((const char*)"RIFF",4); //4 bytes
-        out.write((const char*)&wholeLength,sizeof(wholeLength)); //4 bytes
+        out.write((const char*)&wholeLength,4); //4 bytes
         out.write((const char*)"WAVE", 4); //4 bytes
         out.write((const char*)"fmt ",4); //4 bytes
-        out.write((const char*)&chunkLength,sizeof(chunkLength)); //4 bytes
+        out.write((const char*)&chunkLength,4); //4 bytes
         //TOTAL = 20 bytes
 
 
-        out.write((const char*)&formatType,sizeof(formatType)); //2 bytes
-        out.write((const char*)&numChannels,sizeof(numChannels));//2 bytes
-        out.write((const char*)&sampleRate, sizeof(sampleRate));//4 bytes
-        out.write((const char*)&bytesPerSecond,sizeof(bytesPerSecond));//4 bytes
-        out.write((const char*)&blockAlign,sizeof(blockAlign));//2 bytes
-        out.write((const char*)&bitsPerSample,sizeof(bitsPerSample));//2 bytes
+        out.write((const char*)&formatType,2); //2 bytes
+        out.write((const char*)&numChannels,2);//2 bytes
+        out.write((const char*)&sampleRate, 4);//4 bytes
+        out.write((const char*)&bytesPerSecond,4);//4 bytes
+        out.write((const char*)&blockAlign,2);//2 bytes
+        out.write((const char*)&bitsPerSample,2);//2 bytes
         //TOTAL = 16 bytes
 
         out.write((const char*)"data", 4); //4 bytes
-        out.write((const char*)&dataLength, sizeof(dataLength)); //4 bytes
+        out.write((const char*)&dataLength, 4); //4 bytes
         //TOTAL = 8 bytes
         //HEADER = 44 bytes 
     
@@ -225,10 +232,30 @@ public:
 
   void writeWavHeader(ostream &out, map<int,Vector<ObjectRef> > &accum, int id) 
   {
-    cerr<<"writeWavHeader : writing wav header"<<endl;
-    unsigned long datasize = accum[id].size() * (1024 / FRAMERATE_DIVISOR + 1);
-    cerr<<"writeWavHeader : datasize =  "<<datasize<<endl;
+    unsigned int datasize = 0;
+    for (int frameNum = 0; frameNum < accum[id].size(); frameNum++)
+    {   
+       Vector<float> &frame = object_cast<Vector<float> >(accum[id][frameNum]);
+       datasize += frame.size();
+    }
+    datasize = 2 * ((datasize+FRAMERATE_DIVISOR-1) / FRAMERATE_DIVISOR);
+    //unsigned long datasize = accum[id].size() * (1024 / FRAMERATE_DIVISOR + 1);
+    //cerr<<"writeWavHeader : datasize =  "<<datasize<<endl;
     constructWavHeader(out,datasize);    
+  }
+
+  void writeWav(map<int, Vector<ObjectRef> > &accum, int id) {
+
+		stringstream fname;
+		fname << m_baseName << id << ".wav";
+		
+        //CREATE STREAM, WAIT ON CLOSE, OWNER
+        ofstream my_stream(fname.str().c_str());
+        
+        writeWavHeader(my_stream,accum,id);
+        writeFrames(my_stream,accum,id);
+        
+        my_stream.close();
   }
 
 
@@ -251,7 +278,7 @@ public:
         my_stream << EOF;
 	                
 
-		cerr<<"writeSpeex : done!"<<endl;
+	cerr<<"writeSpeex : done!"<<endl;
   }
 
 
@@ -273,7 +300,7 @@ public:
         int id = it->first;
 
 	    m_frameAccumulator[id].push_back(src.find(id)->second);
-	    cerr<<"Accumulating : "<<id<<" numFrames : "<<m_frameAccumulator[id].size()<<endl;
+	    //cerr<<"Accumulating : "<<id<<" numFrames : "<<m_frameAccumulator[id].size()<<endl;
 	    m_accumulatorLastCount[id] = count;
 
       	it++;
@@ -305,7 +332,7 @@ public:
                 {
                         m_readyQueue.push_back(ite->first);
                         pseudosem_post(&m_semaphore);
-                        cerr<<"SOURCE READY FOR SAVING: "<<ite->first<<endl;     
+                        //cerr<<"SOURCE READY FOR SAVING: "<<ite->first<<endl;     
                 }
             }
             else
@@ -313,7 +340,7 @@ public:
                 //remove source (length too small, discarding)
                 m_accumulatorLastCount.erase(ite->first);   
                 m_frameAccumulator.erase(ite->first);
-                cerr<<"DISCARDING SOURCE (LENGTH TOO SMALL): "<<ite->first<<endl;
+                //cerr<<"DISCARDING SOURCE (LENGTH TOO SMALL): "<<ite->first<<endl;
             }
         }
     } //FOREACH ACCUMULATOR
@@ -327,6 +354,9 @@ public:
   IN_ORDER_NODE_SPEEDUP(SaveSpeex)
 };
 
+
+
+  
 
 void *savespeex_rec_thread(void *data)
 {

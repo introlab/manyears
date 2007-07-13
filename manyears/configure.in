@@ -147,11 +147,6 @@ AC_SUBST(QT_INCLUDES)
 dnl End test for QT
 
 
-
-
-
-
-
 AC_PATH_PROG(XML2_CONFIG,xml2-config,no,$PATH)
 if test "$XML2_CONFIG" = no; then
 	AC_MSG_ERROR( Cannot find xml2-config)
@@ -167,9 +162,6 @@ AC_SUBST(XML2_LIB)
 dnl Look for prefix, if not specified, use FlowDesigner default toolbox prefix
 if test "x$prefix" = "xNONE"; then
   prefix=$FLOWDESIGNER_DATA/$PACKAGE                      
-else
-  dnl this will work, but we should maybe change the variable name
-  OVERFLOW_DATA=$prefix
 fi
 
 AC_OUTPUT([Makefile config/Makefile n-files/Makefile src/Makefile GUI/Makefile])
