@@ -18,8 +18,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _FDREADER_H_
 #define _FDREADER_H_
 
-#include <qserversocket.h> 
-#include <qsocket.h> 
+#include <Qt3Support/q3serversocket.h> 
+#include <Qt3Support/q3socket.h> 
 #include <string>
 #include <sstream>
 
@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 class SourceInfo;
 
-class FDReader : public QServerSocket {
+class FDReader : public Q3ServerSocket {
      
      Q_OBJECT;
      
@@ -52,7 +52,7 @@ class FDReader : public QServerSocket {
 	    
      protected:  
 
-      std::vector<QSocket*> m_sockets;
+      std::vector<Q3Socket*> m_sockets;
 
 };
 #endif

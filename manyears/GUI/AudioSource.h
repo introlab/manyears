@@ -65,7 +65,12 @@ class AudioSource {
             strength = cpy.strength;
             return *this;
         }
-                
+         
+        bool operator== (const AudioSource &cpy)
+        {
+         return (cpy.id == id) && (cpy.theta == theta) && (cpy.phi == phi) && (cpy.strength == strength);            
+        }
+        
         int id;
         float theta;
         float phi;

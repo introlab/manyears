@@ -23,12 +23,12 @@ SNCRZ30_Capture::SNCRZ30_Capture(std::string hostname, int port, int fps)
         :    m_hostname(hostname), m_port(port), m_fps(fps)
 {
     //must be called first
-    qInitNetworkProtocols();
+    q3InitNetworkProtocols();
 
-    m_http = new QHttp(m_hostname.c_str(),m_port);
+    m_http = new Q3Http(m_hostname.c_str(),m_port);
 
     //Connect signals
-    connect(m_http, SIGNAL(readyRead ( const QHttpResponseHeader&)), this, SLOT(dataReady(const QHttpResponseHeader &)));
+    connect(m_http, SIGNAL(readyRead ( const Q3HttpResponseHeader&)), this, SLOT(dataReady(const Q3HttpResponseHeader &)));
 
     //init
     init();
@@ -42,7 +42,7 @@ SNCRZ30_Capture::~SNCRZ30_Capture()
     }
 }
 
-void SNCRZ30_Capture::dataReady(const QHttpResponseHeader & resp )
+void SNCRZ30_Capture::dataReady(const Q3HttpResponseHeader & resp )
 {
     static char JPEG_MARKER_START[] = {0xff,0xd8};
     static char JPEG_MARKER_END[] = {0xff,0xd9};
@@ -53,7 +53,7 @@ void SNCRZ30_Capture::dataReady(const QHttpResponseHeader & resp )
     //std::cerr<<"SNCRZ30_Capture::dataReady() got bytes :"<<array.size()<<std::endl;
 
     //update string
-    input_string += std::string(&array[0],array.size());
+    input_string += std::string(array.at(0),array.size());
 
     unsigned int jpeg_start_pos = input_string.find(std::string(JPEG_MARKER_START,2));
 

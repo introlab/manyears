@@ -22,16 +22,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "audioview.h"
 #include "ImageView.h"
 #include "FDReader.h"
-#include <qmainwindow.h>
-#include <qtextedit.h>
+#include <Qt3Support/q3mainwindow.h>
+#include <Qt3Support/q3textedit.h>
 #include <qlayout.h>
-#include <qbuttongroup.h>
+#include <Qt3Support/q3buttongroup.h>
 #include <qpushbutton.h>
 #include <qtimer.h>
+//Added by qt3to4:
+#include <Qt3Support/q3VBoxLayout>
+#include <Qt3Support/q3GridLayout>
+#include <Qt3Support/q3HBoxLayout>
+#include <QLabel>
 
 
 
-class TrackAudioWidget : public QMainWindow
+class TrackAudioWidget : public Q3MainWindow
 {
     Q_OBJECT;
 
@@ -52,16 +57,16 @@ protected:
     long long minTime;
        
     AudioView* audioView;
-    QTextEdit* msgEdit;
-    QVBoxLayout* Form1Layout;
-    QHBoxLayout* bottomLayout;
-    QGridLayout* gridLayout;
+    Q3TextEdit* msgEdit;
+    Q3VBoxLayout* Form1Layout;
+    Q3HBoxLayout* bottomLayout;
+    Q3GridLayout* gridLayout;
     QPushButton* sourceButtons[4];
     QLabel*      sourceID[4];
     QLabel*      sourceTheta[4];
     QLabel*      sourcePhi[4];
     QLabel*      sourceStrength[4];
-    QButtonGroup* buttonGroup;
+    Q3ButtonGroup* buttonGroup;
     ImageView*    imageView;
     QTimer*       timer;
     FDReader* 	  reader;

@@ -18,9 +18,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _SNCRZ30_CAPTURE_H_
 #define _SNCRZ30_CAPTURE_H_
 
-#include <qurloperator.h> 
-#include <qnetwork.h>
-#include <qhttp.h> 
+#include <Qt3Support/q3urloperator.h> 
+#include <Qt3Support/q3network.h>
+#include <Qt3Support/q3http.h> 
 #include <qimage.h> 
 #include <string>
 #include <sstream>
@@ -35,14 +35,14 @@ class SNCRZ30_Capture : public QObject {
 	  ~SNCRZ30_Capture();
 	     	  
      public slots:
-	  void dataReady(const QHttpResponseHeader & resp );
+	  void dataReady(const Q3HttpResponseHeader & resp );
 	  
      signals:
 	  void putImage(const QImage &image);
 	    
      protected:  
 	  void init();
-	  QHttp *m_http;
+	  Q3Http *m_http;
 	  std::string m_hostname;
 	  int m_port;
 	  int m_fps;

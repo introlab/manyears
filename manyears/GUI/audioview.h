@@ -19,7 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #define __AUDIOVIEW_H__
 
 #include <qtimer.h> 
-#include <qscrollview.h>
+#include <Qt3Support/Q3ScrollView>
 #include <qtooltip.h>
 #include <list>
 #include <map>
@@ -33,7 +33,7 @@ class AudioView;
 
 
 
-class AudioView : public QScrollView, QToolTip{
+class AudioView : public Q3ScrollView{
   Q_OBJECT
 
   public:

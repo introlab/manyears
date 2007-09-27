@@ -29,7 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 
 AudioView::AudioView(QWidget* parent)
-        : QScrollView(parent), QToolTip(viewport()), timeScale(10e-6)
+        : Q3ScrollView(parent), timeScale(10e-6)
 {
     //setMinimumSize(20, 220);
     nbLines = 19;
@@ -57,16 +57,16 @@ AudioView::AudioView(QWidget* parent)
     setMaximumSize(1024,heightLine * (nbLines + 1) + 50);
 
     //initialize available colors
-    availableColors.push_back(Qt::red.light(120));
-    availableColors.push_back(Qt::green.light(120));
-    availableColors.push_back(Qt::blue.light(120));
-    availableColors.push_back(Qt::cyan.light(120));
-    availableColors.push_back(Qt::magenta.light(120));
-    availableColors.push_back(Qt::yellow.light(120));
-    availableColors.push_back(Qt::gray.light(120));
-    availableColors.push_back(Qt::red.light(150));
-    availableColors.push_back(Qt::green.light(150));
-    availableColors.push_back(Qt::blue.light(150));
+    availableColors.push_back(Qt::red);
+    availableColors.push_back(Qt::green);
+    availableColors.push_back(Qt::blue);
+    availableColors.push_back(Qt::cyan);
+    availableColors.push_back(Qt::magenta);
+    availableColors.push_back(Qt::yellow);
+    availableColors.push_back(Qt::gray);
+    availableColors.push_back(Qt::red);
+    availableColors.push_back(Qt::green);
+    availableColors.push_back(Qt::blue);
 }
 
 void AudioView::setExtremas(long long t1, long long t2)
@@ -290,7 +290,7 @@ void AudioView::repaintTimeInterval(long long t1, long long t2, bool erase)
 
 void AudioView::contentsMousePressEvent(QMouseEvent * e)
 {
-    QScrollView::contentsMousePressEvent(e);
+    Q3ScrollView::contentsMousePressEvent(e);
     if(e->button() == Qt::LeftButton)
     {
         long long t = xToTime(e->x());
@@ -326,7 +326,7 @@ void AudioView::contentsMousePressEvent(QMouseEvent * e)
 
 void AudioView::contentsMouseMoveEvent ( QMouseEvent * e )
 {
-    QScrollView::contentsMouseMoveEvent(e);
+    Q3ScrollView::contentsMouseMoveEvent(e);
     switch(mousemode)
     {
     case mmTimeScale:
@@ -415,7 +415,7 @@ void AudioView::contentsMouseReleaseEvent ( QMouseEvent *)
 {
     mousemode = mmNone;
     // code ici pour forcer le tip
-    killTimers();
+    //killTimers();
 }
 
 void AudioView::contentsWheelEvent (QWheelEvent * e)
@@ -477,13 +477,29 @@ QColor AudioView::getSourceColor(int id)
 void AudioView::addSource(long long time, const SourceInfo* source)
 {
     if (source)
-    {      
-        m_sources[time].push_back(AudioSource(source));        
-    }      
+    {
+        addSource(time,AudioSource(source));
+    }   
 }
 void AudioView::addSource(long long time, const AudioSource &source)
 {
-    m_sources[time].push_back(source);       
+    
+    long long index = (time / 10000)  * 10000;
+    bool found = false;
+    
+    for (unsigned int i = 0; i < m_sources[index].size(); i++)
+    {
+        if (m_sources[index][i].id == source.id)
+        {
+            found = true;
+            break;
+        }
+    }
+    
+    if (!found)
+    {
+        m_sources[index].push_back(source);
+    }
 }
    
 void AudioView::timeout()

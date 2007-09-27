@@ -21,22 +21,28 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <sys/time.h>
 #include <unistd.h>
 #include <qlayout.h>
+//Added by qt3to4:
+#include <Qt3Support/q3GridLayout>
+#include <Qt3Support/q3HBoxLayout>
+#include <Qt3Support/q3VBoxLayout>
+#include <QLabel>
 #include <iostream>
-#include <qprocess.h>
+#include <QProcess>
+#include <QStringList>
 
 #define MAX_NUM_SOURCES 4
 
 // ---
 TrackAudioWidget::TrackAudioWidget(QWidget* parent)
-        : QMainWindow(parent), maxTimeSetted(0)
+        : Q3MainWindow(parent), maxTimeSetted(0)
 {
     minTime = getTime();   
-    Form1Layout = new QVBoxLayout( this, 11, 6, "Form1Layout");
+    Form1Layout = new Q3VBoxLayout( this, 11, 6, "Form1Layout");
 
     audioView = new AudioView(this);
     Form1Layout->addWidget(audioView);
 
-    msgEdit = new QTextEdit( this, "msgEdit" );
+    msgEdit = new Q3TextEdit( this, "msgEdit" );
     QFont msgEdit_font(  msgEdit->font() );
     msgEdit_font.setPointSize( 17 );
     msgEdit->setFont( msgEdit_font );
@@ -44,14 +50,14 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     msgEdit->hide();
     Form1Layout->addWidget( msgEdit );
 
-    bottomLayout = new QHBoxLayout(this,11,6,"BottomLayout");
+    bottomLayout = new Q3HBoxLayout(this,11,6,"BottomLayout");
     Form1Layout->addLayout(bottomLayout);
 
     imageView = new ImageView(this);
     bottomLayout->addWidget(imageView);
 
-    gridLayout = new QGridLayout(this,5,5,11,6,"GridLayout");
-    buttonGroup = new QButtonGroup(this);
+    gridLayout = new Q3GridLayout(this,5,5,11,6,"GridLayout");
+    buttonGroup = new Q3ButtonGroup(this);
     buttonGroup->hide();
     connect(buttonGroup, SIGNAL(clicked(int)), this, SLOT(playClicked(int)));
 
@@ -192,17 +198,29 @@ void TrackAudioWidget::playClicked(int source_id)
     std::cerr<<"TrackAudioWidget::playClicked with source_id : "<<source_id<<std::endl;
 
     //TODO: play file...
+    
     QProcess *process = new QProcess(this);
-    process->addArgument("mplayer");
-    process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav"));
+    QString prog;
+    QStringList args;
+    #ifdef WIN32
+    prog = QString("sndrec32.exe");
+    args += QString("/play");
+    args += QString("/close");
+    args += QString("log/source_")+QString::number(source_id) + QString(".wav");
+    //process->addArgument("sndrec32.exe");
+    //process->addArgument(QString("/play"));
+    //process->addArgument(QString("/close"));
+    //process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav"));
+    #else
+    //TODO ADD MPLAYER.
+    #endif
     
 	//process->addArgument("localhost");   
     //process->addArgument("2314");          
     
-    if (!process->start())
-    {
-        std::cerr<<"Error playing source : " << source_id<<std::endl;
-        delete process;                  
+    if (process)
+    {        
+        process->start(prog,args);                
     }      
     
 }

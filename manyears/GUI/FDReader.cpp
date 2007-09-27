@@ -26,7 +26,7 @@ using namespace std;
 
 
 FDReader::FDReader(int port, int backlog)
-        :    QServerSocket(port, backlog)
+        :    Q3ServerSocket(port, backlog)
 {
     cout<<"FDReader::FDReader(int,int) starting socket server on port "<<port<<endl;
 }
@@ -105,7 +105,7 @@ void FDReader::newConnection ( int socket )
 	cout<<"FDReader::newConnection : new network connection on socket "<<socket<<endl;
 
 	//Create a new socket
-	QSocket *newSocket = new QSocket();
+	Q3Socket *newSocket = new Q3Socket();
 
 	//Set the socket for reading
 	newSocket->setSocket(socket);
