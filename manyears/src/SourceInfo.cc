@@ -17,11 +17,54 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include "SourceInfo.h"
 #include "Vector.h"
+#include "conversion.h"
+#include "Exception.h"
+#include "vmethod.h"
+#include <sstream>
 
 using namespace FD;
 
+//conversion declaration
+ObjectRef SourceInfoToStringConversion(ObjectRef in);
+ObjectRef VectorObjectRefToString(ObjectRef in);
+
 DECLARE_TYPE(SourceInfo);
 DECLARE_TYPE(Vector<SourceInfo>);
+REGISTER_CONVERSION(SourceInfo, String, SourceInfoToStringConversion);
+REGISTER_CONVERSION(Vector<ObjectRef>, String, VectorObjectRefToString);
+REGISTER_VTABLE0(toString, Vector<ObjectRef>, VectorObjectRefToString, 1);
+
+//conversion to string...
+ObjectRef SourceInfoToStringConversion(ObjectRef in)
+{
+    try {
+        RCPtr<SourceInfo> info = in;
+        std::stringstream temp;
+        in->printOn(temp);
+        return ObjectRef(new String(temp.str()));                        
+    }
+    catch(BaseException *e)
+    {
+        throw e->add(new GeneralException("Unable to cast into SourceInfo",__FILE__,__LINE__));   
+    }        
+}
+
+
+ObjectRef VectorObjectRefToString(ObjectRef in)
+{
+    try {
+        RCPtr<Vector<ObjectRef> > info = in;
+        std::stringstream temp;
+        in->printOn(temp);
+        return ObjectRef(new String(temp.str()));                        
+    }
+    catch(BaseException *e)
+    {
+        throw e->add(new GeneralException("Unable to cast into SourceInfo",__FILE__,__LINE__));   
+    }  
+    
+}
+
 
 void SourceInfo::printOn(std::ostream &out) const
 {
