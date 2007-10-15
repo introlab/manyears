@@ -57,13 +57,14 @@ ENDIF(APPLE)
 
 add_library(libmanyears-dynamic SHARED ${manyears_SRCS})
 	
-set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME libmanyears.tlb LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
+set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME libmanyears.tlb)
 
 IF(WIN32)
 	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTCORE_LIBRARY} -lole32  -lfftw3 -lm )
 ENDIF(WIN32)
 
 IF(APPLE)
+	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
 	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${FFTW3_LIBRARY} -llibflow -lm )
 ENDIF(APPLE)
 
@@ -71,6 +72,7 @@ ENDIF(APPLE)
 install(TARGETS libmanyears-dynamic DESTINATION lib)
   
 #INSTALLING .def file  
+MESSAGE( STATUS "EXECUTING : ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears_SRCS}")
 INSTALL( CODE "EXECUTE_PROCESS(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src OUTPUT_FILE libmanyears.def COMMAND ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears_SRCS})" )  
 INSTALL( FILES libmanyears.def DESTINATION def)
 INSTALL( FILES ${MANYEARS_EXAMPLES} DESTINATION examples)
