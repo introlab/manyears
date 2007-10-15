@@ -9,10 +9,10 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 #Let's find FlowDesigner
 #Hard coded paths right now...
 
-SET (FLOWDESIGNER_BIN_DIR "/usr/local/flowdesigner/bin/")
-SET (FLOWDESIGNER_INCLUDE_DIR "/usr/local/flowdesigner/include/flowdesigner/")
-SET (FLOWDESIGNER_LIB_DIR "/usr/local/flowdesigner/lib/")
-SET (FLOWDESIGNER_TOOLBOX_DIR "/usr/local/flowdesigner/lib/flowdesigner/toolbox/")
+SET (FLOWDESIGNER_BIN_DIR "/usr/bin/")
+SET (FLOWDESIGNER_INCLUDE_DIR "/usr/include/flowdesigner/")
+SET (FLOWDESIGNER_LIB_DIR "/usr/lib/")
+SET (FLOWDESIGNER_TOOLBOX_DIR "/usr/lib/flowdesigner/toolbox/")
 
 #Add the macros directory for cmake scripts
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/macros)
