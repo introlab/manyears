@@ -42,7 +42,7 @@ namespace FD {
         {
             //Handle            
             std::map<int, std::string> apiMap;
-            apiMap[RtAudio::MACOSX_CORE] = "OS-X Core Audio";
+            apiMap[RtAudio::MACOSX_CORE] = "OSX Core Audio";
             apiMap[RtAudio::WINDOWS_ASIO] = "Windows ASIO";
             apiMap[RtAudio::WINDOWS_DS] = "Windows Direct Sound";
             apiMap[RtAudio::UNIX_JACK] = "Jack Client";
