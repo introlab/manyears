@@ -18,17 +18,15 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _FDREADER_H_
 #define _FDREADER_H_
 
-#include <Qt3Support/q3serversocket.h> 
-#include <Qt3Support/q3socket.h> 
+#include <QTcpServer> 
+#include <QTcpSocket> 
 #include <string>
 #include <sstream>
-
-//#include "SourceInfo.h"
 #include "Vector.h"
 
 class SourceInfo;
 
-class FDReader : public Q3ServerSocket {
+class FDReader : public QTcpServer {
      
      Q_OBJECT;
      
@@ -38,7 +36,7 @@ class FDReader : public Q3ServerSocket {
 
 	  ~FDReader();
 
-	virtual void newConnection ( int socket );
+	virtual void newConnection ();
 	     	  
      public slots:
 
@@ -52,7 +50,7 @@ class FDReader : public Q3ServerSocket {
 	    
      protected:  
 
-      std::vector<Q3Socket*> m_sockets;
+      std::vector<QTcpSocket*> m_sockets;
 
 };
 #endif

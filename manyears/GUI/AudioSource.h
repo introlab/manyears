@@ -20,18 +20,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include <map>
 #include "SourceInfo.h"
+#include <QGraphicsEllipseItem>
 
 class AudioSource {
     public:
 
-        AudioSource(int _id, float _theta, float _phi, float _strength)
-            : id(_id), theta(_theta), phi(_phi), strength (_strength)
+        AudioSource(int _id, float _theta, float _phi, float _strength, QGraphicsEllipseItem *_item = NULL)
+            : id(_id), theta(_theta), phi(_phi), strength (_strength), item(_item)
         {
                                           
         }
         
         AudioSource()
-            : id(-1), theta(0), phi(0), strength (0)
+            : id(-1), theta(0), phi(0), strength (0), item(NULL)
         {
 
         }         
@@ -45,7 +46,7 @@ class AudioSource {
                 phi = atan2(source->x[2], source->x[1]) * -180.0 / M_PI;
                 strength = source->strength;
             }
-            
+            item = NULL;
         }
         
         AudioSource(const AudioSource& cpy)
@@ -54,6 +55,7 @@ class AudioSource {
             theta = cpy.theta;
             phi = cpy.phi;
             strength = cpy.strength;
+	    item = cpy.item;
             
         }
         
@@ -63,18 +65,20 @@ class AudioSource {
             theta = cpy.theta;
             phi = cpy.phi;
             strength = cpy.strength;
+            item = cpy.item;
             return *this;
         }
          
         bool operator== (const AudioSource &cpy)
         {
-         return (cpy.id == id) && (cpy.theta == theta) && (cpy.phi == phi) && (cpy.strength == strength);            
+         return (cpy.id == id) && (cpy.theta == theta) && (cpy.phi == phi) && (cpy.strength == strength) && (cpy.item == item);            
         }
         
         int id;
         float theta;
         float phi;
         float strength;
+        QGraphicsEllipseItem *item;
     
 };
 

@@ -26,8 +26,12 @@ using namespace std;
 
 
 FDReader::FDReader(int port, int backlog)
-        :    Q3ServerSocket(port, backlog)
+        :    QTcpServer()
 {
+
+    setMaxPendingConnections(backlog);
+    listen(QHostAddress::Any,port);
+
     cout<<"FDReader::FDReader(int,int) starting socket server on port "<<port<<endl;
 }
 
@@ -60,7 +64,7 @@ void FDReader::dataReady()
 
     char buffer[size];
     
-    m_sockets[s]->readBlock(buffer,size);   
+    m_sockets[s]->read(buffer,size);   
     
     //cerr<<"FDReader::dataReady got bytes : "<<size<<endl;	
 
@@ -100,15 +104,12 @@ void FDReader::dataReady()
  	     
 }
 
-void FDReader::newConnection ( int socket )
+void FDReader::newConnection ()
 {
-	cout<<"FDReader::newConnection : new network connection on socket "<<socket<<endl;
+	cout<<"FDReader::newConnection : new network connection"<<endl;
 
 	//Create a new socket
-	Q3Socket *newSocket = new Q3Socket();
-
-	//Set the socket for reading
-	newSocket->setSocket(socket);
+	QTcpSocket *newSocket = nextPendingConnection();
 
 	//Connect signals
 	connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataReady()));

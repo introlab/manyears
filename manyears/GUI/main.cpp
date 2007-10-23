@@ -17,7 +17,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include "TrackAudioWidget.h"
 #include <iostream>
-#include <qapplication.h>
+#include <QApplication>
 #include "UINodeRepository.h"
 #include "ObjectRef.h"
 #include "path.h"
@@ -32,10 +32,10 @@ void printusage(){
 int main( int argc, char **argv)
 {
     
-    //load FD toolboxes
-    FD::IExtensions::detect();
-    FD::scanDL();
-    FD::UINodeRepository::Scan();
+//load FD toolboxes
+//    FD::IExtensions::detect();
+//    FD::scanDL();
+//    FD::UINodeRepository::Scan();
 
     
     //QApplication::setColorSpec( QApplication::CustomColor );
@@ -43,7 +43,7 @@ int main( int argc, char **argv)
 
     TrackAudioWidget audioview(NULL);
 
-    app.setMainWidget( &audioview );
+    app.setActiveWindow( &audioview );
     audioview.resize(1024, 768);
     audioview.show();
     return app.exec();

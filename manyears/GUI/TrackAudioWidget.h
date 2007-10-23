@@ -18,34 +18,30 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _TRACK_AUDIO_WIDGET_H_
 #define _TRACK_AUDIO_WIDGET_H_
 
-
 #include "audioview.h"
 #include "ImageView.h"
 #include "FDReader.h"
-#include <Qt3Support/q3mainwindow.h>
-#include <Qt3Support/q3textedit.h>
-#include <qlayout.h>
-#include <Qt3Support/q3buttongroup.h>
-#include <qpushbutton.h>
-#include <qtimer.h>
-//Added by qt3to4:
-#include <Qt3Support/q3VBoxLayout>
-#include <Qt3Support/q3GridLayout>
-#include <Qt3Support/q3HBoxLayout>
+#include <QMainWindow>
+#include <QLayout>
+#include <QButtonGroup>
+#include <QPushButton>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 
 
-
-class TrackAudioWidget : public Q3MainWindow
+class TrackAudioWidget : public QMainWindow
 {
     Q_OBJECT;
 
 public:
     TrackAudioWidget(QWidget* parent=NULL);
-    virtual void setTime (long long time);
+    virtual void setTime (unsigned long long time);
 
     bool isSourceActive(int id);
-    long long getTime();
+    unsigned long long getTime();
     
 public slots:
     void getData(const std::vector<const SourceInfo*> &sources);
@@ -53,20 +49,19 @@ public slots:
     void timeout();   
 
 protected:
+
     long long maxTimeSetted;
-    long long minTime;
-       
+    long long minTime;    
     AudioView* audioView;
-    Q3TextEdit* msgEdit;
-    Q3VBoxLayout* Form1Layout;
-    Q3HBoxLayout* bottomLayout;
-    Q3GridLayout* gridLayout;
+    QVBoxLayout* Form1Layout;
+    QHBoxLayout* bottomLayout;
+    QGridLayout* gridLayout;
     QPushButton* sourceButtons[4];
     QLabel*      sourceID[4];
     QLabel*      sourceTheta[4];
     QLabel*      sourcePhi[4];
     QLabel*      sourceStrength[4];
-    Q3ButtonGroup* buttonGroup;
+    QButtonGroup* buttonGroup;
     ImageView*    imageView;
     QTimer*       timer;
     FDReader* 	  reader;

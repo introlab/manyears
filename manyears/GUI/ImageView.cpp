@@ -16,27 +16,21 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include "ImageView.h"
-#include <qpixmap.h>
-//Added by qt3to4:
+#include <QPixmap>
 #include <QLabel>
-#include "SNCRZ30Cam.h"
 #include "DefaultImage.xpm"
 
 ImageView::ImageView(QWidget*parent)
     : QLabel(parent) {
 
-    m_capture = new SNCRZ30_Capture("192.168.3.3",80,2);
-
-    connect(m_capture,SIGNAL(putImage( const QImage& )), this, SLOT(putImage( const QImage& ))); 
     setPixmap(QPixmap (Default_xpm));
 }
 
 ImageView::~ImageView()
 {          
-    delete m_capture;   
 }   
 
 void ImageView::putImage(const QImage& image)
 {
-    setPixmap(QPixmap(image));
+    setPixmap(QPixmap().fromImage(image));
 }

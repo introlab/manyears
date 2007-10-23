@@ -21,10 +21,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <sys/time.h>
 #include <unistd.h>
 #include <qlayout.h>
-//Added by qt3to4:
-#include <Qt3Support/q3GridLayout>
-#include <Qt3Support/q3HBoxLayout>
-#include <Qt3Support/q3VBoxLayout>
 #include <QLabel>
 #include <iostream>
 #include <QProcess>
@@ -32,34 +28,36 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #define MAX_NUM_SOURCES 4
 
+using namespace std;
+
 // ---
 TrackAudioWidget::TrackAudioWidget(QWidget* parent)
-        : Q3MainWindow(parent), maxTimeSetted(0)
+        : QMainWindow(parent), maxTimeSetted(0), audioView(NULL)
 {
     minTime = getTime();   
-    Form1Layout = new Q3VBoxLayout( this, 11, 6, "Form1Layout");
 
+    //Create a dummy widget
+    QWidget *widget = new QWidget(this);
+    setCentralWidget(widget);
+
+    //Add the layout	    
+    Form1Layout = new QVBoxLayout(widget);
+    widget->setLayout(Form1Layout);
+	
     audioView = new AudioView(this);
     Form1Layout->addWidget(audioView);
 
-    msgEdit = new Q3TextEdit( this, "msgEdit" );
-    QFont msgEdit_font(  msgEdit->font() );
-    msgEdit_font.setPointSize( 17 );
-    msgEdit->setFont( msgEdit_font );
-    msgEdit->setMaximumHeight(60);
-    msgEdit->hide();
-    Form1Layout->addWidget( msgEdit );
-
-    bottomLayout = new Q3HBoxLayout(this,11,6,"BottomLayout");
+    bottomLayout = new QHBoxLayout(NULL);
     Form1Layout->addLayout(bottomLayout);
 
     imageView = new ImageView(this);
     bottomLayout->addWidget(imageView);
 
-    gridLayout = new Q3GridLayout(this,5,5,11,6,"GridLayout");
-    buttonGroup = new Q3ButtonGroup(this);
-    buttonGroup->hide();
-    connect(buttonGroup, SIGNAL(clicked(int)), this, SLOT(playClicked(int)));
+    gridLayout = new QGridLayout(NULL);
+
+    buttonGroup = new QButtonGroup(this);
+
+    connect(buttonGroup, SIGNAL(buttonClicked(int)), this, SLOT(playClicked(int)));
 
     gridLayout->addWidget(new QLabel("",this),0,0,Qt::AlignHCenter);
     gridLayout->addWidget(new QLabel("ID",this),0,1,Qt::AlignHCenter);
@@ -71,7 +69,6 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     {
         sourceButtons[i] = new QPushButton("Play",this);
         gridLayout->addWidget(sourceButtons[i],i + 1,0,Qt::AlignHCenter);
-        //buttonGroup->insert(sourceButtons[i]);
 
         sourceID[i] = new QLabel(this);
         gridLayout->addWidget(sourceID[i],i+1,1,Qt::AlignHCenter);
@@ -91,21 +88,13 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
         sourcePhi[i]->hide();
         sourceStrength[i]->hide();
     }
-
-    //useful?
-    gridLayout->setColStretch(0,20);
-    gridLayout->setColStretch(1,20);
-    gridLayout->setColStretch(2,20);
-    gridLayout->setColStretch(3,20);
-    gridLayout->setColStretch(4,20);
-
-
+   
+ 
     bottomLayout->addLayout(gridLayout);
     Form1Layout->activate();
     
-    //FlowDesigner reader
+    //FlowDesigner SourceInfo reader
     reader = new FDReader();
-
     connect(reader, SIGNAL(putData(const std::vector<const SourceInfo*>&)), this, SLOT(getData(const std::vector<const SourceInfo*>&)));
     
     
@@ -115,54 +104,66 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     timer->start(500);
 }
 
-void TrackAudioWidget::setTime (long long time)
+void TrackAudioWidget::setTime (unsigned long long time)
 {
-    audioView->setExtremas(minTime,time);
 
-    //update timeline selector if required   
-    if (audioView->getSelectedTime() >= maxTimeSetted)
+    if (audioView)
     {
-        audioView->selectTime(time);
-        maxTimeSetted = time;
-    }
+	    audioView->setExtremas(minTime,time);
 
-    msgEdit->clear();
+	    //debug
+	    //add a source
+            audioView->addSource(time,AudioSource(1,0.5,0.5,0.5));
+  
 
-    std::vector<AudioSource> sources = audioView->getSourcesAtSelectedTime();
+	    //update timeline selector if required   
+	    if (audioView->getSelectedTime() >= maxTimeSetted)
+	    {
+		audioView->selectTime(time);
+		maxTimeSetted = time;
+	    }
 
-    for (int i = 0; i < MAX_NUM_SOURCES; i++)
-    {
-        if (i < sources.size())
-        {
-            int source_id = sources[i].id;
-            float phi = sources[i].phi;
-            float theta = sources[i].theta;
-            float strength = sources[i].strength;
+	    std::vector<AudioSource> sources = audioView->getSourcesAtSelectedTime();
 
-            sourceButtons[i]->show();
-            sourceButtons[i]->setPaletteBackgroundColor(audioView->getSourceColor(source_id));
-            sourceButtons[i]->setDisabled(isSourceActive(source_id));
-            buttonGroup->insert(sourceButtons[i],source_id);
+	    for (int i = 0; i < MAX_NUM_SOURCES; i++)
+	    {
+		if (i < sources.size())
+		{
+		    int source_id = sources[i].id;
+		    float phi = sources[i].phi;
+		    float theta = sources[i].theta;
+		    float strength = sources[i].strength;
 
-            sourceID[i]->setText(QString::number(source_id));
-            sourceID[i]->show();
-            sourceTheta[i]->setText(QString::number(theta));
-            sourceTheta[i]->show();
-            sourcePhi[i]->setText(QString::number(phi));
-            sourcePhi[i]->show();
-            sourceStrength[i]->setText(QString::number(strength));
-            sourceStrength[i]->show();
-        }
-        else
-        {
-            buttonGroup->remove(sourceButtons[i]);
-            sourceButtons[i]->hide();
-            sourceID[i]->hide();
-            sourceTheta[i]->hide();
-            sourcePhi[i]->hide();
-            sourceStrength[i]->hide();
-        }
-    }
+		    sourceButtons[i]->show();
+		    sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
+			
+		    //TODO FIX THIS
+		    sourceButtons[i]->setDisabled(isSourceActive(source_id));
+
+
+
+		    buttonGroup->addButton(sourceButtons[i],source_id);
+
+		    sourceID[i]->setText(QString::number(source_id));
+		    sourceID[i]->show();
+		    sourceTheta[i]->setText(QString::number(theta));
+		    sourceTheta[i]->show();
+		    sourcePhi[i]->setText(QString::number(phi));
+		    sourcePhi[i]->show();
+		    sourceStrength[i]->setText(QString::number(strength));
+		    sourceStrength[i]->show();
+		}
+		else
+		{
+		    buttonGroup->removeButton(sourceButtons[i]);
+		    sourceButtons[i]->hide();
+		    sourceID[i]->hide();
+		    sourceTheta[i]->hide();
+		    sourcePhi[i]->hide();
+		    sourceStrength[i]->hide();
+		}
+	    }
+	}
 }
 
 bool TrackAudioWidget::isSourceActive(int id)
@@ -245,7 +246,7 @@ void TrackAudioWidget::timeout()
     setTime(getTime());      
 }   
 
-long long TrackAudioWidget::getTime()
+unsigned long long TrackAudioWidget::getTime()
 {
     timeval thetime;
     gettimeofday(&thetime, 0);

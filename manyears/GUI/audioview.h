@@ -18,14 +18,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef __AUDIOVIEW_H__
 #define __AUDIOVIEW_H__
 
-#include <qtimer.h> 
-#include <Qt3Support/Q3ScrollView>
+#include <QTimer> 
+#include <QScrollArea>
 #include <qtooltip.h>
 #include <list>
 #include <map>
 #include <vector>
 #include <math.h>
 #include "AudioSource.h"
+#include <QGraphicsView>
+#include <QGraphicsLineItem>
 
 class AudioView;
 
@@ -33,8 +35,9 @@ class AudioView;
 
 
 
-class AudioView : public Q3ScrollView{
-  Q_OBJECT
+class AudioView : public QGraphicsView {
+
+  Q_OBJECT;
 
   public:
     AudioView(QWidget* parent);
@@ -91,21 +94,22 @@ class AudioView : public Q3ScrollView{
 
     virtual void         drawContents(QPainter*, int, int, int, int);
 
-    virtual void         contentsMousePressEvent ( QMouseEvent * e );
-    virtual void         contentsMouseMoveEvent ( QMouseEvent * e );
-    virtual void         contentsMouseReleaseEvent ( QMouseEvent * e );
-    virtual void         contentsWheelEvent (QWheelEvent * e);
 
-    virtual void         contextMenuEvent ( QContextMenuEvent * e );
+    //MOUSE EVENTS
+    virtual void         mousePressEvent ( QMouseEvent * e );
+    virtual void         mouseMoveEvent ( QMouseEvent * e );
+    virtual void         mouseReleaseEvent ( QMouseEvent * e );
+    virtual void         wheelEvent (QWheelEvent * e);
 
     virtual void         timerEvent (QTimerEvent *);
 
-    virtual void         maybeTip( const QPoint & );
-
-    long long            xToTime(int x) const;
+    long long            xToTime(long long x) const;
     long long            smartTimeSelect(int x, int y) const;
-    std::vector<QColor>  availableColors;
-    
+
+
+    std::vector<QGraphicsLineItem*> m_horizlines;
+    QGraphicsLineItem *selectedTimeLine;
+    std::vector<QColor>  availableColors;    
     std::map<long long, std::vector<AudioSource> > m_sources;
 };
 

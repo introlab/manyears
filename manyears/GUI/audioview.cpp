@@ -24,13 +24,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <sstream>
 #include <sys/time.h>
 #include <unistd.h>
+#include <QPushButton>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsEllipseItem>
 
 #define marginH    40
 
+using namespace std;
+
 
 AudioView::AudioView(QWidget* parent)
-        : Q3ScrollView(parent), timeScale(10e-6)
+        : QGraphicsView(parent), timeScale(1E-5)
 {
+
+    QGraphicsScene *my_scene = new QGraphicsScene(0,0,1024,heightLine * (nbLines + 1) + 50,this);
+
+    setScene(my_scene);
+
     //setMinimumSize(20, 220);
     nbLines = 19;
     heightLine = 15;
@@ -46,15 +57,33 @@ AudioView::AudioView(QWidget* parent)
     minTime=time;
     maxTime=time + 1 * 1000000LL;
     autoscrollDX = 0;
-    viewport()->setEraseColor(Qt::white);
-    setDragAutoScroll(true);
-    viewport()->setMouseTracking(true);
-    setMouseTracking(true);
-    viewport()->setAcceptDrops(true);
-    setAcceptDrops(true);
+    
+    //TODO REPLACE THIS.
+    //viewport()->setEraseColor(Qt::white); 
+    //setDragAutoScroll(true);
+
+    //viewport()->setMouseTracking(true);
+    //setMouseTracking(true);
+    //viewport()->setAcceptDrops(true);
+    //setAcceptDrops(true);
     mousemode = mmNone;
-    resize(200, heightLine * nbLines + 30);
-    setMaximumSize(1024,heightLine * (nbLines + 1) + 50);
+    //resize(200, heightLine * nbLines + 30);
+    //setMaximumSize(1024,heightLine * (nbLines + 1) + 50);
+
+
+
+    //Create horizontal Lines
+    for (int i = 0; i < nbLines; i++)
+    {
+	QGraphicsLineItem *my_line = new QGraphicsLineItem(0,i*heightLine,1024,i*heightLine,NULL);
+	scene()->addItem(my_line);
+    	m_horizlines.push_back(my_line);
+    }
+
+    //Create selected time line
+    selectedTimeLine = new QGraphicsLineItem(1,0,1,nbLines*heightLine,NULL);
+    selectedTimeLine->setPen(QPen(Qt::red));
+    scene()->addItem(selectedTimeLine);
 
     //initialize available colors
     availableColors.push_back(Qt::red);
@@ -67,6 +96,10 @@ AudioView::AudioView(QWidget* parent)
     availableColors.push_back(Qt::red);
     availableColors.push_back(Qt::green);
     availableColors.push_back(Qt::blue);
+
+    //add vertical line every 5 sec.
+    timerEvent(NULL);
+    startTimer(10000);
 }
 
 void AudioView::setExtremas(long long t1, long long t2)
@@ -77,22 +110,45 @@ void AudioView::setExtremas(long long t1, long long t2)
     minTime = t1;
     maxTime = t2;
     long long l = maxTime-minTime;
-    resizeContents(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
-    repaintContents();
+	
+    //TODO REPLACE THAT
+    //resizeContents(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
+    //repaintContents();
+
+     //scene()->resize(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
+
+
+     float width = max((float)scene()->width(),(float)(2*marginH + (int)(l*timeScale)));
+     float height = max((float)scene()->height(),(float)(heightLine * nbLines + 30));
+     scene()->setSceneRect (0,0,width,height);
+
+     //viewport()->repaint();
 }
 
 void AudioView::setTimeScale(double scale)
 {
     timeScale = scale;
     long long l = maxTime - minTime;
-    resizeContents(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
-    repaintContents();
+    
+    float width = max((float)scene()->width(),(float)(2*marginH + (int)(l*timeScale)));
+    float height = max((float)scene()->height(),(float)(heightLine * nbLines + 30));
+    scene()->setSceneRect (0,0,width,height);
+
+    //TODO REPLACE THAT
+    //resizeContents(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
+    //repaintContents();
+
+    //scene()->resize(2*marginH + (int)(l*timeScale), heightLine * nbLines + 30);
+    //viewport()->repaint();
 }
 
 void AudioView::drawContents(QPainter* p, int cx, int cy, int cw, int )
 {
+
+   cerr<<"AudioView::drawContents(QPainter* p, int cx, int cy, int cw, int )"<<endl;
+
     //logView->mutex.lock();
-    int x1=marginH, x2=contentsWidth()-marginH;
+    int x1=marginH, x2=viewport()->width() -marginH;
     if(x1<cx) x1=cx;
     if(x2>cx+cw) x2=cx+cw;
 
@@ -171,40 +227,40 @@ void AudioView::drawContents(QPainter* p, int cx, int cy, int cw, int )
     }
 
 
-// Go through all sources
-if(m_sources.size() > 0)
-{
-    std::map<long long, std::vector<AudioSource> >::const_iterator iter = m_sources.lower_bound(clipTime1);
-    std::map<long long, std::vector<AudioSource> >::const_iterator end = m_sources.upper_bound(clipTime2);
+	// Go through all sources
+	if(m_sources.size() > 0)
+	{
+	    std::map<long long, std::vector<AudioSource> >::const_iterator iter = m_sources.lower_bound(clipTime1);
+	    std::map<long long, std::vector<AudioSource> >::const_iterator end = m_sources.upper_bound(clipTime2);
 
-    for(;iter!=end;iter++)
-    {
-        for (int i = 0; i < iter->second.size(); i++)
-        {
-            AudioSource currentSource = iter->second[i];
-            
-            //read information
-            int source_id = currentSource.id;
-            float theta = currentSource.theta;
-            float phi = currentSource.phi;
-            float strength = currentSource.strength;
+	    for(;iter!=end;iter++)
+	    {
+		for (int i = 0; i < iter->second.size(); i++)
+		{
+		    AudioSource currentSource = iter->second[i];
+		    
+		    //read information
+		    int source_id = currentSource.id;
+		    float theta = currentSource.theta;
+		    float phi = currentSource.phi;
+		    float strength = currentSource.strength;
 
-            //default color
-            QColor color = availableColors[source_id % 10];
+		    //default color
+		    QColor color = availableColors[source_id % 10];
 
 
-            long long ts = iter->first;
-            int x = marginH + (int)((ts-minTime) * timeScale);
-            int y = (int)((theta+180) * nbLines*heightLine / 360.0);
+		    long long ts = iter->first;
+		    int x = marginH + (int)((ts-minTime) * timeScale);
+		    int y = (int)((theta+180) * nbLines*heightLine / 360.0);
 
-            if(ts == selectedTime)
-                color = color.light(165);
-            p->setPen(color.dark());
-            p->setBrush(color);
-            p->drawEllipse(x - pointSize /2,y - pointSize / 2, pointSize, pointSize);
-        }
-    }
-}
+		    if(ts == selectedTime)
+		        color = color.light(165);
+		    p->setPen(color.dark());
+		    p->setBrush(color);
+		    p->drawEllipse(x - pointSize /2,y - pointSize / 2, pointSize, pointSize);
+		}
+	    }
+	}
                        
       
     
@@ -224,60 +280,14 @@ if(m_sources.size() > 0)
 
 void AudioView::drawOn(QPainter* painter)
 {
-    int w = contentsWidth();
-    int h = contentsHeight();
+    //int w = contentsWidth();
+    //int h = contentsHeight();
+    int w = viewport()->width();
+    int h = viewport()->height();
     drawContents(painter, 0, 0, w, h);
 }
 
-void AudioView::maybeTip( const QPoint & p)
-{
-    QPoint p2 = viewportToContents(p);
-    p2 -= viewport()->pos();
-    int px = p2.x() ;
-    int py = p2.y() ;
 
-    long long clipTime1 = xToTime(px-4);
-    if(clipTime1 < minTime) clipTime1 = minTime;
-    long long clipTime2 = xToTime(px+4);
-
-
-    // Log du Workspace
-    /*
-    if(py >=0 && py<=heightLine){
-       WorkspaceLogs::const_iterator iter = logView->getWorkspaceLogs().lower_bound(clipTime1);
-       WorkspaceLogs::const_iterator end = logView->getWorkspaceLogs().upper_bound(clipTime2);
-       QString message;
-       QRect tiprect;
-       const Workspace& ws = logView->getCurrentWorkspace();
-       for(;iter!=end;iter++)
-          if(!logView->isCommandFiltered(iter->second))
-          {
-             const TimeStamp& ts = iter->first;
-             int x = marginH + (int)((ts.time-minTime) * timeScale);
-             int y = 1*heightLine - (ts.sequence%nbSequence)*dySequence;
-             QRect r(x-pointSize/2, y-pointSize/2, pointSize, pointSize);
-             if(r.contains(p2)) {
-
-                 QString str = tipWorkspace(iter, ws);
-
-                 if(message.length())
-                   message += "<hr>";
-                 message += str;
-                 r.moveTopLeft(p);
-                 tiprect = r;
-                 //tip(r, str);
-             }
-          }
-       if(message.length())
-         tip(tiprect, message);
-
-    }
-
-    */
-
-    // Log behaviors activation/exploitation
-
-}
 
 
 
@@ -285,12 +295,26 @@ void AudioView::repaintTimeInterval(long long t1, long long t2, bool erase)
 {
     int x1 = (int)((t1-minTime)*timeScale) + marginH;
     int x2 = (int)((t2-minTime)*timeScale) + marginH;
-    repaintContents(x1-pointSize/2-1, 0, x2-x1+pointSize+2, nbLines*heightLine+3, erase);
+    update(x1-pointSize/2-1, 0, x2-x1+pointSize+2, nbLines*heightLine+3);
 }
 
-void AudioView::contentsMousePressEvent(QMouseEvent * e)
+void AudioView::mousePressEvent(QMouseEvent * e)
 {
-    Q3ScrollView::contentsMousePressEvent(e);
+
+    cerr<<"AudioView::mousePressEvent(QMouseEvent * e)"<<endl;
+    QGraphicsView::mousePressEvent(e);
+
+
+    if (e->button() == Qt::LeftButton)
+    {
+    
+        QPointF point = mapToScene(e->pos());    
+        long long t = xToTime((long long) point.x());
+        selectTime(t);
+    }
+
+/*
+
     if(e->button() == Qt::LeftButton)
     {
         long long t = xToTime(e->x());
@@ -322,25 +346,29 @@ void AudioView::contentsMousePressEvent(QMouseEvent * e)
         mousemode = mmTimeScale;
         startDragTimePoint = xToTime(startDragPoint.x());
     }
+
+*/
+
 }
 
-void AudioView::contentsMouseMoveEvent ( QMouseEvent * e )
+void AudioView::mouseMoveEvent ( QMouseEvent * e )
 {
-    Q3ScrollView::contentsMouseMoveEvent(e);
-    switch(mousemode)
+    QGraphicsView::mouseMoveEvent(e);
+/* 
+   switch(mousemode)
     {
     case mmTimeScale:
         {
             int d = e->pos().y() - startDragPoint.y();
-            int dx = e->pos().x() - contentsX();
+            int dx = e->pos().x() - viewport()->pos().x();
             setTimeScale(startDragTimeScale * exp(d*0.01));
             dx = marginH + (int) ((startDragTimePoint-minTime) * timeScale) - dx;
-            setContentsPos(dx, 0);
+            //viewport()->setPos(dx, 0);
             break;
         }
     case mmTime:
         {
-            QPoint vp = contentsToViewport(e->pos());
+            QPoint vp = e->pos();
             autoscrollDX = 0;
             if(vp.x() < 10)
             {
@@ -377,59 +405,112 @@ void AudioView::contentsMouseMoveEvent ( QMouseEvent * e )
     default:
     {}
     }
+
+*/
+
 }
 
 void AudioView::timerEvent(QTimerEvent *)
 {
-    if(autoscrollDX)
-    {
-        scrollBy(autoscrollDX, 0);
-        if(++scrollIncrementCount%5 == 0)
-            autoscrollDX += autoscrollDX>0 ? 1 : -1;
-    }
+
+    //GET THE ACTUAL TIME DIFFERENCE FROM NOW TO START TIME
+	timeval thetime;
+    gettimeofday(&thetime, 0);
+    long long elapsedTime = (thetime.tv_sec * 1000000LL + thetime.tv_usec) - minTime + 50E6;
+
+
+   	//DRAW VERTICAL LINE	
+    QGraphicsLineItem *my_line= new QGraphicsLineItem(elapsedTime * timeScale,0,elapsedTime * timeScale,nbLines*heightLine,NULL);
+   	my_line->setPen(QPen(Qt::black));
+    scene()->addItem(my_line);
+
+	//ADD TIME STAMP
+	QGraphicsTextItem *my_text = new QGraphicsTextItem(QString::number(floor(elapsedTime / 1E6)));
+	float width = my_text->textWidth();
+	my_text->setPos(elapsedTime * timeScale - width,nbLines*heightLine + 20);
+	scene()->addItem(my_text);
+	
+	float scene_width = elapsedTime * timeScale;
+	float scene_height = max((float)scene()->height(),(float)(heightLine * nbLines + 30));
+	
+	scene()->setSceneRect (0,0,scene_width,scene_height);
+
+	
+	//DRAW HORIZONTAL LINE LABELS
+
+
+	
+	//STRETCH HORIZONTAL LINES
+	for (int i = 0; i< m_horizlines.size(); i++)
+	{
+		QLineF line = m_horizlines[i]->line();
+		line.setLength(max(line.length(),elapsedTime * timeScale));
+		m_horizlines[i]->setLine(line);		
+	}
+
+
 }
 
 void AudioView::selectTime(long long time)
 {
+
+    cerr<<"AudioView::selectTime(long long time)"<<endl;
     if(time == selectedTime) return;
+
+    selectedTime = time;
+    emit timeSelected(selectedTime);
+
+    unsigned long long elapsedTime = time - minTime;
+
+
+    selectedTimeLine->setLine((float) elapsedTime * timeScale,0,(float) elapsedTime * timeScale,nbLines*heightLine);
+    
+	
+/*
+
     long long oldtime = selectedTime;
     selectedTime = time;
     repaintTimeInterval(oldtime, oldtime);
     repaintTimeInterval(time, time);
     emit timeSelected(selectedTime);
     int x = (int)((time-minTime)*timeScale) + marginH;
-    if(x>=(contentsX()+visibleWidth()-22))
+    if(x>=(viewport()->pos().x()+visibleRegion().boundingRect().width()-22))
     {
-        setContentsPos(x-20, contentsY());
+	//TODO, CHANGE THIS
+        //setContentsPos(x-20, contentsY());
     }
-    else if(x<contentsX())
+    else if(x<viewport()->pos().x())
         ensureVisible(x, 50, 20, 10);
+
+*/
+
 }
 
-void AudioView::contextMenuEvent ( QContextMenuEvent * e )
-{
-    e->accept();
-}
-
-void AudioView::contentsMouseReleaseEvent ( QMouseEvent *)
+void AudioView::mouseReleaseEvent ( QMouseEvent *)
 {
     mousemode = mmNone;
     // code ici pour forcer le tip
     //killTimers();
 }
 
-void AudioView::contentsWheelEvent (QWheelEvent * e)
+void AudioView::wheelEvent (QWheelEvent * e)
 {
-    int dx = e->x() - contentsX();
+
+    /*	
+
+    int dx = e->x() - viewport()->pos().x();
     long long time = xToTime(e->x());
     setTimeScale(timeScale * exp(e->delta()*0.001));
     dx = marginH + (int) ((time-minTime) * timeScale)-dx;
-    setContentsPos(dx, 0);
+    scrollContentsBy(dx, 0);
+
+   */
+
 }
 
-long long AudioView::xToTime(int x) const
+long long AudioView::xToTime(long long x) const
 {
-    return minTime + (long long) ((x-marginH) / timeScale);
+    return minTime + (long long) (x / timeScale);
 }
 
 long long AudioView::smartTimeSelect(int px, int py) const
@@ -483,7 +564,6 @@ void AudioView::addSource(long long time, const SourceInfo* source)
 }
 void AudioView::addSource(long long time, const AudioSource &source)
 {
-    
     long long index = (time / 10000)  * 10000;
     bool found = false;
     
@@ -498,7 +578,18 @@ void AudioView::addSource(long long time, const AudioSource &source)
     
     if (!found)
     {
+	//add to source list
         m_sources[index].push_back(source);
+	//create Item to display
+	float x = (time - minTime) * timeScale;
+	float y = (source.theta+180) * (nbLines*heightLine / 360.0);
+	QGraphicsEllipseItem *my_ellipse = new QGraphicsEllipseItem(x - 1,y - 1,2,2,NULL);
+	//set the color
+	my_ellipse->setPen(QPen(getSourceColor(source.id)));
+	//add item
+	scene()->addItem(my_ellipse);
+	//set ref to this ellipse
+	m_sources[index].back().item = my_ellipse;
     }
 }
    

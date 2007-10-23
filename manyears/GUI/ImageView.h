@@ -18,10 +18,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _IMAGE_VIEW_H_
 #define _IMAGE_VIEW_H_
 
-#include <qwidget.h>
-#include <qlabel.h>
-#include <qimage.h>
-#include "SNCRZ30Cam.h"
+#include <QWidget>
+#include <QLabel>
+#include <QImage>
+
 
 class ImageView : public QLabel
 {
@@ -36,7 +36,7 @@ class ImageView : public QLabel
         void putImage(const QImage& image);
         
     private:
-        SNCRZ30_Capture *m_capture;            
+                 
 };
 
 
