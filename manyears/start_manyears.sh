@@ -8,17 +8,17 @@ killall gflow
 killall audioview
 
 #START AUDIO SERVER
-src/audio_server2 plughw:2 &
+audio_server2 $1 &
 
 sleep 5
 
 #START AUDIO VIEWER
-GUI/audioviewer &
+audioviewer &
 
 sleep 5
 
 #START LOCALIZATION & SEPARATION
-gflow n-files/LocalizeSeparAndSaveWav.n &
+gflow `flowdesigner-config --datadir`/ManyEars/LocalizeSeparAndSaveWav.n &
 
 
 

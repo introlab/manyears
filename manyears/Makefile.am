@@ -7,8 +7,9 @@
 
 SUBDIRS = src n-files config GUI
 
-EXTRA_DIST = CMakeLists.txt
-
 DIST_SUBDIRS = src n-files config GUI
 
 bin_SCRIPTS = start_manyears.sh
+
+EXTRA_DIST = CMakeLists.txt ManyEars.spec.in ManyEars.spec $(bin_SCRIPTS)
+

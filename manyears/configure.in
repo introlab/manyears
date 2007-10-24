@@ -68,12 +68,12 @@ FLOWDESIGNER_LIB=`$FLOWDESIGNER_CONFIG --libs libflow audio_blocks`
 FLOWDESIGNER_INCLUDE=`$FLOWDESIGNER_CONFIG --cflags config libflow audio_blocks`
 FLOWDESIGNER_DATA=`$FLOWDESIGNER_CONFIG  --datadir`
 FLOWDESIGNER_BIN=`$FLOWDESIGNER_CONFIG --bindir`
+FLOWDESIGNER_PREFIX=`$FLOWDESIGNER_CONFIG --prefix`
 
 AC_SUBST(FLOWDESIGNER_LIB)
 AC_SUBST(FLOWDESIGNER_INCLUDE)
 AC_SUBST(FLOWDESIGNER_DATA)
 AC_SUBST(FLOWDESIGNER_BIN)
-
 
 dnl Checks for QT
 
@@ -114,10 +114,10 @@ AC_SUBST(XML2_LIB)
 
 dnl Look for prefix, if not specified, use FlowDesigner default toolbox prefix
 if test "x$prefix" = "xNONE"; then
-  prefix=$FLOWDESIGNER_DATA/$PACKAGE                      
+  prefix=$FLOWDESIGNER_PREFIX                  
 fi
 
-AC_OUTPUT([Makefile config/Makefile n-files/Makefile src/Makefile GUI/Makefile])
+AC_OUTPUT([Makefile config/Makefile n-files/Makefile src/Makefile GUI/Makefile ManyEars.spec])
 
 dnl Notification message for the user to know which flags will be used for compilation
 dnl should use AC_MSG_NOTICE(), but that's apparently not defined in autoconf 2.13

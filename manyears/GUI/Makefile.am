@@ -2,10 +2,12 @@
 # Disable automatic dependency tracking if using other tools than gcc and gmake
 #AUTOMAKE_OPTIONS = no-dependencies
 
-override bindir=${FLOWDESIGNER_BIN}
-
+override includedir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+override datadir=${prefix}/lib/flowdesigner/toolbox/ManyEars
+override libdir=${prefix}/lib/flowdesigner/toolbox/ManyEars
 
 EXTRA_DIST = DefaultImage.xpm CMakeLists.txt
+
 if WITH_QT
 
 INCLUDES = $(XML2_INCLUDE) $(QT_INCLUDES) $(FLOWDESIGNER_INCLUDE)  -Wall -DQT_THREAD_SUPPORT

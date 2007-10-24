@@ -10,9 +10,6 @@
       <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
       <Parameter name="DOWHILE" type="int" value="" description=""/>
     </Node>
-    <Node name="node_LoadFile_1" type="LoadFile" x="-247.000000" y="97.000000">
-      <Parameter name="FILENAME" type="subnet_param" value="ARG3" description="No description available"/>
-    </Node>
     <Node name="node_URLStream_1" type="URLStream" x="-213.000000" y="47.000000">
       <Parameter name="FLAGS" type="string" value="r" description="Flags for opening the stream (r, w, rw)"/>
     </Node>
@@ -22,11 +19,14 @@
     <Node name="node_URLStream_2" type="URLStream" x="-210.000000" y="148.000000">
       <Parameter name="FLAGS" type="string" value="w" description="Flags for opening the stream (r, w, rw)"/>
     </Node>
-    <Link from="node_LoadFile_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="MIC_POS"/>
+    <Node name="node_Constant_3" type="Constant" x="-211.000000" y="95.000000">
+      <Parameter name="VALUE" type="object" value="&lt;Matrix &lt;rows 8&gt; &lt;cols 3&gt; &lt;data -18 16 -15.5 -18 16 15.5 18 16 -15.5 18 16 15.5 -18 -16 -15.5 -18 -16 15.5 18 -16 -15.5 18 -16 15.5&gt; &gt;" description="The value"/>
+    </Node>
     <Link from="node_URLStream_1" output="OUTPUT" to="node_MAIN_LOOP_1" input="INPUT"/>
     <Link from="node_Constant_1" output="VALUE" to="node_URLStream_1" input="INPUT"/>
     <Link from="node_Constant_2" output="VALUE" to="node_URLStream_2" input="INPUT"/>
     <Link from="node_URLStream_2" output="OUTPUT" to="node_MAIN_LOOP_1" input="AUDIOVIEWER_STREAM"/>
+    <Link from="node_Constant_3" output="VALUE" to="node_MAIN_LOOP_1" input="MIC_POS"/>
     <NetOutput name="OUTPUT" node="node_MAIN_LOOP_1" terminal="OUTPUT" object_type="any" description="No description available"/>
   </Network>
   <Network type="iterator" name="MAIN_LOOP">

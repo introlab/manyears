@@ -1,0 +1,45 @@
+%define name     manyears
+%define distname @PACKAGE@
+%define ver      @VERSION@
+%define rel      1
+
+Summary: Sound source localisation, tracking and separation for FlowDesigner.
+Name: %name
+Version: %ver
+Release: %rel
+License: GPL
+Group: Application/Devel
+Source: http://download.sourceforge.net/manyears/%{distname}-%{ver}.tar.gz
+URL: http://manyears.sourceforge.net/
+Vendor: Laborius
+Packager: Dominic Letourneau (dominic.letourneau@usherbrooke.ca)
+
+BuildRoot: %{_tmppath}/root-%{name}-%{version}
+
+%description
+The ManyEars project was setup to provide source code for AUDIBLE project. It provides FlowDesigner building-blocks for microphone array processing. This includes sound source localisation, tracking and separation.
+
+%prep
+%setup -n %distname-%ver
+
+%build
+export CXXFLAGS='-O3 -msse'
+export CFLAGS='-O3 -msse'
+./configure --prefix=/usr
+%{__make} -j8
+
+%install
+%makeinstall
+
+%post -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
+%files
+%defattr(-, root, root, 0755)
+/usr/bin/start_manyears.sh
+/usr/bin/audioviewer
+/usr/bin/audio_client
+/usr/bin/audio_server
+/usr/bin/audio_server2
+/usr/lib/flowdesigner/toolbox/ManyEars
+
