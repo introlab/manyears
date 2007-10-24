@@ -28,29 +28,27 @@ class SourceInfo;
 
 class FDReader : public QTcpServer {
      
-     Q_OBJECT;
-     
-     public:
+    Q_OBJECT;
 
-	  FDReader(int port=30011, int backlog=1);
+    public:
 
-	  ~FDReader();
+    FDReader(int port=30011, int backlog=1);
 
-	virtual void newConnection ();
-	     	  
-     public slots:
+    ~FDReader();
+      
+    public slots:
 
-	  void dataReady();
-	  
-     signals:
-	  //void putData(const QImage &image);
-         
-         void putData(const std::vector<const SourceInfo*> &sources);
-         
-	    
-     protected:  
+    void dataReady();
 
-      std::vector<QTcpSocket*> m_sockets;
+    signals:
+      
+    void putData(const std::vector<const SourceInfo*> &sources);
+
+    protected:  
+
+    virtual void incomingConnection ( int socketDescriptor );
+
+    std::vector<QTcpSocket*> m_sockets;
 
 };
 #endif

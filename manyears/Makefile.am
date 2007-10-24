@@ -7,6 +7,8 @@
 
 SUBDIRS = src n-files config GUI
 
+EXTRA_DIST = CMakeLists.txt
+
 DIST_SUBDIRS = src n-files config GUI
 
 bin_SCRIPTS = start_manyears.sh

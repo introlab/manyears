@@ -161,12 +161,11 @@ void TrackAudioWidget::setTime (unsigned long long time)
     {
 	    //debug
 	    //add a source
-        audioView->addSource(time,AudioSource(1,0.5,0.5,0.5));
-        audioView->addSource(time,AudioSource(2,10.5,10.5,10.5));
-        audioView->addSource(time,AudioSource(3,20.5,20.5,20.5));
-        audioView->addSource(time,AudioSource(4,30.5,30.5,30.5));
+        //audioView->addSource(time,AudioSource(1,0.5,0.5,0.5));
+        //audioView->addSource(time,AudioSource(2,10.5,10.5,10.5));
+        //audioView->addSource(time,AudioSource(3,20.5,20.5,20.5));
+        //audioView->addSource(time,AudioSource(4,30.5,30.5,30.5));
   
-
 	    //update timeline selector if required   
 	    if (audioView->getSelectedTime() >= maxTimeSetted)
 	    {
@@ -180,20 +179,30 @@ void TrackAudioWidget::setTime (unsigned long long time)
 
 bool TrackAudioWidget::isSourceActive(int id)
 {
-    
-    //TODO : reimplementation...   
-    return false;
-    
-   
+    if (audioView)
+    {
+        std::vector<AudioSource> sources = audioView->getSourcesAtTime(getTime() - (unsigned long long)(1E6));
+        bool found = false;
+        for (unsigned i = 0; i< sources.size(); i++)
+        {
+            if (sources[i].id == id)
+            {
+                found = true;
+                break;
+            }                
+        }        
+        return found;
+    }
+    else
+    {
+        return false;
+    }    
 }
 
 
 void TrackAudioWidget::playClicked(int source_id)
 {
     std::cerr<<"TrackAudioWidget::playClicked with source_id : "<<source_id<<std::endl;
-
-    //TODO: play file...
-    
     QProcess *process = new QProcess(this);
     QString prog;
     QStringList args;
@@ -202,21 +211,15 @@ void TrackAudioWidget::playClicked(int source_id)
     args += QString("/play");
     args += QString("/close");
     args += QString("log/source_")+QString::number(source_id) + QString(".wav");
-    //process->addArgument("sndrec32.exe");
-    //process->addArgument(QString("/play"));
-    //process->addArgument(QString("/close"));
-    //process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav"));
     #else
     prog = QString("mplayer");
     args += QString("log/source_")+QString::number(source_id) + QString(".wav");
     #endif
-        
-    
+            
     if (process)
     {        
         process->start(prog,args);                
-    }      
-    
+    }         
 }
 
 void TrackAudioWidget::getData(const std::vector<const SourceInfo*> &sources)

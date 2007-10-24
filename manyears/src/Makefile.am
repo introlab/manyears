@@ -63,5 +63,5 @@ libmanyears_la_LIBADD = -lfftw -lfftw3f
 
 bin_SCRIPTS = speex_play.sh
 
-EXTRA_DIST = $(bin_SCRIPTS)
+EXTRA_DIST = $(bin_SCRIPTS) CMakeLists.txt
 

@@ -3,7 +3,7 @@ dnl Process this file with autoconf to produce a configure script. -*-m4-*-
 AC_INIT(src/LocalizeBeam.cc)
 
 MANYEARS_MAJOR_VERSION=0
-MANYEARS_MINOR_VERSION=1
+MANYEARS_MINOR_VERSION=2
 MANYEARS_MICRO_VERSION=0
 MANYEARS_VERSION=$MANYEARS_MAJOR_VERSION.$MANYEARS_MINOR_VERSION.$MANYEARS_MICRO_VERSION
 MANYEARS_INTERFACE_AGE=0
@@ -47,7 +47,7 @@ AC_PROG_F77
 AC_LANG_CPLUSPLUS
 AC_PROG_MAKE_SET
 AC_C_BIGENDIAN
-
+PKG_PROG_PKG_CONFIG
 AC_INST_EXTENSIONS
 
 
@@ -65,7 +65,7 @@ if test "$FLOWDESIGNER_CONFIG" = no; then
 fi
 
 FLOWDESIGNER_LIB=`$FLOWDESIGNER_CONFIG --libs libflow audio_blocks`
-FLOWDESIGNER_INCLUDE=`$FLOWDESIGNER_CONFIG --cflags config libflow audio_blocks| sed 's/\"/\\\"/g'`
+FLOWDESIGNER_INCLUDE=`$FLOWDESIGNER_CONFIG --cflags config libflow audio_blocks`
 FLOWDESIGNER_DATA=`$FLOWDESIGNER_CONFIG  --datadir`
 FLOWDESIGNER_BIN=`$FLOWDESIGNER_CONFIG --bindir`
 
@@ -84,64 +84,17 @@ QT_FOUND=""
 if test "$disable_qt" = "yes"; then
     AC_MSG_RESULT([QT disabled : "$disable_qt"])
 else
-        AC_MSG_CHECKING(for qt)
-	temp_LIBS=$LIBS
-	temp_CXXFLAGS=$CXXFLAGS
-	AC_ARG_WITH(qt, [  --with-qt              Where qt is installed (/usr)], MYQT_DIR="$withval")
-	if test -n "$MYQT_DIR"; then
-	   LIBS="-L$MYQT_DIR/lib -lqt-mt"
-	   #CXXFLAGS="-I$MYQT_DIR/include"
-	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
-	   if test -n "$QT_FOUND"; then
-	       QT_LIBS="-L$MYQT_DIR/lib -lqt-mt"
-	       QT_INCLUDES="-I$MYQT_DIR/include"
-	       AC_MSG_RESULT(yes)
-	       QT_FOUND="yes"
-	    fi
-	fi
-	
-	dnl test in QT_DIR
-	if test "$QT_FOUND" = "" && test -n "$QTDIR"; then
-	   LIBS="$QTDIR/lib -lqt-mt"
-	   #CXXFLAGS="-I$QTDIR/include"
-	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
-	   if test -n "$QT_FOUND"; then
-	      QT_LIBS="-L$QTDIR/lib -lqt-mt"
-	      QT_INCLUDES="-I$QTDIR/include"
-	      AC_MSG_RESULT(found in QT_DIR)
-	      QT_FOUND="yes"
-	   fi
-	fi
-	
-	dnl test in stantdard location
-	if test "$QT_FOUND" = ""; then
-	   LIBS="-L/usr/lib -lqt-mt"
-	   #CXXFLAGS="-I/usr/include/qt3"
-	   AC_LINK_IFELSE(AC_LANG_PROGRAM([#include <qapplication.h>],[QApplication a(0,NULL); ]) , QT_FOUND="yes", QT_FOUND="no")
-	   if test -n "$QT_FOUND"; then
-	      QT_LIBS="-L/usr/lib -lqt-mt"
-	      QT_INCLUDES="-I/usr/include/qt3"
-	      AC_MSG_RESULT(found in /usr)
-	      QT_FOUND="yes"
-	   fi
-        fi
-	   
-		   
-	if test "$QT_FOUND" = ""; then
-             QT_FOUND="no"
-             AC_MSG_RESULT(no)
-	fi
-	if test "$QT_FOUND" = "yes"; then
-	     dnl run qmake in workspaceViewer
-	     dnl AC_CONFIG_COMMANDS([workspaceViewer/Makefile],[echo running qmake in workspaceViewer/;cd workspaceViewer/;qmake -o Makefile workspaceViewer.pro;cd -])
-	     echo "Removed qmake commands"	     
-        fi
-	
-	LIBS=$temp_LIBS
-	CXXFLAGS=$CXXFLAGS
+        AC_MSG_CHECKING(for Qt)
+	PKG_CHECK_MODULES(QTCORE,QtCore,[QT_FOUND="yes"],[QT_FOUND="no"])
+	PKG_CHECK_MODULES(QTGUI,QtGui,[QT_FOUND="yes"],[QT_FOUND="no"])
+	PKG_CHECK_MODULES(QTNETWORK,QtNetwork,[QT_FOUND="yes"],[QT_FOUND="no"])
+	QT_LIBS="$QTGUI_LIBS $QTCORE_LIBS $QT3SUPPORT_LIBS $QTNETWORK_LIBS"
+	QT_INCLUDES="$QTGUI_CFLAGS $QTCORE_CFLAGS $QT3SUPPORT_CFLAGS $QTNETWORK_CFLAGS"
+	AC_MSG_RESULT([QT_LIBS = $QT_LIBS])
+	AC_MSG_RESULT([QT_INCLUDES = $QT_INCLUDES])
 fi	
 
-AM_CONDITIONAL(WITH_QT, test -n "$QT_FOUND")
+AM_CONDITIONAL(WITH_QT, test "$QT_FOUND" = "yes")
 AC_SUBST(QT_LIBS)
 AC_SUBST(QT_INCLUDES)
 dnl End test for QT

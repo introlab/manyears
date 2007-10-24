@@ -31,7 +31,6 @@ FDReader::FDReader(int port, int backlog)
 
     setMaxPendingConnections(backlog);
     listen(QHostAddress::Any,port);
-
     cout<<"FDReader::FDReader(int,int) starting socket server on port "<<port<<endl;
 }
 
@@ -49,7 +48,6 @@ void FDReader::dataReady()
 {
 
     //std::cerr<<"FDReader::dataReady()"<<std::endl;
-
     //Scan for each socket.
     for (unsigned int s = 0; s < m_sockets.size(); s++)
     {
@@ -75,7 +73,7 @@ void FDReader::dataReady()
         inputStream >> data;         
 
         //data->printOn(cout); 
-	//cout.flush();     
+	    //cout.flush();     
         
         FD::RCPtr<SourceInfo> info;
               
@@ -104,12 +102,15 @@ void FDReader::dataReady()
  	     
 }
 
-void FDReader::newConnection ()
+void FDReader::incomingConnection ( int socketDescriptor )
 {
-	cout<<"FDReader::newConnection : new network connection"<<endl;
+    cout<<"FDReader::newConnection : new network connection on socket: "<<socketDescriptor<<endl;
 
 	//Create a new socket
-	QTcpSocket *newSocket = nextPendingConnection();
+	QTcpSocket *newSocket = new QTcpSocket(this);
+
+    //Set socket descriptor
+    newSocket->setSocketDescriptor(socketDescriptor);
 
 	//Connect signals
 	connect(newSocket, SIGNAL(readyRead()), this, SLOT(dataReady()));
@@ -117,7 +118,6 @@ void FDReader::newConnection ()
 	//push socket in vector
 	m_sockets.push_back(newSocket);
 
-	
 }
 
 

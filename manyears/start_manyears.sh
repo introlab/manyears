@@ -8,7 +8,7 @@ killall gflow
 killall audioview
 
 #START AUDIO SERVER
-src/audio_server2 plughw:1 &
+src/audio_server2 plughw:2 &
 
 sleep 5
 

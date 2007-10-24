@@ -41,6 +41,8 @@ class AudioView : public QGraphicsView {
     
     std::vector<AudioSource> getSourcesAtSelectedTime();
     
+    std::vector<AudioSource> getSourcesAtTime(unsigned long long time);
+    
     QColor               getSourceColor(int id);
     void                 addSource(unsigned long long time, const SourceInfo *source);
     void                 addSource(unsigned long long time, const AudioSource &source);   

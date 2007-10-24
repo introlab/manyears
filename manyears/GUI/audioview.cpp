@@ -205,18 +205,26 @@ unsigned long long AudioView::xToTime(unsigned long long x) const
 }
 
 
-std::vector<AudioSource>  AudioView::getSourcesAtSelectedTime()
+std::vector<AudioSource> AudioView::getSourcesAtTime(unsigned long long time)
 {
-
     std::vector<AudioSource> sources;    
-    std::map<unsigned long long, std::vector<AudioSource> >::const_iterator iter = m_sources.lower_bound(selectedTime);
+    std::map<unsigned long long, std::vector<AudioSource> >::const_iterator iter = m_sources.lower_bound(time);
            
     if (iter != m_sources.end())
     {
-        sources = iter->second;                 
+        if (iter->first >= time - (unsigned long long)(1E6))
+        {
+            sources = iter->second;                 
+        }
     }      
 
     return sources;
+}
+
+
+std::vector<AudioSource>  AudioView::getSourcesAtSelectedTime()
+{
+    return getSourcesAtTime(selectedTime);
 }
 
 QColor AudioView::getSourceColor(int id)
@@ -234,7 +242,7 @@ void AudioView::addSource(unsigned long long time, const SourceInfo* source)
 
 void AudioView::addSource(unsigned long long time, const AudioSource &source)
 {
-    unsigned long long index = (time / 10000)  * 10000;
+    unsigned long long index = (time / 10000)  * 10000; //100th second precision
     bool found = false;
     
     for (unsigned int i = 0; i < m_sources[index].size(); i++)
