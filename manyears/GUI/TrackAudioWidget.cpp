@@ -34,8 +34,6 @@ using namespace std;
 TrackAudioWidget::TrackAudioWidget(QWidget* parent)
         : QMainWindow(parent), maxTimeSetted(0), audioView(NULL)
 {
-    minTime = getTime();   
-
     //Create a dummy widget
     QWidget *widget = new QWidget(this);
     setCentralWidget(widget);
@@ -97,6 +95,8 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     reader = new FDReader();
     connect(reader, SIGNAL(putData(const std::vector<const SourceInfo*>&)), this, SLOT(getData(const std::vector<const SourceInfo*>&)));
     
+    //Selection will update buttons...
+    connect(audioView, SIGNAL(timeSelected(unsigned long long)), this, SLOT(selectedTime(unsigned long long)));
     
     //Timed update
     timer = new QTimer(this);      
@@ -104,65 +104,77 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     timer->start(500);
 }
 
-void TrackAudioWidget::setTime (unsigned long long time)
+void TrackAudioWidget::selectedTime(unsigned long long time)
 {
 
     if (audioView)
     {
-	    audioView->setExtremas(minTime,time);
-
-	    //debug
-	    //add a source
-            audioView->addSource(time,AudioSource(1,0.5,0.5,0.5));
-  
-
-	    //update timeline selector if required   
-	    if (audioView->getSelectedTime() >= maxTimeSetted)
-	    {
-		audioView->selectTime(time);
-		maxTimeSetted = time;
-	    }
 
 	    std::vector<AudioSource> sources = audioView->getSourcesAtSelectedTime();
 
 	    for (int i = 0; i < MAX_NUM_SOURCES; i++)
 	    {
-		if (i < sources.size())
-		{
-		    int source_id = sources[i].id;
-		    float phi = sources[i].phi;
-		    float theta = sources[i].theta;
-		    float strength = sources[i].strength;
+		    if (i < sources.size())
+		    {
+		        int source_id = sources[i].id;
+		        float phi = sources[i].phi;
+		        float theta = sources[i].theta;
+		        float strength = sources[i].strength;
 
-		    sourceButtons[i]->show();
-		    sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
+		        sourceButtons[i]->show();
+		        sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
 			
-		    //TODO FIX THIS
-		    sourceButtons[i]->setDisabled(isSourceActive(source_id));
+		        //TODO FIX THIS
+		        sourceButtons[i]->setDisabled(isSourceActive(source_id));
 
 
 
-		    buttonGroup->addButton(sourceButtons[i],source_id);
+		        buttonGroup->addButton(sourceButtons[i],source_id);
 
-		    sourceID[i]->setText(QString::number(source_id));
-		    sourceID[i]->show();
-		    sourceTheta[i]->setText(QString::number(theta));
-		    sourceTheta[i]->show();
-		    sourcePhi[i]->setText(QString::number(phi));
-		    sourcePhi[i]->show();
-		    sourceStrength[i]->setText(QString::number(strength));
-		    sourceStrength[i]->show();
-		}
-		else
-		{
-		    buttonGroup->removeButton(sourceButtons[i]);
-		    sourceButtons[i]->hide();
-		    sourceID[i]->hide();
-		    sourceTheta[i]->hide();
-		    sourcePhi[i]->hide();
-		    sourceStrength[i]->hide();
-		}
+		        sourceID[i]->setText(QString::number(source_id));
+		        sourceID[i]->show();
+		        sourceTheta[i]->setText(QString::number(theta));
+		        sourceTheta[i]->show();
+		        sourcePhi[i]->setText(QString::number(phi));
+		        sourcePhi[i]->show();
+		        sourceStrength[i]->setText(QString::number(strength));
+		        sourceStrength[i]->show();
+		    }
+		    else
+		    {
+		        buttonGroup->removeButton(sourceButtons[i]);
+		        sourceButtons[i]->hide();
+		        sourceID[i]->hide();
+		        sourceTheta[i]->hide();
+		        sourcePhi[i]->hide();
+		        sourceStrength[i]->hide();
+		    }
 	    }
+	}
+
+}
+
+void TrackAudioWidget::setTime (unsigned long long time)
+{
+
+    if (audioView)
+    {
+	    //debug
+	    //add a source
+        audioView->addSource(time,AudioSource(1,0.5,0.5,0.5));
+        audioView->addSource(time,AudioSource(2,10.5,10.5,10.5));
+        audioView->addSource(time,AudioSource(3,20.5,20.5,20.5));
+        audioView->addSource(time,AudioSource(4,30.5,30.5,30.5));
+  
+
+	    //update timeline selector if required   
+	    if (audioView->getSelectedTime() >= maxTimeSetted)
+	    {
+		    audioView->selectTime(time);
+		    maxTimeSetted = time;
+	    }
+
+	   
 	}
 }
 
@@ -170,27 +182,9 @@ bool TrackAudioWidget::isSourceActive(int id)
 {
     
     //TODO : reimplementation...   
-    
-    std::stringstream sourceStream;//(task.getField(AUDIO_SOURCES_FIELD_STR));
-
-    if (sourceStream.str() != "")
-    {
-        int nb_sources;
-
-        sourceStream >> nb_sources;
-
-        for (int i = 0; i < nb_sources; i++)
-        {
-            int source_id = 0;
-            float phi,theta = 0;
-            float strength = 0;
-
-            sourceStream >> source_id >> phi >> theta >> strength;
-
-            if (source_id == id) return true;
-        }
-    }
     return false;
+    
+   
 }
 
 
@@ -213,11 +207,10 @@ void TrackAudioWidget::playClicked(int source_id)
     //process->addArgument(QString("/close"));
     //process->addArgument(QString("log/source_")+QString::number(source_id) + QString(".wav"));
     #else
-    //TODO ADD MPLAYER.
+    prog = QString("mplayer");
+    args += QString("log/source_")+QString::number(source_id) + QString(".wav");
     #endif
-    
-	//process->addArgument("localhost");   
-    //process->addArgument("2314");          
+        
     
     if (process)
     {        

@@ -29,88 +29,66 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QGraphicsView>
 #include <QGraphicsLineItem>
 
-class AudioView;
-
-//
-
-
-
 class AudioView : public QGraphicsView {
 
   Q_OBJECT;
 
   public:
+  
     AudioView(QWidget* parent);
 
-    void                 repaintTimeInterval(long long t1, long long t2, bool erase=true);
-
-    void                 drawOn(QPainter* painter);
-    long long            getSelectedTime(){return selectedTime;}
+    unsigned long long    getSelectedTime(){return selectedTime;}
     
     std::vector<AudioSource> getSourcesAtSelectedTime();
     
     QColor               getSourceColor(int id);
-    void                 addSource(long long time, const SourceInfo *source);
-    void                 addSource(long long time, const AudioSource &source);   
+    void                 addSource(unsigned long long time, const SourceInfo *source);
+    void                 addSource(unsigned long long time, const AudioSource &source);   
 
   public slots:
-    void                 setTimeScale(double scale);
-    void                 filterToggle();
-    void                 setExtremas(long long t1, long long t2);
-    void                 selectTime(long long time);
-    void                 timeout();   
+
+    void                 selectTime(unsigned long long time);
+    unsigned long long   getCurrentTime();
+   
 
   signals:
-    void                 timeSelected(long long time);
-    void                 selectedLogLine(int line);
+  
+    void                 timeSelected(unsigned long long time);
+
 
   protected:
 
     double               timeScale; // pixel / seconds
-    long long            minTime, maxTime;
-    long long            selectedTime;
-    int                  logLineSelected;
+    unsigned long long   minTime, maxTime;
+    unsigned long long   selectedTime;
+    unsigned long long   m_timeLineUpdateTime;
+    bool                 m_mouseClicked;
+
+
 
     int                  nbLines;
     int                  heightLine;
-    int                  nbSequence;
-    int                  dySequence;
-    int                  pointSize;
-    long long            markStep;
-
-    QPoint               startDragPoint;
-    double               startDragTimeScale;
-    long long            startDragTimePoint;
-
-    int                  autoscrollDX;
-    int                  scrollIncrementCount;
 
 
 
-    std::map<QString,bool> filterState;
-    std::map<QString,int> filterMenuId;
+    void                 drawTimeLine(unsigned long long time);
 
-    enum MouseMode { mmNone, mmTimeScale, mmTime} mousemode;
-
-    virtual void         drawContents(QPainter*, int, int, int, int);
-
-
-    //MOUSE EVENTS
+    //MOUSE EVENT(S)
     virtual void         mousePressEvent ( QMouseEvent * e );
     virtual void         mouseMoveEvent ( QMouseEvent * e );
-    virtual void         mouseReleaseEvent ( QMouseEvent * e );
     virtual void         wheelEvent (QWheelEvent * e);
 
+    //TIMER EVENT(S)
     virtual void         timerEvent (QTimerEvent *);
 
-    long long            xToTime(long long x) const;
-    long long            smartTimeSelect(int x, int y) const;
+    unsigned long long   xToTime(unsigned long long x) const;
+    unsigned long long   smartTimeSelect(int x, int y) const;
 
 
     std::vector<QGraphicsLineItem*> m_horizlines;
     QGraphicsLineItem *selectedTimeLine;
     std::vector<QColor>  availableColors;    
-    std::map<long long, std::vector<AudioSource> > m_sources;
+    std::map<unsigned long long, std::vector<AudioSource> > m_sources;
 };
 
 

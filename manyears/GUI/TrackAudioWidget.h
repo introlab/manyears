@@ -45,13 +45,13 @@ public:
     
 public slots:
     void getData(const std::vector<const SourceInfo*> &sources);
+    void selectedTime(unsigned long long time);
     void playClicked(int source_id);
     void timeout();   
 
 protected:
 
-    long long maxTimeSetted;
-    long long minTime;    
+    long long maxTimeSetted;  
     AudioView* audioView;
     QVBoxLayout* Form1Layout;
     QHBoxLayout* bottomLayout;
