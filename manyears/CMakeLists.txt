@@ -9,22 +9,29 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 #Let's find FlowDesigner
 #Hard coded paths right now...
 
-SET (FLOWDESIGNER_BIN_DIR "/usr/bin/")
-SET (FLOWDESIGNER_INCLUDE_DIR "/usr/include/flowdesigner/")
-SET (FLOWDESIGNER_LIB_DIR "/usr/lib/")
-SET (FLOWDESIGNER_TOOLBOX_DIR "/usr/lib/flowdesigner/toolbox/")
+IF (WIN32)
+	SET(FD_PREFIX "C:/Progra~1/FlowDesigner")
+ELSE(WIN32)
+	SET(FD_PREFIX "/usr")
+ENDIF(WIN32)
+	
+SET (FLOWDESIGNER_BIN_DIR "${FD_PREFIX}/bin/")
+SET (FLOWDESIGNER_INCLUDE_DIR "${FD_PREFIX}/include/flowdesigner/")
+SET (FLOWDESIGNER_LIB_DIR "${FD_PREFIX}/lib/")
+SET (FLOWDESIGNER_TOOLBOX_DIR "${FD_PREFIX}/lib/flowdesigner/toolbox/")
+
+
 
 #Add the macros directory for cmake scripts
-SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/macros)
+SET(CMAKE_MODULE_PATH "${ManyEars_SOURCE_DIR}/macros")
+
+MESSAGE(STATUS "SET MODULE PATH : ${CMAKE_MODULE_PATH}")
 
 #Look for dependencies
-find_package(FFTW3 REQUIRED)
-
-#finding qt
 find_package(Qt4 REQUIRED)
-
-#STANDARD PERL MODULE
 find_package(Perl REQUIRED)
+find_package(FFTW3 REQUIRED)
+find_package(LibXml2 REQUIRED)
 
 #set the prefix
 SET(CMAKE_INSTALL_PREFIX "${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars")
@@ -32,9 +39,9 @@ SET(CMAKE_INSTALL_PREFIX "${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars")
 #Adding subdirectories
 ADD_SUBDIRECTORY(src)
 
-IF (HAVE_QT4)
+IF (QT4_FOUND)
 	ADD_SUBDIRECTORY(GUI)
-ENDIF(HAVE_QT4)
+ENDIF(QT4_FOUND)
 
 #WIN32 DLL INSTALLATION
 IF(WIN32)
@@ -62,17 +69,19 @@ ENDIF(APPLE)
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "2")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "ManyEars")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${CMAKE_INSTALL_PREFIX})
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
   # SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
   # SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\FDSetup.exe")
-  # SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} FlowDesigner")
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ManyEars Installation")
   # SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\manyears.sourceforge.net")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\manyears.sourceforge.net")
   SET(CPACK_NSIS_CONTACT "manyears-devel@lists.sourceforge.net")
-  SET(CPACK_NSIS_MODIFY_PATH ON)
+  SET(CPACK_NSIS_MODIFY_PATH OFF)
+  SET(CPACK_PACKAGE_EXECUTABLES "audioviewer;AudioViewer")
+  SET(CPACK_TOPLEVEL_TAG "ManyEars")
 ENDIF(WIN32 AND NOT UNIX)
 
 INCLUDE(CPack)

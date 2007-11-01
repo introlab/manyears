@@ -1,11 +1,46 @@
-# - Check for the presence of FFTW3## The following variables are set when FFTW3 is found:#  HAVE_FFTW3       = Set to true, if all components of FFTW3#                          have been found.#  FFTW3_INCLUDE_DIR = Include path for the header files of FFTW3#  FFTW3_LIBRARY     = Link these to use FFTW3## -----------------------------------------------------------------------------## Check for the header filesMESSAGE (STATUS "CHECKING FOR FFTW3...")
-FIND_PATH (FFTW3_INCLUDE_DIR fftw3.h  PATHS /usr/local/include /opt/local/fftw3/include /opt/local/fftw3/include/ /usr/include /sw/include)
+MESSAGE (STATUS "CHECKING FOR FFTW3...")
 
-MESSAGE(STATUS "FFTW3_INCLUDE_DIR : ${FFTW3_INCLUDE_DIR}")
-## -----------------------------------------------------------------------------## Check for the library
+IF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)
+   SET(FFTW3_FIND_QUIETLY TRUE)
+ENDIF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)
 
-FIND_LIBRARY (FFTW3_LIBRARY fftw3f  PATHS /usr/local/lib /usr/local/fftw3/lib /usr/lib /lib /sw/lib)
+IF (NOT WIN32)
+   INCLUDE(UsePkgConfig)
+   PKGCONFIG(libfftw3 _FFTW3IncDir _FFTW3LinkDir _FFTW3LinkFlags _FFTW3Cflags)
+   SET(FFTW3_DEFINITIONS ${_FFTW3Cflags})
+ENDIF (NOT WIN32)
 
-MESSAGE(STATUS "FFTW3_LIBRARY : ${FFTW3_LIBRARY}")
-## -----------------------------------------------------------------------------## Actions taken when all components have been foundIF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)  SET (HAVE_FFTW3 TRUE)ELSE (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)  IF (NOT FFTW3_FIND_QUIETLY)    IF (NOT FFTW3_INCLUDE_DIR)      MESSAGE (STATUS "Unable to find FFTW3 header files!")    ENDIF (NOT FFTW3_INCLUDE_DIR)    IF (NOT FFTW3_LIBRARY)      MESSAGE (STATUS "Unable to find FFTW3 library files!")    ENDIF (NOT FFTW3_LIBRARY)  ENDIF (NOT FFTW3_FIND_QUIETLY)ENDIF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)IF (HAVE_FFTW3)  IF (NOT FFTW3_FIND_QUIETLY)    MESSAGE (STATUS "Found components for FFTW3")    MESSAGE (STATUS "FFTW3_INCLUDE_DIR = ${FFTW3_INCLUDE_DIR}")    MESSAGE (STATUS "FFTW3_LIBRARY     = ${FFTW3_LIBRARY}")  ENDIF (NOT FFTW3_FIND_QUIETLY)ELSE (HAVE_FFTW3)  IF (FFTW3_FIND_REQUIRED)    MESSAGE (FATAL_ERROR "Could not find FFTW3!")  ENDIF (FFTW3_FIND_REQUIRED)ENDIF (HAVE_FFTW3)
-## ------------------------------------------------------------------------------## Mark as advanced ...
+FIND_PATH(FFTW3_INCLUDE_DIR fftw3.h
+   PATHS "C:/Dev-Cpp/include/fftw"
+   ${_FFTW3IncDir}
+   )
+
+MESSAGE (STATUS "FFTW3_INCLUDE_DIR : ${FFTW3_INCLUDE_DIR}")
+   
+FIND_LIBRARY(FFTW3_LIBRARY NAMES fftw3f fftw3 NO_DEFAULT_PATH 
+   PATHS
+   "C:/Dev-Cpp/lib"
+   "C:/Dev-Cpp/bin"
+   ${_FFTW3LinkDir}
+   )
+
+MESSAGE (STATUS "FFTW3_LIBRARY : ${FFTW3_LIBRARY}")
+   
+IF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)
+   SET(FFTW3_FOUND TRUE)
+ELSE (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)
+   SET(FFTW3_FOUND FALSE)
+ENDIF (FFTW3_INCLUDE_DIR AND FFTW3_LIBRARY)
+
+IF (FFTW3_FOUND)
+   IF (NOT FFTW3_FIND_QUIETLY)
+      MESSAGE(STATUS "Found FFTW3: ${FFTW3_LIBRARY}")
+   ENDIF (NOT FFTW3_FIND_QUIETLY)
+ELSE (FFTW3_FOUND)
+   IF (FFTW3_FIND_REQUIRED)
+      MESSAGE(SEND_ERROR "Could NOT find FFTW3")
+   ENDIF (FFTW3_FIND_REQUIRED)
+ENDIF (FFTW3_FOUND)
+
+MARK_AS_ADVANCED(FFTW3_INCLUDE_DIR FFTW3_LIBRARY)
+

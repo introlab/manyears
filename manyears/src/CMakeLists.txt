@@ -22,6 +22,8 @@ SET(manyears_SRCS
    particles.cc   
 )	
 
+#Look for dependencies
+FIND_PACKAGE(FFTW3 REQUIRED)
 
 SET(CMAKE_CXX_FLAGS "-msse -O3")
    
@@ -32,9 +34,7 @@ INCLUDE_DIRECTORIES(${FLOWDESIGNER_INCLUDE_DIR}
 
 IF(WIN32)
 	ADD_DEFINITIONS(-D__WINDOWS_ASIO__)
-	INCLUDE_DIRECTORIES(${FLOWDESIGNER_SOURCE_DIR}/data-flow/include 
-    	./
-		C:/Dev-Cpp/include/fftw
+	INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES}     	
 		${LIBXML2_INCLUDE} 
        	${QT_INCLUDE_DIR}
 	)
