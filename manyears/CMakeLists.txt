@@ -34,7 +34,7 @@ find_package(FFTW3 REQUIRED)
 find_package(LibXml2 REQUIRED)
 
 #set the prefix
-SET(CMAKE_INSTALL_PREFIX "${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars")
+SET(CMAKE_INSTALL_PREFIX ${FD_PREFIX})
 
 #Adding subdirectories
 ADD_SUBDIRECTORY(src)
@@ -69,17 +69,17 @@ ENDIF(APPLE)
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "2")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY ${CMAKE_INSTALL_PREFIX})
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "FlowDesigner")
 IF(WIN32 AND NOT UNIX)
   # There is a bug in NSI that does not handle full unix paths properly. Make
   # sure there is at least one set of four (4) backlasshes.
   # SET(CPACK_PACKAGE_ICON "${CMake_SOURCE_DIR}/Utilities/Release\\\\InstallIcon.bmp")
   # SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\FDSetup.exe")
-  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ManyEars Installation")
+  SET(CPACK_NSIS_DISPLAY_NAME "${CPACK_PACKAGE_INSTALL_DIRECTORY} ManyEars Toolkit")
   # SET(CPACK_NSIS_HELP_LINK "http:\\\\\\\\manyears.sourceforge.net")
   SET(CPACK_NSIS_URL_INFO_ABOUT "http:\\\\\\\\manyears.sourceforge.net")
   SET(CPACK_NSIS_CONTACT "manyears-devel@lists.sourceforge.net")
-  SET(CPACK_NSIS_MODIFY_PATH OFF)
+  SET(CPACK_NSIS_MODIFY_PATH ON)
   SET(CPACK_PACKAGE_EXECUTABLES "audioviewer;AudioViewer")
   SET(CPACK_TOPLEVEL_TAG "ManyEars")
 ENDIF(WIN32 AND NOT UNIX)
