@@ -13,6 +13,7 @@ SET(manyears_SRCS
    SourceTrack.cc
    SeparGSS.cc
    SaveWavWin32.cc
+   SaveRawAudio.cc
    RtAudio.cpp
    info.cc
    conj_window.cc
