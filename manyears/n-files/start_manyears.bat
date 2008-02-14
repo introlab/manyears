@@ -1,3 +1,3 @@
 mkdir log
 start audioviewer
-start qtflow LocalizeSeparAndSaveWavWin32.n
+start flowdesigner LocalizeSeparAndSaveWavWin32.n
