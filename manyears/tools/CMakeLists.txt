@@ -1,0 +1,1 @@
+INSTALL(FILES ManyEars_Setup.nsi DESTINATION .)

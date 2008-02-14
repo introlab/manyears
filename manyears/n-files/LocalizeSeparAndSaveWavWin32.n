@@ -12,7 +12,7 @@
     <Link from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS1"/>
     <NetOutput name="OUTPUT" node="loop_0" terminal="OUTPUT" object_type="any" description="No description available"/>
     <NetOutput name="BOOLWRITE" node="loop_0" terminal="BOOLWRITE" object_type="any" description="No description available"/>
-    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
   </Network>
   <Network type="iterator" name="loop">
     <Node name="Constant_0" type="Constant" x="-851.000000" y="-445.000000">
@@ -46,7 +46,7 @@
       <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
     </Node>
     <Node name="openStreamManyEars_0" type="openStreamManyEars" x="-929.000000" y="-281.000000">
-      <Parameter name="DEVICE" type="string" value="M-Audio Delta" description="device name"/>
+      <Parameter name="DEVICE" type="string" value="any" description="device name"/>
       <Parameter name="SAMPLERATE" type="int" value="48000" description="sampleRate"/>
       <Parameter name="LENGTH" type="int" value="8192" description="number of samples"/>
       <Parameter name="ADVANCE" type="int" value="4096" description="number of samples"/>
@@ -71,6 +71,6 @@
     <NetOutput name="BOOLWRITE" node="QtSendString_1" terminal="BOOLWRITE" object_type="any" description="No description available"/>
     <NetInput name="MIC_POS" node="LocalizeBeam_0" terminal="MIC_POS" object_type="any" description="No description available"/>
     <NetInput name="MIC_POS1" node="SeparGSS_0" terminal="MIC_POS" object_type="any" description="No description available"/>
-    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
   </Network>
 </Document>

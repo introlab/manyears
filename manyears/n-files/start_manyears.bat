@@ -1,6 +1,3 @@
-cd ../n-files
-md log
-cd ../GUI
+mkdir log
 start audioviewer
-cd ../n-files
 start qtflow LocalizeSeparAndSaveWavWin32.n

@@ -155,7 +155,7 @@ namespace FD {
                 //GET THE FIRST DEVICE WITH ENOUGH AUDIO INPUTS (8)
                 if (m_device == "any")
                 {
-                	if (info.inputChannels == m_nChannels)
+                	if (info.inputChannels >= m_nChannels)
                 	{
                 		m_device = info.name;
                 		deviceID = i;
