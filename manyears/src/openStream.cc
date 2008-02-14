@@ -1,3 +1,20 @@
+/* Copyright (C) 2002-2008 Jean-Marc Valin, Julien D'Ascenzio
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+*/
+
 #include "BufferedNode.h"
 #include "operators.h"
 #include "RtAudio.h"
@@ -134,15 +151,30 @@ namespace FD {
             for (i=0; i<devices; i++) 
             {
                 info = m_adac.getDeviceInfo(i);
-                size_t found = info.name.find(m_device.c_str());
-                if(info.name.find(m_device.c_str()) != string::npos )
+                
+                //GET THE FIRST DEVICE WITH ENOUGH AUDIO INPUTS (8)
+                if (m_device == "any")
                 {
-                    deviceID = i;
-                    break;                        
+                	if (info.inputChannels == m_nChannels)
+                	{
+                		m_device = info.name;
+                		deviceID = i;
+                		break;
+                	}
+                	
+                }
+                else
+                {	
+                	size_t found = info.name.find(m_device.c_str());
+                	if(info.name.find(m_device.c_str()) != string::npos )
+                	{
+                		deviceID = i;
+                		break;                        
+                	}
                 }
             }
             if(i==devices)
-                throw new GeneralException("device: " + m_device + "don't find" ,__FILE__,__LINE__);
+                throw new GeneralException("device: " + m_device + "not found" ,__FILE__,__LINE__);
             
             // Set the input parameters.
             RtAudio::StreamParameters iParams;
