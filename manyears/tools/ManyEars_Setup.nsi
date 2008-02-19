@@ -35,6 +35,7 @@ Section "binaries" ;No components page, name is not important
   
   ; Put file there
   File bin\audioviewer.exe
+  File bin\fftw3.dll
   
 SectionEnd ; end the section
 
