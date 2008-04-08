@@ -70,24 +70,10 @@ void FDReader::dataReady()
 
     try {                                      
         FD::RCPtr<FD::Vector<FD::ObjectRef> > data;
-        inputStream >> data;         
-
-        //data->printOn(cout); 
-	    //cout.flush();     
-        
-        FD::RCPtr<SourceInfo> info;
-              
-        vector<const SourceInfo*> output;      
-        
-        for (unsigned int i = 0; i < data->size(); i++)
-        {
-            info = (*data)[i];         
-            output.push_back(info.get());
-        }         
-	
-	
-	//cout<<"FDReader::dataReady emit putData signal with nbsources:"<<output.size()<<endl;
-        emit putData(output);      
+        inputStream >> data;
+        //Will send signal putData
+        //Object will self destruct when unused
+        emit putData(data);      
     }
     catch(FD::BaseException *e)
     {

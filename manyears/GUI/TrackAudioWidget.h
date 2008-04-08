@@ -44,7 +44,7 @@ public:
     unsigned long long getTime();
     
 public slots:
-    void getData(const std::vector<const SourceInfo*> &sources);
+    void getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources);
     void selectedTime(unsigned long long time);
     void playClicked(int source_id);
     void timeout();   

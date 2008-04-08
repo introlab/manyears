@@ -93,7 +93,7 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     
     //FlowDesigner SourceInfo reader
     reader = new FDReader();
-    connect(reader, SIGNAL(putData(const std::vector<const SourceInfo*>&)), this, SLOT(getData(const std::vector<const SourceInfo*>&)));
+    connect(reader, SIGNAL(putData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)), this, SLOT(getData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)));
     
     //Selection will update buttons...
     connect(audioView, SIGNAL(timeSelected(unsigned long long)), this, SLOT(selectedTime(unsigned long long)));
@@ -116,10 +116,10 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 	    {
 		    if (i < sources.size())
 		    {
-		        int source_id = sources[i].id;
-		        float phi = sources[i].phi;
-		        float theta = sources[i].theta;
-		        float strength = sources[i].strength;
+		        int source_id = sources[i].m_id;
+		        float phi = sources[i].m_phi;
+		        float theta = sources[i].m_theta;
+		        float strength = sources[i].m_strength;
 
 		        sourceButtons[i]->show();
 		        sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
@@ -185,7 +185,7 @@ bool TrackAudioWidget::isSourceActive(int id)
         bool found = false;
         for (unsigned i = 0; i< sources.size(); i++)
         {
-            if (sources[i].id == id)
+            if (sources[i].m_id == id)
             {
                 found = true;
                 break;
@@ -206,33 +206,39 @@ void TrackAudioWidget::playClicked(int source_id)
     QProcess *process = new QProcess(this);
     QString prog;
     QStringList args;
-    #ifdef WIN32
+ #ifdef WIN32
     prog = QString("sndrec32.exe");
     args += QString("/play");
     args += QString("/close");
     args += QString("log/source_")+QString::number(source_id) + QString(".wav");
-    #else
+ #endif
+    
+#ifdef linux
     prog = QString("mplayer");
     args += QString("log/source_")+QString::number(source_id) + QString(".wav");
-    #endif
-            
+#endif
+    
+#ifdef __APPLE_CC__
+    prog = QString("open");
+    args += QString("log/source_")+QString::number(source_id) + QString(".wav");
+#endif
+    
     if (process)
     {        
         process->start(prog,args);                
     }         
 }
 
-void TrackAudioWidget::getData(const std::vector<const SourceInfo*> &sources)
+void TrackAudioWidget::getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources)
 {
     //get the actual time
-    long long time = getTime();
-
-    //std::cerr<<"TrackAudioWidget::getData nb sources : "<<sources.size()<<std::endl;
-
+    long long time = getTime(); 
+    
     //add sources
-    for (unsigned int i =0 ; i < sources.size(); i++)
+    for (unsigned int i =0 ; i < sources->size(); i++)
     {
-        audioView->addSource(time,sources[i]);
+    	FD::RCPtr<SourceInfo> info = (*sources)[i];   	
+        audioView->addSource(time,info.get());
     }      
 
 }

@@ -247,7 +247,7 @@ void AudioView::addSource(unsigned long long time, const AudioSource &source)
     
     for (unsigned int i = 0; i < m_sources[index].size(); i++)
     {
-        if (m_sources[index][i].id == source.id)
+        if (m_sources[index][i].m_id == source.m_id)
         {
             found = true;
             break;
@@ -260,14 +260,14 @@ void AudioView::addSource(unsigned long long time, const AudioSource &source)
         m_sources[index].push_back(source);
 	    //create Item to display
 	    float x = (time - minTime) * timeScale;
-	    float y = (source.theta+180) * (nbLines*heightLine / 360.0);
+	    float y = (source.m_theta+180) * (nbLines*heightLine / 360.0);
 	    QGraphicsEllipseItem *my_ellipse = new QGraphicsEllipseItem(x - 1,y - 1,2,2,NULL);
 	    //set the color
-	    my_ellipse->setPen(QPen(getSourceColor(source.id)));
+	    my_ellipse->setPen(QPen(getSourceColor(source.m_id)));
 	    //add item
 	    scene()->addItem(my_ellipse);
 	    //set ref to this ellipse
-	    m_sources[index].back().item = my_ellipse;
+	    m_sources[index].back().m_item = my_ellipse;
     }
 }
    

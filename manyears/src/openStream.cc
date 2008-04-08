@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QtCore/QSemaphore>
 #include <QtCore/QList>
 #include "Buffer.h"
+#include <fstream>
 
 using namespace std;
 
@@ -30,8 +31,12 @@ namespace FD {
     
     class openStreamManyEars;
     
+    //ofstream rawOutputTest("rawoutput.raw");
+    
     QMutex buffersList_openStreamManyEars;
     QSemaphore newSamplesSemaphore_openStreamManyEars;
+    
+    
     
     int inOpenStream( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         double streamTime, RtAudioStreamStatus status, void *data )
@@ -43,8 +48,11 @@ namespace FD {
         Vector<float>* buffer = Vector<float>::alloc(nBufferFrames * 8);
         QList<Vector<float>*>* buffersList = (QList<Vector<float>*>*) data;   
         for(int i=0; i<nBufferFrames*8; i++)
+        {
             (*buffer)[i]= (float)(in[i]);            
-        
+            //TESTING RAW OUPTUT
+            //rawOutputTest.write((char*) &in[i],sizeof(short));
+        }
         buffersList_openStreamManyEars.lock();
         buffersList->append( buffer );        
         buffersList_openStreamManyEars.unlock();

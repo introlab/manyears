@@ -51,7 +51,7 @@ string tag;
     in >> tag;
     
     if (tag == "x") {
-      in >> x[0] >> x[1] >> x[2];
+      in >> x[0] >> x[1] >> x[2];      
     }
     else if (tag == "strength") {
       in >> strength;

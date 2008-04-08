@@ -21,18 +21,19 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <map>
 #include "SourceInfo.h"
 #include <QGraphicsEllipseItem>
+#include <math.h>
 
 class AudioSource {
     public:
 
         AudioSource(int _id, float _theta, float _phi, float _strength, QGraphicsEllipseItem *_item = NULL)
-            : id(_id), theta(_theta), phi(_phi), strength (_strength), item(_item)
+            : m_id(_id), m_theta(_theta), m_phi(_phi), m_strength (_strength), m_item(_item)
         {
                                           
         }
         
         AudioSource()
-            : id(-1), theta(0), phi(0), strength (0), item(NULL)
+            : m_id(-1), m_theta(0), m_phi(0), m_strength (0), m_item(NULL)
         {
 
         }         
@@ -41,44 +42,43 @@ class AudioSource {
         {
             if (source)
             {
-                id = source->source_id;
-                theta = atan2(source->x[1], source->x[0]) * 180.0 / M_PI;
-                phi = atan2(source->x[2], source->x[1]) * -180.0 / M_PI;
-                strength = source->strength;
+                m_id = source->source_id;
+                m_phi = -180.0 * atan2(source->x[2], source->x[1]) / M_PI;
+                m_theta = 180.0 * atan2(source->x[1],source->x[0]) / M_PI;
+                m_strength = source->strength;
             }
-            item = NULL;
+            m_item = NULL;
         }
         
         AudioSource(const AudioSource& cpy)
         {
-            id = cpy.id;
-            theta = cpy.theta;
-            phi = cpy.phi;
-            strength = cpy.strength;
-	    item = cpy.item;
-            
+            m_id = cpy.m_id;
+            m_theta = cpy.m_theta;
+            m_phi = cpy.m_phi;
+            m_strength = cpy.m_strength;
+            m_item = cpy.m_item;      
         }
         
         AudioSource& operator= (const AudioSource &cpy)
         {
-            id = cpy.id;
-            theta = cpy.theta;
-            phi = cpy.phi;
-            strength = cpy.strength;
-            item = cpy.item;
+            m_id = cpy.m_id;
+            m_theta = cpy.m_theta;
+            m_phi = cpy.m_phi;
+            m_strength = cpy.m_strength;
+            m_item = cpy.m_item;
             return *this;
         }
          
         bool operator== (const AudioSource &cpy)
         {
-         return (cpy.id == id) && (cpy.theta == theta) && (cpy.phi == phi) && (cpy.strength == strength) && (cpy.item == item);            
+         return (cpy.m_id == m_id) && (cpy.m_theta == m_theta) && (cpy.m_phi == m_phi) && (cpy.m_strength == m_strength) && (cpy.m_item == m_item);            
         }
         
-        int id;
-        float theta;
-        float phi;
-        float strength;
-        QGraphicsEllipseItem *item;
+        int m_id;
+        float m_theta;
+        float m_phi;
+        float m_strength;
+        QGraphicsEllipseItem *m_item;
     
 };
 

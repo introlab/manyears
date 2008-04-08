@@ -116,6 +116,7 @@ public:
             continue;
          tracker.filters[i]->getStats (mean, std);
          std::cout << count << " " << tracker.filters[i]->getID() << " " << mean[0] << " " << mean[1] << " " << mean[2] << " " << std[0] << " " << std[1] << " " << std[2] << " " << tracker.filters[i]->age << " " << tracker.filters[i]->age2 << " " << tracker.filters[i]->weight << std::endl;
+        
          SourceInfo &s = *new SourceInfo;
          s.x[0] = mean[0];
          s.x[1] = mean[1];

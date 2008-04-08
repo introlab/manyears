@@ -42,7 +42,7 @@ class FDReader : public QTcpServer {
 
     signals:
       
-    void putData(const std::vector<const SourceInfo*> &sources);
+    void putData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources);
 
     protected:  
 

@@ -31,6 +31,44 @@ public:
    int start_time;
    int source_id;
    double remaining;
+   
+   SourceInfo()
+   {
+	   memset(delta,0,sizeof(float) * 7);
+	   memset(x,0,sizeof(float) * 3);
+	   strength = 0;
+	   age = 0;
+	   interval = 0;
+	   eval_count = 0;
+	   start_time = 0;
+	   source_id = -1;
+	   remaining = 0;
+   }
+   
+   SourceInfo(const SourceInfo &cpy)
+   {
+	   memcpy(delta,cpy.delta,7*sizeof(float));
+	   memcpy(x,cpy.x,3*sizeof(float));
+	   strength = cpy.strength;
+	   age = cpy.age;
+	   interval = cpy.interval;
+	   eval_count = cpy.eval_count;
+	   start_time = cpy.start_time;
+	   source_id = cpy.source_id;
+	   remaining = cpy.remaining;
+	   
+	   std::cerr<<"SourceInfo cpy ctor : "<<std::endl;
+	   printOn(std::cerr);
+	   
+   }
+   
+   float getX(unsigned int index) const
+   {
+	   if (index < 3)
+		   return x[index];
+	   else
+		   return -1;
+   }
 
    float angle(const float *y) const
    {
