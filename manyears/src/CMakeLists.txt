@@ -21,14 +21,25 @@ SET(manyears_SRCS
    LocalizeBeam.cc
    sphere.cc
    particles.cc   
+   UDPOSCOut.cc
 )	
 
 #Look for dependencies
 FIND_PACKAGE(FFTW3 REQUIRED)
 
 SET(CMAKE_CXX_FLAGS "-msse -O3")
+
+#finding qt
+SET(QT_USE_QTNETWORK TRUE)
+
+find_package(Qt4 REQUIRED)
+
+#REQUIRED
+include(${QT_USE_FILE})
+
    
 INCLUDE_DIRECTORIES(${FLOWDESIGNER_INCLUDE_DIR}
+    ${QT_INCLUDE_DIR}
 	${FFTW3_INCLUDE_DIR}
 	./
 )
@@ -61,12 +72,12 @@ add_library(libmanyears-dynamic SHARED ${manyears_SRCS})
 set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME libmanyears.tlb)
 
 IF(WIN32)
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTCORE_LIBRARY} -lole32  -lfftw3 -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -lfftw3 -lm )
 ENDIF(WIN32)
 
 IF(APPLE)
 	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${FFTW3_LIBRARY} -llibflow -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -llibflow -lm )
 ENDIF(APPLE)
 
 
