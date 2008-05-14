@@ -1,7 +1,7 @@
 PROJECT (ManyEars)
 
 #Look for minimum cmake version
-cmake_minimum_required(VERSION 2.4.0)
+cmake_minimum_required(VERSION 2.6.0)
 
 SET(CMAKE_BUILD_TYPE Release )
 SET(CMAKE_VERBOSE_MAKEFILE ON)
@@ -43,7 +43,7 @@ ENDIF(QT4_FOUND)
 IF(WIN32)
 
 	SET(FFTW3_DLL
- 		C:/Dev-Cpp/bin/fftw3.dll
+ 		C:/Dev-Cpp/lib/fftw3.dll
 	)
 	INSTALL(FILES ${FFTW3_DLL} DESTINATION bin)
 

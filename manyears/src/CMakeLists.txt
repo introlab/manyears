@@ -49,6 +49,7 @@ IF(WIN32)
 	INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES}     	
 		${LIBXML2_INCLUDE} 
        	${QT_INCLUDE_DIR}
+		asio/
 	)
 
 	SET(manyears_SRCS ${manyears_SRCS}
@@ -72,7 +73,7 @@ add_library(libmanyears-dynamic SHARED ${manyears_SRCS})
 set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME libmanyears.tlb)
 
 IF(WIN32)
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -lfftw3 -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -LC:/Dev-Cpp/lib -lfftw3 -lm )
 ENDIF(WIN32)
 
 IF(APPLE)
