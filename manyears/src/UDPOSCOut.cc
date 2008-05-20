@@ -118,10 +118,15 @@ namespace FD {
 				   
 				   
 				   //write to the socket
-				   socket.writeDatagram(outputString.str().c_str(),outputString.str().size(),
+				   int size = socket.writeDatagram(outputString.str().c_str(),outputString.str().size(),
 						   QHostAddress(hostname.c_str()),portnumber);
 				   
+				   if (size < 0)
+				   {
+					   cerr << "size =" << size << socket.errorString().toStdString() << endl;
+				   }
 				   
+
 				   outputs->push_back(ObjectRef(new String(outputString.str())));
 				   
 			   }
