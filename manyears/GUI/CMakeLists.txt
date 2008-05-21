@@ -39,7 +39,7 @@ INCLUDE_DIRECTORIES(./ ${FLOWDESIGNER_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${LIBXML2_I
 add_executable(audioviewer ${AUDIOVIEWER_SRCS} main.cpp ${AUDIOVIEWER_MOC_SRCS})
 
 # Linking with libflow and Qt libraries
-target_link_libraries(audioviewer  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES})
+target_link_libraries(audioviewer  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES})
 
 #install application
 install(TARGETS audioviewer DESTINATION bin)

@@ -70,15 +70,15 @@ ENDIF(APPLE)
 
 add_library(libmanyears-dynamic SHARED ${manyears_SRCS})
 	
-set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME libmanyears.tlb)
+set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME manyears.tlb)
 
 IF(WIN32)
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -LC:/Dev-Cpp/lib -lfftw3 -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -LC:/Dev-Cpp/lib -lfftw3 -lm )
 ENDIF(WIN32)
 
 IF(APPLE)
 	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -llibflow -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm )
 ENDIF(APPLE)
 
 
