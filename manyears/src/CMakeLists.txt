@@ -80,12 +80,16 @@ IF(APPLE)
 	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
 	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm )
 ENDIF(APPLE)
+    
+IF(UNIX)
+    target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm )
+ENDIF(UNIX)
 
 
 install(TARGETS libmanyears-dynamic DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib)
   
 #INSTALLING .def file  
 MESSAGE( STATUS "EXECUTING : ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears_SRCS}")
-INSTALL( CODE "EXECUTE_PROCESS(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src OUTPUT_FILE libmanyears.def COMMAND ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears_SRCS})" )  
+INSTALL( CODE "EXECUTE_PROCESS(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/src OUTPUT_FILE libmanyears.def COMMAND ${PERL} ${FLOWDESIGNER_BIN_DIR}info2def.pl ${manyears_SRCS})" )  
 INSTALL( FILES libmanyears.def DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/def)
 INSTALL( FILES ${MANYEARS_EXAMPLES} DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/examples)
