@@ -1,5 +1,3 @@
-
-
 SET(MANYEARS_EXAMPLES
  ../n-files/LocalizeSeparAndSaveWavWin32.n
  ../n-files/start_manyears.bat
@@ -12,6 +10,7 @@ SET(manyears_SRCS
    EqualGains.cc
    SourceTrack.cc
    SeparGSS.cc
+   SaveWav.cc
    SaveWavWin32.cc
    SaveRawAudio.cc
    RtAudio.cpp
