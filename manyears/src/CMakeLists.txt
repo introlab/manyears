@@ -25,6 +25,9 @@ SET(manyears_SRCS
 
 #Look for dependencies
 FIND_PACKAGE(FFTW3 REQUIRED)
+IF(UNIX)
+    find_package(Alsa REQUIRED)
+ENDIF(UNIX)
 
 SET(CMAKE_CXX_FLAGS "-msse -O3")
 
@@ -63,7 +66,18 @@ ENDIF(WIN32)
 IF(APPLE)
 	ADD_DEFINITIONS(-D__MACOSX_CORE__ -DMAC)
 ENDIF(APPLE)
-
+IF(UNIX)
+    # With RtAudio, we use Alsa by default
+    # __LINUX_ALSA__ , __UNIX_JACK__ , __LINUX_OSS__ 
+    #
+	ADD_DEFINITIONS(-D__LINUX_ALSA__ -DLINUX)
+    INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES}     	
+		${LIBALSA_INCLUDE_DIR} 
+	)
+    SET(manyears_SRCS ${manyears_SRCS}
+  			alsadevice.cpp 
+  	)
+ENDIF(UNIX)
 
 # create an executable file named "flowdesigner" from the source files 
 
@@ -81,7 +95,7 @@ IF(APPLE)
 ENDIF(APPLE)
     
 IF(UNIX)
-    target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm )
+    target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm ${LIBALSA_LIBRARIES})
 ENDIF(UNIX)
 
 
