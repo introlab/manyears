@@ -21,6 +21,12 @@ SET(manyears_SRCS
    sphere.cc
    particles.cc   
    UDPOSCOut.cc
+   ../ManyEars3D/EqualGains3D.cc
+   ../ManyEars3D/SourceTrack3D.cc
+   ../ManyEars3D/TrackingDecision3D.cc
+   ../ManyEars3D/Localize3D.cc
+   ../ManyEars3D/SteeringVector3D.cc
+   ../ManyEars3D/particles3D.cc
 )	
 
 #Look for dependencies
@@ -44,6 +50,7 @@ INCLUDE_DIRECTORIES(${FLOWDESIGNER_INCLUDE_DIR}
     ${QT_INCLUDE_DIR}
 	${FFTW3_INCLUDE_DIR}
 	./
+	../ManyEars3D/
 )
 
 IF(WIN32)

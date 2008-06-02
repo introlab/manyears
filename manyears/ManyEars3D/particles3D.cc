@@ -8,6 +8,9 @@
 
 using namespace std;
 
+namespace ManyEars3D
+{
+
 #define DELTA_T 0.04
 #define TRANS_PROB .05f
 #define SHORT_APRIORI .5f
@@ -148,6 +151,9 @@ inline int find_range(float x, const vector<float> &cumul)
    return cur;
 }
 
+}//namespace ManyEars3D
+
+using namespace ManyEars3D;
 
 Particle3D::Particle3D(float pos[3])
 {

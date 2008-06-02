@@ -31,10 +31,25 @@ find_package(LibXml2 REQUIRED)
 #set the prefix
 SET(CMAKE_INSTALL_PREFIX ${FD_PREFIX})
 
+# use, i.e. don't skip the full RPATH for the build tree
+SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, don't use the install RPATH already
+# (but later on when installing)
+SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+# the RPATH to be used when installing
+SET(CMAKE_INSTALL_RPATH "${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib")
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+
 #Adding subdirectories
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tools)
-ADD_SUBDIRECTORY(ManyEars3D)
+#ADD_SUBDIRECTORY(ManyEars3D)
 
 IF (QT4_FOUND)
 	ADD_SUBDIRECTORY(GUI)
