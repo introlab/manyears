@@ -13,7 +13,8 @@ ENDIF (NOT WIN32)
 FIND_PATH(FFTW3_INCLUDE_DIR fftw3.h
    PATHS "C:/Dev-Cpp/include/fftw"
    ${_FFTW3IncDir}
-   )
+   /opt/local/include   
+)
 
 MESSAGE (STATUS "FFTW3_INCLUDE_DIR : ${FFTW3_INCLUDE_DIR}")
    
@@ -22,6 +23,7 @@ FIND_LIBRARY(FFTW3_LIBRARY NAMES fftw3f fftw3 NO_DEFAULT_PATH
    "C:/Dev-Cpp/lib"
    "C:/Dev-Cpp/bin"
    ${_FFTW3LinkDir}
+   /opt/local/lib
    )
 
 MESSAGE (STATUS "FFTW3_LIBRARY : ${FFTW3_LIBRARY}")

@@ -25,9 +25,9 @@ SET(manyears_SRCS
 
 #Look for dependencies
 FIND_PACKAGE(FFTW3 REQUIRED)
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
     find_package(Alsa REQUIRED)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
 SET(CMAKE_CXX_FLAGS "-msse -O3")
 
@@ -66,7 +66,7 @@ ENDIF(WIN32)
 IF(APPLE)
 	ADD_DEFINITIONS(-D__MACOSX_CORE__ -DMAC)
 ENDIF(APPLE)
-IF(UNIX)
+IF(UNIX AND NOT APPLE)
     # With RtAudio, we use Alsa by default
     # __LINUX_ALSA__ , __UNIX_JACK__ , __LINUX_OSS__ 
     #
@@ -77,7 +77,7 @@ IF(UNIX)
     SET(manyears_SRCS ${manyears_SRCS}
   			alsadevice.cpp 
   	)
-ENDIF(UNIX)
+ENDIF(UNIX AND NOT APPLE)
 
 # create an executable file named "flowdesigner" from the source files 
 
