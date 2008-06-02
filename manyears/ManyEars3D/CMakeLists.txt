@@ -28,10 +28,10 @@ set_target_properties(libmanyears3D-dynamic PROPERTIES OUTPUT_NAME manyears3D.tl
 target_link_libraries(libmanyears3D-dynamic -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} ${FFTW3_LIBRARY} libmanyears-dynamic)
 
 
-install(TARGETS libmanyears3D-dynamic DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/manyears3D/lib)
+install(TARGETS libmanyears3D-dynamic DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib)
   
 #INSTALLING .def file  
 MESSAGE( STATUS "EXECUTING : ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears3D_SRCS}")
 INSTALL( CODE "EXECUTE_PROCESS(WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/ManyEars3D OUTPUT_FILE libmanyears3D.def COMMAND ${PERL} ${FLOWDESIGNER_BIN_DIR}/info2def.pl ${manyears3D_SRCS})" )  
-INSTALL( FILES libmanyears3D.def DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/manyears3D/def)
+INSTALL( FILES libmanyears3D.def DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/def)
 
