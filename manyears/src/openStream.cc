@@ -152,8 +152,16 @@ namespace FD {
             unsigned int devices = m_adac.getDeviceCount();
             if ( devices < 1 )
                 throw new GeneralException("No audio devices found",__FILE__,__LINE__);
-            
+
             RtAudio::DeviceInfo info;
+            cout << "Audio device count = " << devices << endl;
+            for (unsigned int i=0; i<devices; i++) 
+            {
+                info = m_adac.getDeviceInfo(i); 
+                cout << "Audio device found = " << info.name << endl;  
+            }
+
+            //RtAudio::DeviceInfo info;
             unsigned int deviceID;
             unsigned int i;
             for (i=0; i<devices; i++) 
@@ -166,6 +174,7 @@ namespace FD {
                 	if (info.inputChannels >= m_nChannels)
                 	{
                 		m_device = info.name;
+                        cout << "Using audio device = " << info.name << endl;
                 		deviceID = i;
                 		break;
                 	}

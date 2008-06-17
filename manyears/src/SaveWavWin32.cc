@@ -256,6 +256,8 @@ public:
         
 		stringstream fname;
 		fname << m_baseName << id << ".wav";
+
+        cerr<<"writeWav : filename =  "<<fname.str().c_str()<<endl;
 		
         //CREATE STREAM, WAIT ON CLOSE, OWNER
         ofstream my_stream(fname.str().c_str(),ios::binary);

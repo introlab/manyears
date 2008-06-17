@@ -83,6 +83,7 @@ IF(UNIX AND NOT APPLE)
 	)
     SET(manyears_SRCS ${manyears_SRCS}
   			alsadevice.cpp 
+            SaveAudioStreamTCP.cc
   	)
 ENDIF(UNIX AND NOT APPLE)
 

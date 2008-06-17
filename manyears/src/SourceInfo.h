@@ -19,6 +19,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "ObjectParser.h"
 #include <cmath>
 #include "misc.h"
+#include <string>
 
 class SourceInfo : public FD::Object {
 public:
@@ -31,6 +32,13 @@ public:
    int start_time;
    int source_id;
    double remaining;
+   
+   bool useAudioStream;
+   std::string host;
+   int port;
+
+   SourceInfo() : useAudioStream(false), host(""), port(0) 
+   {}
 
    float angle(const float *y) const
    {

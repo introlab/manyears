@@ -73,5 +73,9 @@ void SourceInfo::printOn(std::ostream &out) const
    out << "<strength " << strength << " >" << std::endl;
    out << "<age " << age << " >" << std::endl;
    out << "<source_id " << source_id << " >" << std::endl;
+   if(useAudioStream) {
+      out << "<host " << host.c_str() << " >" << std::endl;
+      out << "<port " << port << " >" << std::endl;
+   }
    out << ">" << std::endl;
 }
