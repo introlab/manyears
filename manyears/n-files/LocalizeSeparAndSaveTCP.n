@@ -51,7 +51,7 @@
       <Parameter name="SAMPLERATE" type="int" value="48000" description="sampleRate"/>
       <Parameter name="LENGTH" type="int" value="8192" description="number of samples"/>
       <Parameter name="ADVANCE" type="int" value="4096" description="number of samples"/>
-      <Parameter name="NCHANNELS" type="int" value="1" description="number of channels"/>
+      <Parameter name="NCHANNELS" type="int" value="8" description="number of channels"/>
       <Parameter name="FIRSTCHANNEL" type="int" value="0" description="first Channel"/>
     </Node>
     <Node name="SaveAudioStreamTCP_8" type="SaveAudioStreamTCP" x="110,000000" y="-284,000000">
