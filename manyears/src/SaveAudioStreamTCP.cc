@@ -27,18 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "binio.h"
 
 // For socket/stream use
-#include <stdio.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <string.h>
-#include "stream_wrap.h"
-#include "Stream.h"
-#include <errno.h>
+#include <QTcpSocket>
+#include <QDataStream>
+#include <QString>
 
 
 //16KHz downsampling
@@ -127,11 +118,13 @@ private:
     
     string m_hosts[4];
     int m_ports[4];
-    ostream* m_server[4];       //numServer -> stream
+    QDataStream* m_server[4];       //numServer -> stream
     map<int, int> m_sourceMap;  // id -> numServer
 
     map<int, int> start_pos;    
     map<int, int> m_accumulatorLastCount;
+
+    static const int TIMEOUT = 5000;
     
 public:
     SaveAudioStreamTCP(string nodeName, ParameterSet params)
@@ -190,9 +183,9 @@ public:
         {
             int id = it->first;   
             
-            ostream* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
+            QDataStream* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
             if(outStream) {
-                writeFrames(*outStream, it->second, id);
+                writeFrames(outStream, it->second, id);
             }
             else {
                 //cerr << "SaveAudioStreamTCP : stream is null, id=" << id << endl;
@@ -240,7 +233,7 @@ public:
     }
 
 private:
-    void writeFrames(ostream &out, const ObjectRef &inFrame, int id)
+    void writeFrames(QDataStream *out, const ObjectRef &inFrame, int id)
     {
         Vector<float> &frame = object_cast<Vector<float> >(inFrame);
         short buff[frame.size()];
@@ -261,14 +254,14 @@ private:
         start_pos[id] = i-frame.size();
         int nb_samples = k;
 
-        out.write((const char *)buff, sizeof(short)*nb_samples);          
+        out->writeRawData((const char *)buff, sizeof(short)*nb_samples);          
     }
     
-    ostream* getStream(int sourceId)
+    QDataStream* getStream(int sourceId)
     {
         // find stream mapped to this source
         // or create a new one if enough exist 
-        ostream* out = 0;
+        QDataStream* out = 0;
         map<int, int >::iterator it = m_sourceMap.find(sourceId);
         if(it != m_sourceMap.end()) {
             out = m_server[it->second];
@@ -323,42 +316,32 @@ private:
         return -1;            
     }
 
-    ostream* createStream(string host, int port)
+    QDataStream* createStream(string host, int port)
     {
-        struct sockaddr_in addr;
-        int sock = socket(PF_INET, SOCK_STREAM, 0);
-        struct hostent *entp;
+        QTcpSocket* socket = new QTcpSocket();
+        socket->connectToHost(QString(host.c_str()), port);
 
-        memset(&addr, 0, sizeof(struct sockaddr));
+        if (!socket->waitForConnected(TIMEOUT)) {
+            delete socket;
+            return 0;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
+        }
 
-        addr.sin_family = AF_INET;
+        QDataStream* stream = new QDataStream(socket);
+        stream->setVersion(QDataStream::Qt_4_0);
 
-        addr.sin_addr.s_addr = htonl(INADDR_ANY);
-        addr.sin_port = htons(0);
-
-        if (bind (sock, (struct sockaddr *)&addr, sizeof(addr)))
-            return 0;//throw new NodeException(this, string("bind failed: ") + string(strerror(errno)), __FILE__, __LINE__);
-
-        if((entp = gethostbyname(host.c_str())) == NULL)
-            return 0;//throw new NodeException(this, string("Can't get host by name: ") + host, __FILE__, __LINE__);
-
-        memcpy(&addr.sin_addr, entp->h_addr_list[0], entp->h_length);
-
-        addr.sin_port = htons(port);
-
-        if (connect (sock, (struct sockaddr *)&addr, sizeof(addr)))
-            return 0;//throw new NodeException(this, string("connect failed: ") + string(strerror(errno)), __FILE__, __LINE__);
-
-        /*if (!blocking)
-            fcntl(fd, F_SETFL, O_NONBLOCK);*/
-
-        return new fd_ostream(sock);
+        return stream;
     }
 
     void removeStream(int sourceId)
     {
-        ostream* stream = m_server[m_sourceMap[sourceId]];
-        if(stream) {
+        QDataStream* stream = m_server[m_sourceMap[sourceId]];
+        if(stream) {    
+            QIODevice* socket = stream->device();
+            if(socket) {
+                socket->close();
+                delete socket;
+                stream->setDevice(0);
+            }  
             delete stream;
             m_server[m_sourceMap[sourceId]] = 0;
         }

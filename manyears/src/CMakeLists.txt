@@ -1,5 +1,6 @@
 SET(MANYEARS_EXAMPLES
  ../n-files/LocalizeSeparAndSaveWavWin32.n
+ ../n-files/LocalizeSeparAndSaveTCP.n
  ../n-files/start_manyears.bat
  ../config/cube_mic_pos.mat
  ../config/robot_mic_pos.mat
@@ -21,6 +22,7 @@ SET(manyears_SRCS
    sphere.cc
    particles.cc   
    UDPOSCOut.cc
+   SaveAudioStreamTCP.cc
    ../ManyEars3D/EqualGains3D.cc
    ../ManyEars3D/SourceTrack3D.cc
    ../ManyEars3D/TrackingDecision3D.cc
@@ -83,7 +85,6 @@ IF(UNIX AND NOT APPLE)
 	)
     SET(manyears_SRCS ${manyears_SRCS}
   			alsadevice.cpp 
-            SaveAudioStreamTCP.cc
   	)
 ENDIF(UNIX AND NOT APPLE)
 
