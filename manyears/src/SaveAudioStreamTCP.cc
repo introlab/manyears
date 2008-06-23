@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 // For socket/stream use
 #include <QTcpSocket>
-#include <QDataStream>
+#include <QIODevice>
 #include <QString>
 
 
@@ -118,7 +118,7 @@ private:
     
     string m_hosts[4];
     int m_ports[4];
-    QDataStream* m_server[4];       //numServer -> stream
+    QIODevice* m_server[4];       //numServer -> stream
     map<int, int> m_sourceMap;  // id -> numServer
 
     map<int, int> start_pos;    
@@ -183,7 +183,7 @@ public:
         {
             int id = it->first;   
             
-            QDataStream* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
+            QIODevice* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
             if(outStream) {
                 writeFrames(outStream, it->second, id);
             }
@@ -233,7 +233,7 @@ public:
     }
 
 private:
-    void writeFrames(QDataStream *out, const ObjectRef &inFrame, int id)
+    void writeFrames(QIODevice *out, const ObjectRef &inFrame, int id)
     {
         Vector<float> &frame = object_cast<Vector<float> >(inFrame);
         short buff[frame.size()];
@@ -248,20 +248,24 @@ private:
                tmp = 32767;
             else if (tmp < -32767)
                tmp = -32767;
-            buff[k++] = short(.5+floor(tmp));
+            buff[k++] = short(.5+floor(tmp)); 
         }
 
         start_pos[id] = i-frame.size();
         int nb_samples = k;
-
-        out->writeRawData((const char *)buff, sizeof(short)*nb_samples);          
+        int result = out->write((const char *)buff, sizeof(short)*nb_samples);
+        
+        if(!out->waitForBytesWritten(10))
+         {            
+            cerr << "SaveAudioStreamTCP : Error to write bytes"<< endl;
+         }
     }
     
-    QDataStream* getStream(int sourceId)
+    QIODevice* getStream(int sourceId)
     {
         // find stream mapped to this source
         // or create a new one if enough exist 
-        QDataStream* out = 0;
+        QIODevice* out = 0;
         map<int, int >::iterator it = m_sourceMap.find(sourceId);
         if(it != m_sourceMap.end()) {
             out = m_server[it->second];
@@ -316,7 +320,7 @@ private:
         return -1;            
     }
 
-    QDataStream* createStream(string host, int port)
+    QIODevice* createStream(string host, int port)
     {
         QTcpSocket* socket = new QTcpSocket();
         socket->connectToHost(QString(host.c_str()), port);
@@ -325,23 +329,13 @@ private:
             delete socket;
             return 0;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
         }
-
-        QDataStream* stream = new QDataStream(socket);
-        stream->setVersion(QDataStream::Qt_4_0);
-
-        return stream;
+        return socket;
     }
 
     void removeStream(int sourceId)
     {
-        QDataStream* stream = m_server[m_sourceMap[sourceId]];
+        QIODevice* stream = m_server[m_sourceMap[sourceId]];
         if(stream) {    
-            QIODevice* socket = stream->device();
-            if(socket) {
-                socket->close();
-                delete socket;
-                stream->setDevice(0);
-            }  
             delete stream;
             m_server[m_sourceMap[sourceId]] = 0;
         }
