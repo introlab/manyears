@@ -2,8 +2,8 @@
 <?xml version="1.0"?>
 <Document>
   <Network type="subnet" name="MAIN">
-    <Node name="LoadFile_5" type="LoadFile" x="-222,000000" y="-136,000000">
-      <Parameter name="FILENAME" type="string" value="/localhome/mathieu/log/cube_mic_pos.mat" description="No description available"/>
+    <Node name="LoadFile_5" type="LoadFile" x="-222,000000" y="-137,000000">
+      <Parameter name="FILENAME" type="string" value="cube_mic_pos.mat" description="No description available"/>
     </Node>
     <Node name="loop_0" type="loop" x="56,000000" y="-53,000000">
       <Parameter name="DOWHILE" type="bool" value="" description="No description available"/>

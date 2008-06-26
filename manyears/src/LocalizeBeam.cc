@@ -840,7 +840,7 @@ public:
          }
          if (e1 < 10 || e2 < 10)
          {
-            cerr << "got some zeros" << endl;
+            cerr << "LocalizeBeam: got some zeros" << endl;
             for (int i=0;i<8;i++)
             {
                Vector<complex<float> > &fr = *Vector<complex<float> >::alloc(pslength);

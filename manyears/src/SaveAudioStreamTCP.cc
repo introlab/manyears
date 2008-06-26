@@ -1,4 +1,4 @@
-/* Copyright (C) 2007 Mathieu Labbe
+/* Copyright (C) 2008 Mathieu Labbe
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -121,10 +121,11 @@ private:
     QIODevice* m_server[4];       //numServer -> stream
     map<int, int> m_sourceMap;  // id -> numServer
 
-    map<int, int> start_pos;    
+    map<int, int> m_start_pos;    
     map<int, int> m_accumulatorLastCount;
 
     static const int TIMEOUT = 5000;
+    std::vector<int> m_ignoreServerList;
     
 public:
     SaveAudioStreamTCP(string nodeName, ParameterSet params)
@@ -229,7 +230,7 @@ public:
         //Set outputs
         //=================================
         (*(outputs[outputSourcesID].buffer))[count]=input1Value; // Same as input
-        (*(outputs[outputSrcPosID].buffer))[count]=&srcInfos; // modified input src_pos wqith server/port info
+        (*(outputs[outputSrcPosID].buffer))[count]=&srcInfos; // modified input src_pos with server/port info
     }
 
 private:
@@ -241,7 +242,7 @@ private:
 
         //The 3 is the decimation for 16kHz
         //6 is for 8kHz
-        for (k=0,i=start_pos[id];i<frame.size();i+=FRAMERATE_DIVISOR)
+        for (k=0,i=m_start_pos[id];i<frame.size();i+=FRAMERATE_DIVISOR)
         {
             float tmp = 3 * frame[i];
             if (tmp > 32767)
@@ -251,7 +252,7 @@ private:
             buff[k++] = short(.5+floor(tmp)); 
         }
 
-        start_pos[id] = i-frame.size();
+        m_start_pos[id] = i-frame.size();
         int nb_samples = k;
         int result = out->write((const char *)buff, sizeof(short)*nb_samples);
         
@@ -273,10 +274,9 @@ private:
         else {
             bool gotConnection = false;
             int serverNum = -1;
-            std::vector<int> ignoreServerList;
             while(serverNum == -1)
             {
-                serverNum = getWaitingServer(ignoreServerList);
+                serverNum = getWaitingServer(m_ignoreServerList);
                 if(serverNum == -1) {
                     cerr << "SaveAudioStreamTCP : All servers are busy." << endl;
                     break;
@@ -292,7 +292,7 @@ private:
                     }
                     else {
                         cerr << "SaveAudioStreamTCP : Can't create a stream to server : " << m_hosts[serverNum] << ":" << m_ports[serverNum] << ". Trying to find another server..." << endl;  
-                        ignoreServerList.push_back(serverNum); // MAKE SERVER INVALID FOR THIS COUNT
+                        m_ignoreServerList.push_back(serverNum); // MAKE SERVER INVALID FOREVER (until the program is closed)
                         serverNum = -1;           
                     }
                 }

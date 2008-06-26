@@ -158,7 +158,12 @@ namespace FD {
             for (unsigned int i=0; i<devices; i++) 
             {
                 info = m_adac.getDeviceInfo(i); 
-                cout << "Audio device found = " << info.name << endl;  
+                if(info.probed == false) {
+                    cout << "Audio device " << i << " is busy or unavailable..." << endl;
+                }
+                else {
+                    cout << "Audio device found = " << info.name << endl;  
+                }
             }
 
             //RtAudio::DeviceInfo info;
