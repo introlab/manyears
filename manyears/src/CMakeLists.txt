@@ -11,7 +11,6 @@ SET(manyears_SRCS
    EqualGains.cc
    SourceTrack.cc
    SeparGSS.cc
-   SaveWav.cc
    SaveWavWin32.cc
    SaveRawAudio.cc
    RtAudio.cpp
@@ -58,8 +57,6 @@ INCLUDE_DIRECTORIES(${FLOWDESIGNER_INCLUDE_DIR}
 IF(WIN32)
 	ADD_DEFINITIONS(-D__WINDOWS_ASIO__)
 	INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES}     	
-		${LIBXML2_INCLUDE} 
-       	${QT_INCLUDE_DIR}
 		asio/
 	)
 
@@ -71,6 +68,12 @@ IF(WIN32)
   	)
 
 ENDIF(WIN32)
+
+IF(NOT WIN32)
+	SET(manyears_SRCS ${manyears_SRCS}
+  			SaveWav.cc
+  	)
+ENDIF(NOT WIN32)
 
 IF(APPLE)
 	ADD_DEFINITIONS(-D__MACOSX_CORE__ -DMAC)
@@ -95,7 +98,7 @@ add_library(libmanyears-dynamic SHARED ${manyears_SRCS})
 set_target_properties(libmanyears-dynamic PROPERTIES OUTPUT_NAME manyears.tlb)
 
 IF(WIN32)
-	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} ${QT_QTNETWORK_LIBRARY} ${QT_QTCORE_LIBRARY} -lole32  -LC:/Dev-Cpp/lib -lfftw3 -lm )
+	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_LIB_DIR} -llibflow ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} -lole32  ${FFTW3_LIBRARY} -lm )
 ENDIF(WIN32)
 
 IF(APPLE)

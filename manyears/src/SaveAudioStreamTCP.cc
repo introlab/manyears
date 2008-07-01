@@ -52,6 +52,8 @@ private:
     static const int TIMEOUT = 5000;
     QTcpSocket* m_socket;
     bool m_initialized;
+	string m_host; 
+	int m_port;
 
     // Thread stuff
     static const int THREAD_IDLE     = 0;
@@ -61,46 +63,45 @@ private:
     QSemaphore* m_frameMutex;
     QSemaphore* m_frameReadySem;
     QSemaphore* m_waitUntilFinishedSem;
+	QSemaphore* m_initSem;
 
     int m_threadState;
     
 public:
-    StreamWriter() : m_initialized(false), m_threadState(THREAD_IDLE), m_socket(0)
+    StreamWriter(string host, int port) : m_initialized(false), m_threadState(THREAD_IDLE), m_socket(0), m_host(host), m_port(port)
     {
         m_frameReadySem = new QSemaphore(0);
         m_frameMutex = new QSemaphore(1);
         m_waitUntilFinishedSem = new QSemaphore(0);
+		m_initSem = new QSemaphore(0);
     }
 
     ~StreamWriter()
     {
         if(m_frameReadySem) {
             delete m_frameReadySem;
+			m_frameReadySem = 0;
         }
         if(m_frameMutex) {
             delete m_frameMutex;
+			m_frameMutex = 0;
         }
         if(m_socket) {
             delete m_socket;
+			m_socket = 0;
+        }
+		if(m_initSem) {
+            delete m_initSem;
+			m_initSem = 0;
         }
     }
 
-    bool init(string host, int port)
-    {
-        if(m_initialized) {
-            return true;
-        }
-        m_socket = new QTcpSocket();
-        m_socket->connectToHost(QString(host.c_str()), port);
-
-        if (!m_socket->waitForConnected(TIMEOUT)) {
-            delete m_socket;
-            m_socket = 0;
-            return false;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
-        }
-        m_initialized = true;
-        return true;
-    }
+	bool isInitialized()
+	{
+		m_initSem->acquire(); // Wait for thread initialization
+		m_initSem->release(); // Release it for future call
+		return m_initialized;
+	}
 
     void addFrame(const Vector<float> &inFrame, const int id)
     {
@@ -118,45 +119,68 @@ public:
     {
         m_threadState = THREAD_STOPPING;
         m_frameReadySem->release();
-
+		
         m_waitUntilFinishedSem->acquire();
     }
 
 protected:  
     virtual void run()
     {
-        if(!m_initialized) {
-            std::cerr << "SaveAudioStream : StreamWriter can't start, it must be initialized first." << std::endl;
-            return;
-        }
+		if(init()) {
+	        std::vector< Vector<float> > framesBuffer;
+	        std::vector<int> framesIDBuffer;
+	        m_threadState = THREAD_RUNNING;
+	        while(m_threadState == THREAD_RUNNING) {
+	            m_frameReadySem->acquire(); // Wait for a frame
+	            
+				// If we are still running
+				if(m_threadState == THREAD_RUNNING) {
+		            m_frameMutex->acquire();
+		            {
+		                framesBuffer = m_framesToWrite;
+		                framesIDBuffer = m_framesID;
+		                m_framesToWrite.clear();
+		                m_framesID.clear();
+		            }
+		            m_frameMutex->release();
 
-        std::vector< Vector<float> > framesBuffer;
-        std::vector<int> framesIDBuffer;
-        m_threadState = THREAD_RUNNING;
-        while(m_threadState == THREAD_RUNNING) {
-            m_frameReadySem->acquire();
-            
-            m_frameMutex->acquire();
-            {
-                framesBuffer = m_framesToWrite;
-                framesIDBuffer = m_framesID;
-                m_framesToWrite.clear();
-                m_framesID.clear();
-            }
-            m_frameMutex->release();
+		            for(int i=0; i<framesBuffer.size() && i<framesIDBuffer.size(); i++) {
+		                writeFrame(framesBuffer[i], framesIDBuffer[i]);
+		            }
 
-            for(int i=0; i<framesBuffer.size() && i<framesIDBuffer.size(); i++) {
-                writeFrame(framesBuffer[i], framesIDBuffer[i]);
-            }
-
-            framesBuffer.clear();  
-            framesIDBuffer.clear();
-        }
+		            framesBuffer.clear();  
+		            framesIDBuffer.clear();
+				}
+	        }
+		}
+		else {
+			std::cerr << "SaveAudioStream : StreamWriter -> Initialization failed..." << std::endl;
+		}
 
         m_waitUntilFinishedSem->release();
     }
 
 private:
+	bool init()
+    {
+        if(m_initialized) {
+            return true;
+        }
+        m_socket = new QTcpSocket();
+        m_socket->connectToHost(QString(m_host.c_str()), m_port);
+
+        if (!m_socket->waitForConnected(TIMEOUT)) {
+            delete m_socket;
+            m_socket = 0;
+            m_initialized = false;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
+        }
+		else {
+			m_initialized = true;
+		}
+		m_initSem->release(); // Initialization finished
+        return m_initialized;
+    }
+	
     void writeFrame(const Vector<float> &frame, const int id)
     {
         short buff[frame.size()];
@@ -181,9 +205,9 @@ private:
         int result = out->write((const char *)buff, sizeof(short)*nb_samples);
         
         if(!out->waitForBytesWritten(10))
-         {            
-            cerr << "SaveAudioStreamTCP : Error to write bytes"<< endl;
-         }
+        {            
+			cerr << "SaveAudioStreamTCP:StreamWriter : Error to write bytes"<< endl;
+        }
     }
 };
 
@@ -346,12 +370,17 @@ public:
         }//WHILE ALL SOURCES 
 
 
-        //REMOVE ALL PENDING STREAM
-        for(map<int, int >::iterator ite = m_sourceMap.begin(); ite != m_sourceMap.end(); ite++) {
+		//REMOVE ALL PENDING STREAM
+		map<int, int >::iterator ite = m_sourceMap.begin();
+        while(ite != m_sourceMap.end()) {
             if (count > m_accumulatorLastCount[ite->first] + 30) {
                 removeStream(ite->first);
-                m_accumulatorLastCount.erase(ite->first); 
+                m_accumulatorLastCount.erase(ite->first);
+				ite = m_sourceMap.begin();
             }
+			else {
+				ite++;
+			}
         }
 
         //=================================
@@ -442,11 +471,10 @@ private:
 
     StreamWriter* createStream(string host, int port)
     {
-        StreamWriter* stream = new StreamWriter();
-        if(stream->init(host, port)) {
-            stream->start();
-        }
-        else {
+        StreamWriter* stream = new StreamWriter(host, port);
+		stream->start();
+        if(!stream->isInitialized()) {
+			stream->killSafe();
             delete stream;
             stream = 0;
         }      
@@ -454,7 +482,7 @@ private:
     }
 
     void removeStream(int sourceId)
-    {
+    {	
         StreamWriter* stream = m_server[m_sourceMap[sourceId]];
         if(stream) {   
             stream->killSafe(); 
