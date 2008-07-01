@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QTcpSocket>
 #include <QIODevice>
 #include <QString>
+#include <QThread>
+#include <QSemaphore>
 
 
 //16KHz downsampling
@@ -39,6 +41,151 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 //#define FRAMERATE_DIVISOR 6 
 
 using namespace FD;
+
+class StreamWriter : public QThread {
+private:
+    std::vector< Vector<float> > m_framesToWrite;
+    std::vector<int> m_framesID;
+    map<int, int> m_start_pos;
+
+    // Socket stuff
+    static const int TIMEOUT = 5000;
+    QTcpSocket* m_socket;
+    bool m_initialized;
+
+    // Thread stuff
+    static const int THREAD_IDLE     = 0;
+    static const int THREAD_RUNNING  = 1;
+    static const int THREAD_STOPPING = 2;
+
+    QSemaphore* m_frameMutex;
+    QSemaphore* m_frameReadySem;
+    QSemaphore* m_waitUntilFinishedSem;
+
+    int m_threadState;
+    
+public:
+    StreamWriter() : m_initialized(false), m_threadState(THREAD_IDLE), m_socket(0)
+    {
+        m_frameReadySem = new QSemaphore(0);
+        m_frameMutex = new QSemaphore(1);
+        m_waitUntilFinishedSem = new QSemaphore(0);
+    }
+
+    ~StreamWriter()
+    {
+        if(m_frameReadySem) {
+            delete m_frameReadySem;
+        }
+        if(m_frameMutex) {
+            delete m_frameMutex;
+        }
+        if(m_socket) {
+            delete m_socket;
+        }
+    }
+
+    bool init(string host, int port)
+    {
+        if(m_initialized) {
+            return true;
+        }
+        m_socket = new QTcpSocket();
+        m_socket->connectToHost(QString(host.c_str()), port);
+
+        if (!m_socket->waitForConnected(TIMEOUT)) {
+            delete m_socket;
+            m_socket = 0;
+            return false;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
+        }
+        m_initialized = true;
+        return true;
+    }
+
+    void addFrame(const Vector<float> &inFrame, const int id)
+    {
+        m_frameMutex->acquire();
+        {
+            m_framesToWrite.push_back(inFrame);
+            m_framesID.push_back(id);
+        }
+        m_frameMutex->release();
+
+        m_frameReadySem->release(); // Frame added !
+    }
+
+    void killSafe()
+    {
+        m_threadState = THREAD_STOPPING;
+        m_frameReadySem->release();
+
+        m_waitUntilFinishedSem->acquire();
+    }
+
+protected:  
+    virtual void run()
+    {
+        if(!m_initialized) {
+            std::cerr << "SaveAudioStream : StreamWriter can't start, it must be initialized first." << std::endl;
+            return;
+        }
+
+        std::vector< Vector<float> > framesBuffer;
+        std::vector<int> framesIDBuffer;
+        m_threadState = THREAD_RUNNING;
+        while(m_threadState == THREAD_RUNNING) {
+            m_frameReadySem->acquire();
+            
+            m_frameMutex->acquire();
+            {
+                framesBuffer = m_framesToWrite;
+                framesIDBuffer = m_framesID;
+                m_framesToWrite.clear();
+                m_framesID.clear();
+            }
+            m_frameMutex->release();
+
+            for(int i=0; i<framesBuffer.size() && i<framesIDBuffer.size(); i++) {
+                writeFrame(framesBuffer[i], framesIDBuffer[i]);
+            }
+
+            framesBuffer.clear();  
+            framesIDBuffer.clear();
+        }
+
+        m_waitUntilFinishedSem->release();
+    }
+
+private:
+    void writeFrame(const Vector<float> &frame, const int id)
+    {
+        short buff[frame.size()];
+        int i, k;
+        QIODevice* out = (QIODevice*)m_socket;
+
+        //The 3 is the decimation for 16kHz
+        //6 is for 8kHz
+        for (k=0,i=m_start_pos[id];i<frame.size();i+=FRAMERATE_DIVISOR)
+        {
+            float tmp = 3 * frame[i];
+            if (tmp > 32767)
+               tmp = 32767;
+            else if (tmp < -32767)
+               tmp = -32767;
+            buff[k++] = short(.5+floor(tmp)); 
+        }
+
+        m_start_pos[id] = i-frame.size();
+        int nb_samples = k;
+    
+        int result = out->write((const char *)buff, sizeof(short)*nb_samples);
+        
+        if(!out->waitForBytesWritten(10))
+         {            
+            cerr << "SaveAudioStreamTCP : Error to write bytes"<< endl;
+         }
+    }
+};
 
 class SaveAudioStreamTCP;
 DECLARE_NODE(SaveAudioStreamTCP)
@@ -115,16 +262,17 @@ private:
     int srcPosID;
     int outputSourcesID;
     int outputSrcPosID;
-    
-    string m_hosts[4];
-    int m_ports[4];
-    QIODevice* m_server[4];       //numServer -> stream
-    map<int, int> m_sourceMap;  // id -> numServer
+ 
+    static const int DEFAULT_STREAM_NUMBER = 4; // It is not supported over 4
 
-    map<int, int> m_start_pos;    
-    map<int, int> m_accumulatorLastCount;
+    string m_hosts[DEFAULT_STREAM_NUMBER];
+    int m_ports[DEFAULT_STREAM_NUMBER];
 
-    static const int TIMEOUT = 5000;
+    StreamWriter* m_server[DEFAULT_STREAM_NUMBER]; // numServer -> stream
+    map<int, int> m_sourceMap;                  // id -> numServer
+  
+    map<int, int> m_accumulatorLastCount;       // id -> count
+
     std::vector<int> m_ignoreServerList;
     
 public:
@@ -147,14 +295,14 @@ public:
         m_ports[2] = dereference_cast<int> (parameters.get("PORT2"));
         m_ports[3] = dereference_cast<int> (parameters.get("PORT3"));
 
-        for(int i=0; i<4; i++) {
+        for(int i=0; i<DEFAULT_STREAM_NUMBER; i++) {
             m_server[i] = 0;
         }  
     }
     
     ~SaveAudioStreamTCP()
     {
-        for(int i=0; i<4; i++) {
+        for(int i=0; i<DEFAULT_STREAM_NUMBER; i++) {
             if(m_server[i]) {
                 delete m_server[i];
                 m_server[i] = 0;
@@ -183,10 +331,10 @@ public:
         while (it != src.end())
         {
             int id = it->first;   
-            
-            QIODevice* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
+
+            StreamWriter* outStream = getStream(id); // get stream, if no one exist for this id, one will be created
             if(outStream) {
-                writeFrames(outStream, it->second, id);
+                outStream->addFrame(object_cast<Vector<float> >(it->second), id);
             }
             else {
                 //cerr << "SaveAudioStreamTCP : stream is null, id=" << id << endl;
@@ -234,39 +382,11 @@ public:
     }
 
 private:
-    void writeFrames(QIODevice *out, const ObjectRef &inFrame, int id)
-    {
-        Vector<float> &frame = object_cast<Vector<float> >(inFrame);
-        short buff[frame.size()];
-        int i, k;
-
-        //The 3 is the decimation for 16kHz
-        //6 is for 8kHz
-        for (k=0,i=m_start_pos[id];i<frame.size();i+=FRAMERATE_DIVISOR)
-        {
-            float tmp = 3 * frame[i];
-            if (tmp > 32767)
-               tmp = 32767;
-            else if (tmp < -32767)
-               tmp = -32767;
-            buff[k++] = short(.5+floor(tmp)); 
-        }
-
-        m_start_pos[id] = i-frame.size();
-        int nb_samples = k;
-        int result = out->write((const char *)buff, sizeof(short)*nb_samples);
-        
-        if(!out->waitForBytesWritten(10))
-         {            
-            cerr << "SaveAudioStreamTCP : Error to write bytes"<< endl;
-         }
-    }
-    
-    QIODevice* getStream(int sourceId)
+    StreamWriter* getStream(int sourceId)
     {
         // find stream mapped to this source
-        // or create a new one if enough exist 
-        QIODevice* out = 0;
+        // or create a new one if enough server exist 
+        StreamWriter* out = 0;
         map<int, int >::iterator it = m_sourceMap.find(sourceId);
         if(it != m_sourceMap.end()) {
             out = m_server[it->second];
@@ -306,7 +426,7 @@ private:
         bool ignore;
         int i;
         size_t j;
-        for(i=0; i<4; i++) {
+        for(i=0; i<DEFAULT_STREAM_NUMBER; i++) {
             ignore = false;
             for(j=0; j<ignoreServerList.size(); j++) {
                 if(ignoreServerList[j] == i) {
@@ -320,22 +440,24 @@ private:
         return -1;            
     }
 
-    QIODevice* createStream(string host, int port)
+    StreamWriter* createStream(string host, int port)
     {
-        QTcpSocket* socket = new QTcpSocket();
-        socket->connectToHost(QString(host.c_str()), port);
-
-        if (!socket->waitForConnected(TIMEOUT)) {
-            delete socket;
-            return 0;//throw new NodeException(this, string("Can't connection with host: ") + host, __FILE__, __LINE__);
+        StreamWriter* stream = new StreamWriter();
+        if(stream->init(host, port)) {
+            stream->start();
         }
-        return socket;
+        else {
+            delete stream;
+            stream = 0;
+        }      
+        return stream;
     }
 
     void removeStream(int sourceId)
     {
-        QIODevice* stream = m_server[m_sourceMap[sourceId]];
-        if(stream) {    
+        StreamWriter* stream = m_server[m_sourceMap[sourceId]];
+        if(stream) {   
+            stream->killSafe(); 
             delete stream;
             m_server[m_sourceMap[sourceId]] = 0;
         }
