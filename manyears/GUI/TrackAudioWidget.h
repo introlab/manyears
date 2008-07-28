@@ -62,6 +62,7 @@ protected:
     QLabel*      sourceTheta[4];
     QLabel*      sourcePhi[4];
     QLabel*      sourceStrength[4];
+    QLabel*      sourceDistance[4];
     QButtonGroup* buttonGroup;
     ImageView*    imageView;
     QTimer*       timer;

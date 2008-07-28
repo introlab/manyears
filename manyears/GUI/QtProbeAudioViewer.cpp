@@ -10,6 +10,9 @@
 
 using namespace FD;
 
+DECLARE_PROBE(QtProbeAudioViewer)
+DECLARE_PROBE_ALLOWED_DATA_TYPE(QtProbeAudioViewer, "Vector<ObjectRef>")
+
 QtProbeAudioViewer::QtProbeAudioViewer(QWidget *parent, const QString &processHost, const int &processPort, const int &linkId)
 	: QtProbe(parent, processHost, processPort, linkId)
 {

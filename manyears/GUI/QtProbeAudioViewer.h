@@ -6,10 +6,6 @@
 
 using namespace FD;
 
-class QtProbeAudioViewer;
-DECLARE_PROBE(QtProbeAudioViewer)
-DECLARE_PROBE_ALLOWED_DATA_TYPE(QtProbeAudioViewer, "Vector<ObjectRef>")
-
 class QtProbeAudioViewer : public QtProbe
 {
 	Q_OBJECT;

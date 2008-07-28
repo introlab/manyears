@@ -26,14 +26,14 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 class AudioSource {
     public:
 
-        AudioSource(int _id, float _theta, float _phi, float _strength, QGraphicsEllipseItem *_item = NULL)
-            : m_id(_id), m_theta(_theta), m_phi(_phi), m_strength (_strength), m_item(_item)
+        AudioSource(int _id, float _theta, float _phi, float _strength, float _distance, QGraphicsEllipseItem *_item = NULL)
+            : m_id(_id), m_theta(_theta), m_phi(_phi), m_strength (_strength), m_distance(_distance), m_item(_item)
         {
                                           
         }
         
         AudioSource()
-            : m_id(-1), m_theta(0), m_phi(0), m_strength (0), m_item(NULL)
+            : m_id(-1), m_theta(0), m_phi(0), m_strength (0), m_distance(0), m_item(NULL)
         {
 
         }         
@@ -46,6 +46,8 @@ class AudioSource {
                 m_phi = -180.0 * atan2(source->x[2], source->x[1]) / M_PI;
                 m_theta = 180.0 * atan2(source->x[1],source->x[0]) / M_PI;
                 m_strength = source->strength;
+                m_distance = source->x[0] * source->x[0] + source->x[1] * source->x[1] + source->x[2] * source->x[2];
+                m_distance = sqrt(m_distance);
             }
             m_item = NULL;
         }
@@ -56,7 +58,8 @@ class AudioSource {
             m_theta = cpy.m_theta;
             m_phi = cpy.m_phi;
             m_strength = cpy.m_strength;
-            m_item = cpy.m_item;      
+            m_item = cpy.m_item; 
+            m_distance = cpy.m_distance;     
         }
         
         AudioSource& operator= (const AudioSource &cpy)
@@ -66,18 +69,20 @@ class AudioSource {
             m_phi = cpy.m_phi;
             m_strength = cpy.m_strength;
             m_item = cpy.m_item;
+            m_distance = cpy.m_distance;
             return *this;
         }
          
         bool operator== (const AudioSource &cpy)
         {
-         return (cpy.m_id == m_id) && (cpy.m_theta == m_theta) && (cpy.m_phi == m_phi) && (cpy.m_strength == m_strength) && (cpy.m_item == m_item);            
+         return (cpy.m_id == m_id) && (cpy.m_theta == m_theta) && (cpy.m_phi == m_phi) && (cpy.m_strength == m_strength) && (cpy.m_item == m_item) && (cpy.m_distance == m_distance);            
         }
         
         int m_id;
         float m_theta;
         float m_phi;
         float m_strength;
+        float m_distance;
         QGraphicsEllipseItem *m_item;
     
 };

@@ -58,6 +58,7 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     gridLayout->addWidget(new QLabel("Theta",this),0,2,Qt::AlignHCenter);
     gridLayout->addWidget(new QLabel("Phi",this),0,3,Qt::AlignHCenter);
     gridLayout->addWidget(new QLabel("Strength",this),0,4,Qt::AlignHCenter);
+    gridLayout->addWidget(new QLabel("Distance",this),0,5,Qt::AlignHCenter);
 
     for (int i = 0; i < MAX_NUM_SOURCES; i++)
     {
@@ -75,12 +76,16 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
 
         sourceStrength[i] = new QLabel(this);
         gridLayout->addWidget(sourceStrength[i],i+1,4,Qt::AlignHCenter);
+        
+        sourceDistance[i] = new QLabel(this);
+        gridLayout->addWidget(sourceDistance[i],i+1,5,Qt::AlignHCenter);
 
         sourceButtons[i]->hide();
         sourceID[i]->hide();
         sourceTheta[i]->hide();
         sourcePhi[i]->hide();
         sourceStrength[i]->hide();
+        sourceDistance[i]->hide();
     }
    
  
@@ -116,6 +121,7 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 		        float phi = sources[i].m_phi;
 		        float theta = sources[i].m_theta;
 		        float strength = sources[i].m_strength;
+		        float distance = sources[i].m_distance;
 
 		        sourceButtons[i]->show();
 		        sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
@@ -135,6 +141,8 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 		        sourcePhi[i]->show();
 		        sourceStrength[i]->setText(QString::number(strength));
 		        sourceStrength[i]->show();
+		        sourceDistance[i]->setText(QString::number(distance));
+		        sourceDistance[i]->show();
 		    }
 		    else
 		    {
@@ -144,6 +152,7 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 		        sourceTheta[i]->hide();
 		        sourcePhi[i]->hide();
 		        sourceStrength[i]->hide();
+		        sourceDistance[i]->hide();
 		    }
 	    }
 	}
