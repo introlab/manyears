@@ -404,8 +404,9 @@ public:
          float xdist = float(max_ind[2])/(NDIST2-1);
 #endif
          float dist = .3+xdist + 1.7*xdist*xdist;
-         for (int m=0;m<3;m++)
-            pos[m] *= dist;
+         for (int mi=0;mi<3;mi++)
+            pos[mi] *= dist;
+			
          float norm_1 = 1.0f/sqrt(sqr(pos[0])+sqr(pos[1])+sqr(pos[2]));
          /*if (peak == 0 && max_sum>300)
             cout << "pos " << pos[0] << " " << pos[1] << " " << pos[2] << endl;*/
