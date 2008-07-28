@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2005 Jean-Marc Valin
+/* Copyright (C) 2006-2007 Eric Beaudry, Simon Briere, Dominic Letourneau
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,9 +36,46 @@ public:
    bool useAudioStream;
    std::string host;
    int port;
-
-   SourceInfo() : useAudioStream(false), host(""), port(0) 
-   {}
+   
+   SourceInfo()
+   {
+	   memset(delta,0,sizeof(float) * 7);
+	   memset(x,0,sizeof(float) * 3);
+	   strength = 0;
+	   age = 0;
+	   interval = 0;
+	   eval_count = 0;
+	   start_time = 0;
+	   source_id = -1;
+	   remaining = 0;
+	   useAudioStream = false;
+	   host = "";
+	   port = 0;
+   }
+   
+   SourceInfo(const SourceInfo &cpy)
+   {
+	   memcpy(delta,cpy.delta,7*sizeof(float));
+	   memcpy(x,cpy.x,3*sizeof(float));
+	   strength = cpy.strength;
+	   age = cpy.age;
+	   interval = cpy.interval;
+	   eval_count = cpy.eval_count;
+	   start_time = cpy.start_time;
+	   source_id = cpy.source_id;
+	   remaining = cpy.remaining;
+	   useAudioStream = cpy.useAudioStream;
+	   host = cpy.host;
+	   port = cpy.port;
+   }
+   
+   float getX(unsigned int index) const
+   {
+	   if (index < 3)
+		   return x[index];
+	   else
+		   return -1;
+   }
 
    float angle(const float *y) const
    {
@@ -57,9 +94,8 @@ public:
       return FD::ObjectRef(new SourceInfo(*this));
    }
    
-   void readFrom(std::istream &in)
-   {
-   }
+   void readFrom(std::istream &in);
+
    friend std::istream &operator >> (std::istream &in, SourceInfo &cell);
 };
 

@@ -14,32 +14,63 @@ find_package(Qt4 REQUIRED)
 #REQUIRED
 include(${QT_USE_FILE})
 
-SET(AUDIOVIEWER_SRCS 
-   audioview.cpp
-   TrackAudioWidget.cpp
-   ImageView.cpp 
-   FDReader.cpp 
-   SourceInfo.cpp 
+#Sources for the AudioViewer application
+SET(AUDIOVIEWER_SRCS
+   main.cpp
+   FDReader.cpp
 )
 
 SET(AUDIOVIEWER_HEADERS 
+   FDReader.h
+)
+
+#Shared sources between AudioViewer application and Probes used in FlowDesigner
+SET(AUDIOVIEWERSHARED_SRCS 
+   audioview.cpp
+   TrackAudioWidget.cpp
+   ImageView.cpp
+)
+
+SET(AUDIOVIEWERSHARED_HEADERS 
    audioview.h
    TrackAudioWidget.h 
    ImageView.h
-   FDReader.h
+)
+
+#Sources for Probes used in FlowDesigner
+SET(AUDIOVIEWERPROBES_SRCS 
+   QtProbeAudioViewer.cpp
+)
+
+SET(AUDIOVIEWERPROBES_HEADERS 
+   QtProbeAudioViewer.h
 )
 
 #This will generate moc_* for Qt
 QT4_WRAP_CPP(AUDIOVIEWER_MOC_SRCS ${AUDIOVIEWER_HEADERS})
+#This will generate moc_* for Qt
+QT4_WRAP_CPP(AUDIOVIEWERSHARED_MOC_SRCS ${AUDIOVIEWERSHARED_HEADERS})
+#This will generate moc_* for Qt
+QT4_WRAP_CPP(AUDIOVIEWERPROBES_MOC_SRCS ${AUDIOVIEWERPROBES_HEADERS})
+
+#Qtflow includes
+SET (FLOWDESIGNER_QTFLOW_INCLUDE_DIR "${FLOWDESIGNER_INCLUDE_DIR}/qtflow/")
 
 #include files
-INCLUDE_DIRECTORIES(./ ${FLOWDESIGNER_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR}  )
+INCLUDE_DIRECTORIES(./ ../src ${FLOWDESIGNER_INCLUDE_DIR} ${QT_INCLUDE_DIR} ${LIBXML2_INCLUDE_DIR} ${FLOWDESIGNER_QTFLOW_INCLUDE_DIR} )
 
 # create an executable file named "AUDIOVIEWER" from the source files 
-add_executable(audioviewer ${AUDIOVIEWER_SRCS} main.cpp ${AUDIOVIEWER_MOC_SRCS})
+add_executable(audioviewer ${AUDIOVIEWER_SRCS} ${AUDIOVIEWER_MOC_SRCS} ${AUDIOVIEWERSHARED_SRCS} ${AUDIOVIEWERSHARED_MOC_SRCS})
 
 # Linking with libflow and Qt libraries
-target_link_libraries(audioviewer  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES})
+target_link_libraries(audioviewer  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
 
 #install application
 install(TARGETS audioviewer DESTINATION bin)
+
+#Create a library, used for probes
+ADD_DEFINITIONS(-DINSTALL_PREFIX=\"${FD_PREFIX}\")
+add_library(libmanyears-probe-dynamic SHARED ${AUDIOVIEWERSHARED_SRCS} ${AUDIOVIEWERSHARED_MOC_SRCS} ${AUDIOVIEWERPROBES_SRCS} ${AUDIOVIEWERPROBES_MOC_SRCS})
+set_target_properties(libmanyears-probe-dynamic PROPERTIES OUTPUT_NAME manyears.probe)
+target_link_libraries(libmanyears-probe-dynamic ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow -lqtflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
+install(TARGETS libmanyears-probe-dynamic DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib)

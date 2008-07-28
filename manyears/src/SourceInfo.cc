@@ -1,4 +1,4 @@
-/* Copyright (C) 2002-2004 Jean-Marc Valin
+/* Copyright (C) 2006-2007 Jean-Marc Valin, Eric Beaudry, Simon Briere, Dominic Letourneau
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -14,14 +14,18 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
-
 #include "SourceInfo.h"
 #include "Vector.h"
+#include "ObjectParser.h"
+#include <string>
+#include <iostream>
+
 #include "conversion.h"
 #include "Exception.h"
 #include "vmethod.h"
 #include <sstream>
 
+using namespace std;
 using namespace FD;
 
 //conversion declaration
@@ -65,7 +69,6 @@ ObjectRef VectorObjectRefToString(ObjectRef in)
     
 }
 
-
 void SourceInfo::printOn(std::ostream &out) const
 {
    out << "<SourceInfo " << std::endl;
@@ -78,4 +81,50 @@ void SourceInfo::printOn(std::ostream &out) const
       out << "<port " << port << " >" << std::endl;
    }
    out << ">" << std::endl;
+}
+
+void SourceInfo::readFrom(std::istream &in)
+{
+string tag;
+  
+  while (1) {
+    char ch;
+    in >> ch;
+    if (ch == '>') break;
+    
+    else if (ch != '<') {
+      throw new ParsingException ("SourceInfo::readFrom : Parse error: '<' expected");
+    }
+    in >> tag;
+    
+    if (tag == "x") {
+      in >> x[0] >> x[1] >> x[2];      
+    }
+    else if (tag == "strength") {
+      in >> strength;
+    }
+    else if (tag == "age") {
+      in >> age;
+    }
+    else if (tag == "source_id") {
+      in >> source_id;
+    }
+    else if (tag == "host") {
+      useAudioStream = true;
+      in >> host;
+    }
+    else if (tag == "port") {
+      useAudioStream = true;
+      in >> port;
+    }
+    else {
+      throw new ParsingException ("SourceInfo::readFrom : Unknown argument: " + tag);
+    }
+    
+    if (!in) throw new ParsingException ("SourceInfo::readFrom : Parse error trying to build " + tag);
+    
+    in >> tag;
+    if (tag != ">") 
+      throw new ParsingException ("SourceInfo::readFrom : Parse error: '>' expected ");
+  }
 }

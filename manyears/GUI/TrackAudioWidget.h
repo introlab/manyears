@@ -20,8 +20,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include "audioview.h"
 #include "ImageView.h"
-#include "FDReader.h"
-#include <QMainWindow>
+#include "Vector.h"
+#include <QWidget>
 #include <QLayout>
 #include <QButtonGroup>
 #include <QPushButton>
@@ -32,12 +32,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLabel>
 
 
-class TrackAudioWidget : public QMainWindow
+class TrackAudioWidget : public QWidget
 {
     Q_OBJECT;
 
 public:
     TrackAudioWidget(QWidget* parent=NULL);
+    ~TrackAudioWidget();
     virtual void setTime (unsigned long long time);
 
     bool isSourceActive(int id);
@@ -64,7 +65,6 @@ protected:
     QButtonGroup* buttonGroup;
     ImageView*    imageView;
     QTimer*       timer;
-    FDReader* 	  reader;
 };
 
 #endif

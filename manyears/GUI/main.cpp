@@ -16,8 +16,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
 
 #include "TrackAudioWidget.h"
+#include "FDReader.h"
 #include <iostream>
 #include <QApplication>
+#include <QMainWindow>
 #include "UINodeRepository.h"
 #include "ObjectRef.h"
 #include "path.h"
@@ -41,10 +43,17 @@ int main( int argc, char **argv)
     //QApplication::setColorSpec( QApplication::CustomColor );
     QApplication app( argc, argv );
 
-    TrackAudioWidget audioview(NULL);
+	QMainWindow mainWindow;
+	FDReader fdReader;
+	TrackAudioWidget audioview;
+	
+	//FlowDesigner SourceInfo reader
+    QObject::connect(&fdReader, SIGNAL(putData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)), &audioview, SLOT(getData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)));
+	
+	mainWindow.setCentralWidget(&audioview);
 
-    app.setActiveWindow( &audioview );
-    audioview.resize(1024, 768);
-    audioview.show();
+    app.setActiveWindow(&mainWindow);
+    mainWindow.resize(1024, 768);
+    mainWindow.show();
     return app.exec();
 }

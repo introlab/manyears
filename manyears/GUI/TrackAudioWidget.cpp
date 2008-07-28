@@ -32,15 +32,11 @@ using namespace std;
 
 // ---
 TrackAudioWidget::TrackAudioWidget(QWidget* parent)
-        : QMainWindow(parent), maxTimeSetted(0), audioView(NULL)
+        : QWidget(parent), maxTimeSetted(0), audioView(NULL)
 {
-    //Create a dummy widget
-    QWidget *widget = new QWidget(this);
-    setCentralWidget(widget);
-
     //Add the layout	    
-    Form1Layout = new QVBoxLayout(widget);
-    widget->setLayout(Form1Layout);
+    Form1Layout = new QVBoxLayout(this);
+    this->setLayout(Form1Layout);
 	
     audioView = new AudioView(this);
     Form1Layout->addWidget(audioView);
@@ -91,10 +87,6 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     bottomLayout->addLayout(gridLayout);
     Form1Layout->activate();
     
-    //FlowDesigner SourceInfo reader
-    reader = new FDReader();
-    connect(reader, SIGNAL(putData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)), this, SLOT(getData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)));
-    
     //Selection will update buttons...
     connect(audioView, SIGNAL(timeSelected(unsigned long long)), this, SLOT(selectedTime(unsigned long long)));
     
@@ -102,6 +94,10 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     timer = new QTimer(this);      
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));  
     timer->start(500);
+}
+
+TrackAudioWidget::~TrackAudioWidget()
+{
 }
 
 void TrackAudioWidget::selectedTime(unsigned long long time)
