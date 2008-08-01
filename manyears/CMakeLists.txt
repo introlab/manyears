@@ -3,7 +3,7 @@ PROJECT (ManyEars)
 #Look for minimum cmake version
 cmake_minimum_required(VERSION 2.6.0)
 
-SET(CMAKE_BUILD_TYPE Release )
+SET(CMAKE_BUILD_TYPE Debug )
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #Let's find FlowDesigner
@@ -18,6 +18,23 @@ SET (FLOWDESIGNER_BIN_DIR "${FD_PREFIX}/bin/")
 SET (FLOWDESIGNER_INCLUDE_DIR "${FD_PREFIX}/include/flowdesigner/")
 SET (FLOWDESIGNER_LIB_DIR "${FD_PREFIX}/lib/")
 SET (FLOWDESIGNER_TOOLBOX_DIR "${FD_PREFIX}/lib/flowdesigner/toolbox/")
+
+
+#SET(PEDANTIC TRUE)
+
+
+# skip the full RPATH for the build tree
+#SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+# when building, use the install RPATH already
+# (so it doesn't need to relink when installing)
+#SET(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE) 
+
+# add the automatically determined parts of the RPATH
+# which point to directories outside the build tree to the install RPATH
+#SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH FALSE)
+
+
 
 #Add the macros directory for cmake scripts
 SET(CMAKE_MODULE_PATH "${ManyEars_SOURCE_DIR}/macros")

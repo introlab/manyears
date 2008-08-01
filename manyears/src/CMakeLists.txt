@@ -102,7 +102,9 @@ IF(WIN32)
 ENDIF(WIN32)
 
 IF(APPLE)
-	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
+	set_target_properties(libmanyears-dynamic PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox"
+	BUILD_WITH_INSTALL_RPATH ON
+	INSTALL_NAME_DIR ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib)
 	target_link_libraries(libmanyears-dynamic -L${FLOWDESIGNER_BIN_DIR} -L${FLOWDESIGNER_LIB_DIR} ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${FFTW3_LIBRARY} -lflow -lm )
 ENDIF(APPLE)
     
