@@ -55,7 +55,7 @@ public class Sphinx4TcpServer {
 				initialized = true;
 			}
 			catch(IOException e) {
-				System.out.println(e);
+				System.err.println(e);
 			}	
 		}
 		return initialized;
@@ -74,7 +74,7 @@ public class Sphinx4TcpServer {
 			}
 		}
 		catch (IOException e) {
-			System.out.println(e);
+			System.err.println(e);
 		}
 
 	}
@@ -90,7 +90,7 @@ public class Sphinx4TcpServer {
 				mySocket.close(); // Make sure that previous connection is terminated
 			}
 			
-			System.out.println("Listening on port " + portNumber);
+			System.err.println("Listening on port " + portNumber);
 			mySocket = myServerSocket.accept();
 			
 			//cant_takeit.wav 8 bits
@@ -115,7 +115,7 @@ public class Sphinx4TcpServer {
 	        reader.setInputStream(audioInputStream, "tcp-stream");
 		}
 		catch(IOException e) {
-			System.out.println(e);
+			System.err.println(e);
 		}
 	}
 		
@@ -128,7 +128,7 @@ public class Sphinx4TcpServer {
 		// TODO args set port
 		try {
             URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
-            System.out.println("Loading Recognizer...\n");
+            System.err.println("Loading Recognizer...\n");
             
             if(configURL==null) {
             	System.err.println("Sphinx4 configuration file not found.");
@@ -171,7 +171,7 @@ public class Sphinx4TcpServer {
             
 		    initConnection(reader);
 		    
-		    System.out.println("Entering loop...");
+		    System.err.println("Entering loop...");
 		    boolean done = false;
 		    while(true) {
 	            /* decode the audio file */
@@ -179,10 +179,10 @@ public class Sphinx4TcpServer {
 	            
 	            /* print out the results */
 	            if (result != null) {
-	                System.out.println("\nRESULT: " + 
+	                System.out.println("RESULT: " + 
 	                                   result.getBestFinalResultNoFiller() + "\n");
 	            } else {
-	                System.out.println("Result: null\n");
+	                System.out.println("RESULT: null\n");
 	                initConnection(reader);
 	            }
 		    }
@@ -214,7 +214,7 @@ public class Sphinx4TcpServer {
     			if(args[i].compareTo("-wav") == 0 && i+1 < args.length) {
     				audioFileURL = Sphinx4TcpServer.class.getResource(args[i+1]);
     				if(audioFileURL == null) {
-    					System.out.println("The file " + args[i+1] + " is not a valid wav.");
+    					System.err.println("The file " + args[i+1] + " is not a valid wav.");
     					return;
     				}
     				break;
@@ -228,7 +228,7 @@ public class Sphinx4TcpServer {
 
             URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
 
-            System.out.println("Loading Recognizer...\n");
+            System.err.println("Loading Recognizer...\n");
 
             ConfigurationManager cm = new ConfigurationManager(configURL);
 
@@ -237,8 +237,8 @@ public class Sphinx4TcpServer {
             /* allocate the resource necessary for the recognizer */
             recognizer.allocate();
 
-            System.out.println("Decoding " + audioFileURL.getFile());
-            System.out.println(AudioSystem.getAudioFileFormat(audioFileURL));
+            System.err.println("Decoding " + audioFileURL.getFile());
+            System.err.println(AudioSystem.getAudioFileFormat(audioFileURL));
 
             StreamDataSource reader = (StreamDataSource) cm.lookup("streamDataSource");
             AudioInputStream ais 
