@@ -31,9 +31,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 using namespace std;
 
 // ---
-TrackAudioWidget::TrackAudioWidget(QWidget* parent)
-        : QWidget(parent), maxTimeSetted(0), audioView(NULL)
+TrackAudioWidget::TrackAudioWidget(QWidget* parent, bool _startSphinxServers, int basePort)
+        : QWidget(parent), maxTimeSetted(0), audioView(NULL), m_sphinxBasePort(basePort)
 {
+	memset(m_sphinxProcess,0,4 * sizeof(QProcess*));
+	
     //Add the layout	    
     Form1Layout = new QVBoxLayout(this);
     this->setLayout(Form1Layout);
@@ -44,8 +46,8 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     bottomLayout = new QHBoxLayout(NULL);
     Form1Layout->addLayout(bottomLayout);
 
-    imageView = new ImageView(this);
-    bottomLayout->addWidget(imageView);
+    //imageView = new ImageView(this);
+    //bottomLayout->addWidget(imageView);
 
     gridLayout = new QGridLayout(NULL);
 
@@ -59,6 +61,8 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     gridLayout->addWidget(new QLabel("Phi",this),0,3,Qt::AlignHCenter);
     gridLayout->addWidget(new QLabel("Strength",this),0,4,Qt::AlignHCenter);
     gridLayout->addWidget(new QLabel("Distance",this),0,5,Qt::AlignHCenter);
+    
+    
 
     for (int i = 0; i < MAX_NUM_SOURCES; i++)
     {
@@ -99,10 +103,147 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent)
     timer = new QTimer(this);      
     connect(timer,SIGNAL(timeout()),this,SLOT(timeout()));  
     timer->start(500);
+    
+    
+    if (_startSphinxServers)
+    {
+    	startSphinxServers(m_sphinxBasePort);
+    }
+    
+}
+
+void TrackAudioWidget::startSphinxServers(int basePort)
+{
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		m_sphinxProcess[i] = new QProcess(this);
+		
+		QString command = "java Sphinx4TcpServer";
+		
+		QStringList args;
+		
+		args.append("-p");
+		args.append(QString::number(basePort + i));
+		
+		//TODO Set working directory 
+		m_sphinxProcess[i]->setWorkingDirectory("TO BE SET PLEASE");
+		
+		//connect process signals
+		connect(m_sphinxProcess[i],SIGNAL(error(QProcess::ProcessError)),this,SLOT(sphinxProcessError(QProcess::ProcessError)));
+		connect(m_sphinxProcess[i],SIGNAL(started()),this,SLOT(sphinxProcessStarted()));
+		connect(m_sphinxProcess[i],SIGNAL(finished(int,QProcess::ExitStatus)),this,SLOT(sphinxProcessFinished(int,QProcess::ExitStatus)));
+		
+		//StdErr & StdOut redirections
+		connect(m_sphinxProcess[i],SIGNAL(readyReadStandardError()),this,SLOT(sphinxProcessReadStdErr()));
+		connect(m_sphinxProcess[i],SIGNAL(readyReadStandardOutput()),this,SLOT(sphinxProcessReadStdOut()));
+		
+		
+		//start the process
+		m_sphinxProcess[i]->start(command,args);
+	}
 }
 
 TrackAudioWidget::~TrackAudioWidget()
 {
+	
+}
+
+void TrackAudioWidget::sphinxProcessError(QProcess::ProcessError error )
+{
+	switch(error)
+	{
+
+		case QProcess::FailedToStart:
+			cerr<<"Sphinx Process failed to start"<<endl;
+			break;
+			
+		case QProcess::Crashed:
+			cerr<<"Sphinx Process crashed"<<endl;
+			break;
+			
+		case QProcess::Timedout:
+			cerr<<"Sphinx Process timed out"<<endl;
+			break;
+			
+		case QProcess::WriteError:
+			cerr<<"Sphinx Process write error"<<endl;
+			break;
+			
+		case QProcess::ReadError:
+			cerr<<"Sphinx Process read error"<<endl;
+			break;
+			
+		case QProcess::UnknownError:
+			cerr<<"Sphinx Process unknown error"<<endl;
+			break;
+
+	}
+}
+
+void TrackAudioWidget::sphinxProcessStarted()
+{
+	cout<<"Sphinx process started"<<endl;
+	
+}
+
+void TrackAudioWidget::sphinxProcessFinished( int exitCode, QProcess::ExitStatus exitStatus)
+{
+	cout<<"Sphinx process finished with exit code : "<<exitCode<<" and exit status : "<<exitStatus<<endl;
+	
+}
+
+void TrackAudioWidget::sphinxProcessReadStdErr ()
+{
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		QByteArray array = m_sphinxProcess[i]->readAllStandardError ();
+		
+		if (array.size() > 0)
+		{
+			QString errorString(array);
+			cerr<<errorString.toStdString()<<endl;
+		}
+	}
+}
+
+
+void TrackAudioWidget::sphinxProcessReadStdOut()
+{
+	for (unsigned int i = 0; i < 4; i++)
+	{
+		QByteArray array = m_sphinxProcess[i]->readAllStandardOutput ();
+		
+		if (array.size() > 0)
+		{
+			//Got the speech recognizer output
+			//Let's see to which source it belongs
+			std::vector<AudioSource> sources = audioView->getSourcesAtTime(getTime() - (unsigned long long)(1E6));
+			
+			for (unsigned int index = 0; index < sources.size(); index++)
+			{	
+				if((sources[index].m_port - m_sphinxBasePort) == i)
+				{
+					//m_recogString[sources[index].m_id] = QString(array);
+					
+					sources[index].m_item->setToolTip(QString(array));
+					
+					QRectF myRect = sources[index].m_item->rect();
+					myRect.setHeight(myRect.height() * 2);
+					
+					sources[index].m_item->setRect(myRect);
+					
+					cout << "Setting recog for source id : "<<sources[index].m_id<< " = "<<QString(array).toStdString()<<endl;
+				}
+			}
+			
+		}
+	}
+}
+
+
+void TrackAudioWidget::setRecogString(int sourceID, QString recogString)
+{
+	m_recogString[sourceID] = recogString;
 }
 
 void TrackAudioWidget::selectedTime(unsigned long long time)

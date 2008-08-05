@@ -45,7 +45,7 @@ int main( int argc, char **argv)
 
 	QMainWindow mainWindow;
 	FDReader fdReader;
-	TrackAudioWidget audioview;
+	TrackAudioWidget audioview(NULL,true);
 	
 	//FlowDesigner SourceInfo reader
     QObject::connect(&fdReader, SIGNAL(putData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)), &audioview, SLOT(getData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)));

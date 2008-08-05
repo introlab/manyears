@@ -27,13 +27,13 @@ class AudioSource {
     public:
 
         AudioSource(int _id, float _theta, float _phi, float _strength, float _distance, QGraphicsEllipseItem *_item = NULL)
-            : m_id(_id), m_theta(_theta), m_phi(_phi), m_strength (_strength), m_distance(_distance), m_item(_item)
+            : m_id(_id), m_theta(_theta), m_phi(_phi), m_strength (_strength), m_distance(_distance), m_port(-1), m_item(_item)
         {
                                           
         }
         
         AudioSource()
-            : m_id(-1), m_theta(0), m_phi(0), m_strength (0), m_distance(0), m_item(NULL)
+            : m_id(-1), m_theta(0), m_phi(0), m_strength (0), m_distance(0), m_item(NULL), m_port(-1)
         {
 
         }         
@@ -48,6 +48,8 @@ class AudioSource {
                 m_strength = source->strength;
                 m_distance = source->x[0] * source->x[0] + source->x[1] * source->x[1] + source->x[2] * source->x[2];
                 m_distance = sqrt(m_distance);
+                m_host = source->host;
+                m_port = source->port;
             }
             m_item = NULL;
         }
@@ -59,7 +61,9 @@ class AudioSource {
             m_phi = cpy.m_phi;
             m_strength = cpy.m_strength;
             m_item = cpy.m_item; 
-            m_distance = cpy.m_distance;     
+            m_distance = cpy.m_distance; 
+            m_host = cpy.m_host;
+            m_port = cpy.m_port;
         }
         
         AudioSource& operator= (const AudioSource &cpy)
@@ -70,12 +74,14 @@ class AudioSource {
             m_strength = cpy.m_strength;
             m_item = cpy.m_item;
             m_distance = cpy.m_distance;
+            m_host = cpy.m_host;
+            m_port = cpy.m_port;
             return *this;
         }
          
         bool operator== (const AudioSource &cpy)
         {
-         return (cpy.m_id == m_id) && (cpy.m_theta == m_theta) && (cpy.m_phi == m_phi) && (cpy.m_strength == m_strength) && (cpy.m_item == m_item) && (cpy.m_distance == m_distance);            
+        	return (cpy.m_id == m_id) && (cpy.m_theta == m_theta) && (cpy.m_phi == m_phi) && (cpy.m_strength == m_strength) && (cpy.m_item == m_item) && (cpy.m_distance == m_distance);            
         }
         
         int m_id;
@@ -84,6 +90,8 @@ class AudioSource {
         float m_strength;
         float m_distance;
         QGraphicsEllipseItem *m_item;
+        std::string m_host;
+        int m_port;
     
 };
 

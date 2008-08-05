@@ -30,6 +30,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QProcess>
+#include <map>
 
 
 class TrackAudioWidget : public QWidget
@@ -37,7 +39,7 @@ class TrackAudioWidget : public QWidget
     Q_OBJECT;
 
 public:
-    TrackAudioWidget(QWidget* parent=NULL);
+    TrackAudioWidget(QWidget* parent=NULL, bool startSphinxServers = false, int basePort = 7000);
     ~TrackAudioWidget();
     virtual void setTime (unsigned long long time);
 
@@ -48,10 +50,21 @@ public slots:
     void getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources);
     void selectedTime(unsigned long long time);
     void playClicked(int source_id);
-    void timeout();   
+    void timeout();
+    void setRecogString(int sourceID, QString recogString);
 
+protected slots:
+	void sphinxProcessError(QProcess::ProcessError error );
+	void sphinxProcessStarted();
+	void sphinxProcessFinished( int exitCode, QProcess::ExitStatus exitStatus);
+	void sphinxProcessReadStdErr();
+	void sphinxProcessReadStdOut();
+    
 protected:
 
+	void startSphinxServers(int basePort);
+	
+	
     long long maxTimeSetted;  
     AudioView* audioView;
     QVBoxLayout* Form1Layout;
@@ -64,8 +77,11 @@ protected:
     QLabel*      sourceStrength[4];
     QLabel*      sourceDistance[4];
     QButtonGroup* buttonGroup;
-    ImageView*    imageView;
+    //ImageView*    imageView;
     QTimer*       timer;
+    std::map<int,QString> m_recogString;
+    QProcess *m_sphinxProcess[4];
+    int		m_sphinxBasePort;
 };
 
 #endif
