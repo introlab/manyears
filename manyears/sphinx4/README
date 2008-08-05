@@ -1,0 +1,46 @@
+***********
+* INFO
+***********
+Sphinx4TcpServer is a simple Sphinx4 server that 
+receives an audio TCP stream and detects 
+digits (0,1,2,3,4,5,6,7,8,9). You can use 4 instances 
+of this server to receive the separated audio streams 
+from ManyEars. Use "LocalizeSeparAndSaveTCP.n" in the 
+FlowDesigner examples of ManyEars.
+
+You can test the server with a WAV with the "SendWavOverTcp.n" 
+example in the FlowDesigner directory and use the wav 
+"10001-90210-01803.wav" provided.
+
+For an advanced speech detection (detecting more words, 
+sentence...), refer to to Sphinx4 documentation.
+
+***********
+* REQUIREMENTS
+***********
+You must have Sphinx4 libraries (JAR) installed 
+on your computer.
+In your CLASSPATH, add the path of :
+ -sphinx4.jar
+ -TIDIGITS_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar
+
+***********
+* COMPILATION
+***********
+javac SphinxServer.java
+
+***********
+* RUN
+***********
+java SphinxServer
+
+***********
+* USAGE
+***********
+-By default, it listens on the port 7000, to change the port :
+ java SphinxServer -p 7002
+
+-Testing with a wav :
+ java SphinxServer -wav [FileName.wav]
+
+
