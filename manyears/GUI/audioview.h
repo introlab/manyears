@@ -45,7 +45,8 @@ class AudioView : public QGraphicsView {
     
     QColor               getSourceColor(int id);
     void                 addSource(unsigned long long time, const SourceInfo *source);
-    void                 addSource(unsigned long long time, const AudioSource &source);   
+    void                 addSource(unsigned long long time, const AudioSource &source);  
+    void				 addRecog(unsigned long long time, const QString &recog, int procesID);
 
   public slots:
 

@@ -270,6 +270,72 @@ void AudioView::addSource(unsigned long long time, const AudioSource &source)
 	    m_sources[index].back().m_item = my_ellipse;
     }
 }
+
+void AudioView::addRecog(unsigned long long time, const QString &_recog, int port)
+{
+
+   QString recog = _recog;
+   recog.remove("\n");
+	
+   std::vector<AudioSource> sources;    
+   std::map<unsigned long long, std::vector<AudioSource> >::reverse_iterator iter = m_sources.rbegin();
+   
+   
+    //create Item to display
+    float x = (time - minTime) * timeScale;
+    float y = (nbLines*heightLine);
+    QGraphicsRectItem *my_ellipse = NULL;
+    QGraphicsTextItem *myTextItem = NULL;
+
+    /*
+	vector<AudioSource> vect = iter->second;
+	
+	cerr<<"vect size : "<<vect.size()<<endl;
+	for (unsigned int i = 0; i < vect.size(); i++)
+	{
+		cerr<<"comparing port "<<vect[i].m_port<<" with port "<<port<<endl;
+		if (vect[i].m_port == port)
+		{
+			QPointF pos = vect[i].m_item->scenePos();
+			x = pos.x();
+			y = pos.y();
+			cerr << "item ptr "<<vect[i].m_item<<endl;
+			my_ellipse = new QGraphicsEllipseItem(-5,-5,10,10,vect[i].m_item);
+			break;
+		}
+	}
+	*/
+    	
+
+    //my_ellipse = new QGraphicsRectItem(x,((nbLines + 5)*heightLine) + (port - 7000) * 40,10,10,NULL);
+    my_ellipse = new  QGraphicsRectItem(0,0,10,10,NULL);
+    my_ellipse->setPos(QPointF(x,((nbLines + 5)*heightLine) + (port - 7000) * 30));
+    
+    
+    myTextItem = new QGraphicsTextItem(my_ellipse);
+    myTextItem->setPlainText(recog);
+    myTextItem->setPos(0,0);
+     
+    
+    //set the color
+    if (recog.contains("null"))
+    	my_ellipse->setPen(QPen(Qt::red));
+    else
+    	my_ellipse->setPen(QPen(Qt::green));
+    
+    QBrush brush(my_ellipse->pen().color());
+    my_ellipse->setBrush(brush);
+    
+    //set ToolTip
+    my_ellipse->setToolTip(recog);
+    
+    //add item
+    scene()->addItem(my_ellipse);
+    
+    
+    
+    
+}
    
 unsigned long long AudioView::getCurrentTime()
 {

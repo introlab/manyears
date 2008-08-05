@@ -1,9 +1,10 @@
+
 PROJECT (ManyEars)
 
 #Look for minimum cmake version
 cmake_minimum_required(VERSION 2.6.0)
 
-SET(CMAKE_BUILD_TYPE Debug )
+SET(CMAKE_BUILD_TYPE Release )
 SET(CMAKE_VERBOSE_MAKEFILE ON)
 
 #Let's find FlowDesigner

@@ -118,12 +118,12 @@ void TrackAudioWidget::startSphinxServers(int basePort)
 	{
 		m_sphinxProcess[i] = new QProcess(this);
 		
-		QString command = "java Sphinx4TcpServer";
+		QString command = "java";
 		
 		QStringList args;
-		
 		args.append("-classpath");
-		args.append("*.jar");
+		args.append(".:sphinx4.jar:TIDIGITS_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar");
+		args.append("Sphinx4TcpServer");
 		args.append("-p");
 		args.append(QString::number(basePort + i));
 		
@@ -217,8 +217,18 @@ void TrackAudioWidget::sphinxProcessReadStdOut()
 		
 		if (array.size() > 0)
 		{
+			QString recogData(array);
+			
+			if (recogData.contains("RESULT:"))
+			{	
+				audioView->addRecog(getTime(), QString(array), m_sphinxBasePort + i);
+			}
+			
+			cout << "Got recog : "<<QString(array).toStdString()<<endl;
+			
 			//Got the speech recognizer output
 			//Let's see to which source it belongs
+			/*
 			std::vector<AudioSource> sources = audioView->getSourcesAtTime(getTime() - (unsigned long long)(1E6));
 			
 			for (unsigned int index = 0; index < sources.size(); index++)
@@ -237,6 +247,7 @@ void TrackAudioWidget::sphinxProcessReadStdOut()
 					cout << "Setting recog for source id : "<<sources[index].m_id<< " = "<<QString(array).toStdString()<<endl;
 				}
 			}
+			*/
 			
 		}
 	}
