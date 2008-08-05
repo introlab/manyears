@@ -11,6 +11,8 @@ IF(JAVA_COMPILE)
         sphinx4.jar
         tags.jar
         TIDIGITS_8gau_13dCep_16k_40mel_130Hz_6800Hz.jar
+        config.xml
+        digits.gram
     )
 
     install( FILES ${SPHINX4TCPSERVER_FILES} DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/sphinx4 )

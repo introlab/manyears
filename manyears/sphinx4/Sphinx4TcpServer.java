@@ -129,6 +129,11 @@ public class Sphinx4TcpServer {
 		try {
             URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
             System.out.println("Loading Recognizer...\n");
+            
+            if(configURL==null) {
+            	System.err.println("Sphinx4 configuration file not found.");
+            	return;
+            }
 
             ConfigurationManager cm = new ConfigurationManager(configURL);
 
@@ -214,7 +219,12 @@ public class Sphinx4TcpServer {
     				}
     				break;
     			}
-    		}          
+    		}
+            
+            if(audioFileURL==null) {
+            	System.err.println("wav file not found.");
+            	return;
+            }
 
             URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
 
