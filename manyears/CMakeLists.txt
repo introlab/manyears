@@ -19,6 +19,8 @@ SET (FLOWDESIGNER_INCLUDE_DIR "${FD_PREFIX}/include/flowdesigner/")
 SET (FLOWDESIGNER_LIB_DIR "${FD_PREFIX}/lib/")
 SET (FLOWDESIGNER_TOOLBOX_DIR "${FD_PREFIX}/lib/flowdesigner/toolbox/")
 
+ADD_DEFINITIONS(-DSPHINX_INSTALL_DIR=\"${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/sphinx4\")
+
 
 #SET(PEDANTIC TRUE)
 
@@ -40,10 +42,12 @@ SET (FLOWDESIGNER_TOOLBOX_DIR "${FD_PREFIX}/lib/flowdesigner/toolbox/")
 SET(CMAKE_MODULE_PATH "${ManyEars_SOURCE_DIR}/macros")
 
 #Look for dependencies
-find_package(Qt4 REQUIRED)
+find_package(Qt4)
 find_package(Perl REQUIRED)
 find_package(FFTW3 REQUIRED)
 find_package(LibXml2 REQUIRED)
+find_package(Java)
+
 
 #set the prefix
 SET(CMAKE_INSTALL_PREFIX ${FD_PREFIX})
@@ -66,7 +70,11 @@ SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #Adding subdirectories
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(tools)
-ADD_SUBDIRECTORY(sphinx4)
+
+IF (JAVA_FOUND)
+    ADD_SUBDIRECTORY(sphinx4)
+ENDIF(JAVA_FOUND)
+
 #ADD_SUBDIRECTORY(ManyEars3D)
 
 IF (QT4_FOUND)

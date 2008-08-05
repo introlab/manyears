@@ -122,11 +122,13 @@ void TrackAudioWidget::startSphinxServers(int basePort)
 		
 		QStringList args;
 		
+		args.append("-classpath");
+		args.append("*.jar");
 		args.append("-p");
 		args.append(QString::number(basePort + i));
 		
 		//TODO Set working directory 
-		m_sphinxProcess[i]->setWorkingDirectory("TO BE SET PLEASE");
+		m_sphinxProcess[i]->setWorkingDirectory(SPHINX_INSTALL_DIR);
 		
 		//connect process signals
 		connect(m_sphinxProcess[i],SIGNAL(error(QProcess::ProcessError)),this,SLOT(sphinxProcessError(QProcess::ProcessError)));
