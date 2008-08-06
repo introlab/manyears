@@ -84,12 +84,12 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent, bool _startSphinxServers, in
         sourceDistance[i] = new QLabel(this);
         gridLayout->addWidget(sourceDistance[i],i+1,5,Qt::AlignHCenter);
 
-        sourceButtons[i]->hide();
-        sourceID[i]->hide();
-        sourceTheta[i]->hide();
-        sourcePhi[i]->hide();
-        sourceStrength[i]->hide();
-        sourceDistance[i]->hide();
+        //sourceButtons[i]->hide();
+        //sourceID[i]->hide();
+        //sourceTheta[i]->hide();
+        //sourcePhi[i]->hide();
+        //sourceStrength[i]->hide();
+        //sourceDistance[i]->hide();
     }
    
  
@@ -221,34 +221,10 @@ void TrackAudioWidget::sphinxProcessReadStdOut()
 			
 			if (recogData.contains("RESULT:"))
 			{	
-				audioView->addRecog(getTime(), QString(array), m_sphinxBasePort + i);
+				audioView->addRecog(getTime(), QString(array), i);
 			}
 			
-			cout << "Got recog : "<<QString(array).toStdString()<<endl;
-			
-			//Got the speech recognizer output
-			//Let's see to which source it belongs
-			/*
-			std::vector<AudioSource> sources = audioView->getSourcesAtTime(getTime() - (unsigned long long)(1E6));
-			
-			for (unsigned int index = 0; index < sources.size(); index++)
-			{	
-				if((sources[index].m_port - m_sphinxBasePort) == i)
-				{
-					//m_recogString[sources[index].m_id] = QString(array);
-					
-					sources[index].m_item->setToolTip(QString(array));
-					
-					QRectF myRect = sources[index].m_item->rect();
-					myRect.setHeight(myRect.height() * 2);
-					
-					sources[index].m_item->setRect(myRect);
-					
-					cout << "Setting recog for source id : "<<sources[index].m_id<< " = "<<QString(array).toStdString()<<endl;
-				}
-			}
-			*/
-			
+			//cout << "Got recog : "<<QString(array).toStdString()<<endl;	
 		}
 	}
 }
@@ -278,13 +254,13 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 		        float distance = sources[i].m_distance;
 
 		        sourceButtons[i]->show();
-		        sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
+		        
 			
 		        //TODO FIX THIS
 		        sourceButtons[i]->setDisabled(isSourceActive(source_id));
 
-
-
+		        sourceButtons[i]->setPalette(audioView->getSourceColor(source_id));
+		        sourceButtons[i]->setForegroundRole(QPalette::Button);
 		        buttonGroup->addButton(sourceButtons[i],source_id);
 
 		        sourceID[i]->setText(QString::number(source_id));
@@ -301,12 +277,13 @@ void TrackAudioWidget::selectedTime(unsigned long long time)
 		    else
 		    {
 		        buttonGroup->removeButton(sourceButtons[i]);
-		        sourceButtons[i]->hide();
-		        sourceID[i]->hide();
-		        sourceTheta[i]->hide();
-		        sourcePhi[i]->hide();
-		        sourceStrength[i]->hide();
-		        sourceDistance[i]->hide();
+		        sourceButtons[i]->setDisabled(true);
+		        sourceID[i]->setText("");
+		        sourceTheta[i]->setText("");
+		        sourcePhi[i]->setText("");
+		        sourceStrength[i]->setText("");
+		        sourceDistance[i]->setText("");
+				
 		    }
 	    }
 	}

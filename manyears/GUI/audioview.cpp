@@ -271,68 +271,51 @@ void AudioView::addSource(unsigned long long time, const AudioSource &source)
     }
 }
 
-void AudioView::addRecog(unsigned long long time, const QString &_recog, int port)
+void AudioView::addRecog(unsigned long long time, const QString &_recog, int index)
 {
 
    QString recog = _recog;
    recog.remove("\n");
+   recog.remove("RESULT:");
 	
    std::vector<AudioSource> sources;    
    std::map<unsigned long long, std::vector<AudioSource> >::reverse_iterator iter = m_sources.rbegin();
    
+   //create Item to display
+   float x = (time - minTime) * timeScale;
+   float y = ((nbLines + 5)*heightLine);
    
-    //create Item to display
-    float x = (time - minTime) * timeScale;
-    float y = (nbLines*heightLine);
-    QGraphicsRectItem *my_ellipse = NULL;
-    QGraphicsTextItem *myTextItem = NULL;
-
-    /*
-	vector<AudioSource> vect = iter->second;
-	
-	cerr<<"vect size : "<<vect.size()<<endl;
-	for (unsigned int i = 0; i < vect.size(); i++)
-	{
-		cerr<<"comparing port "<<vect[i].m_port<<" with port "<<port<<endl;
-		if (vect[i].m_port == port)
-		{
-			QPointF pos = vect[i].m_item->scenePos();
-			x = pos.x();
-			y = pos.y();
-			cerr << "item ptr "<<vect[i].m_item<<endl;
-			my_ellipse = new QGraphicsEllipseItem(-5,-5,10,10,vect[i].m_item);
-			break;
-		}
-	}
-	*/
-    	
-
-    //my_ellipse = new QGraphicsRectItem(x,((nbLines + 5)*heightLine) + (port - 7000) * 40,10,10,NULL);
-    my_ellipse = new  QGraphicsRectItem(0,0,10,10,NULL);
-    my_ellipse->setPos(QPointF(x,((nbLines + 5)*heightLine) + (port - 7000) * 30));
+   RecogTextItem *myItem = new RecogTextItem(NULL,recog,x,y);
+   scene()->addItem(myItem);
+   
+   //Look backward in the source to find the latest source corresponding to our 
+   //Recognition port
+   for (;iter != m_sources.rend(); iter++)
+   {	  
+	   bool found = false;
+	   
+	   sources = iter->second;
+	    
+	    for (unsigned int i = 0; i < sources.size(); i++)
+	    {		    	
+		    if (sources[i].m_port == 7000 + index)
+		    {
+		    	QBrush brush = sources[i].m_item->brush();
+		    	myItem->setBrush(QBrush(getSourceColor(sources[i].m_id)));
+		    	found = true;
+		    	break;
+		    }
+	    }	
+	    
+	    if (found)
+	    	break;
+   }
     
-    
-    myTextItem = new QGraphicsTextItem(my_ellipse);
-    myTextItem->setPlainText(recog);
-    myTextItem->setPos(0,0);
-     
-    
-    //set the color
-    if (recog.contains("null"))
-    	my_ellipse->setPen(QPen(Qt::red));
-    else
-    	my_ellipse->setPen(QPen(Qt::green));
-    
-    QBrush brush(my_ellipse->pen().color());
-    my_ellipse->setBrush(brush);
-    
-    //set ToolTip
-    my_ellipse->setToolTip(recog);
-    
-    //add item
-    scene()->addItem(my_ellipse);
-    
-    
+    //Avoid colliding with other text labels
+    while(scene()->collidingItems(myItem).size() > 1)
+    {	
+    	myItem->moveBy(0,30);
+    }
     
     
 }

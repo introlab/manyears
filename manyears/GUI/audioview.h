@@ -28,6 +28,33 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include "AudioSource.h"
 #include <QGraphicsView>
 #include <QGraphicsLineItem>
+#include <QGraphicsTextItem>
+#include <QGraphicsRectItem>
+
+
+class RecogTextItem : public QGraphicsRectItem
+{
+	
+	public:
+	
+	RecogTextItem(QGraphicsItem  *parent, const QString &text, float x, float y)
+		: QGraphicsRectItem(parent)
+	{
+		
+		m_textItem = new QGraphicsTextItem(this);
+		m_textItem->setPlainText(text);
+		
+		QRectF  rect = m_textItem->boundingRect();
+		setRect(rect);
+		
+		setPos(x,y);
+	}
+	
+	protected:
+		
+		QGraphicsTextItem *m_textItem;
+	
+};
 
 class AudioView : public QGraphicsView {
 
@@ -46,7 +73,7 @@ class AudioView : public QGraphicsView {
     QColor               getSourceColor(int id);
     void                 addSource(unsigned long long time, const SourceInfo *source);
     void                 addSource(unsigned long long time, const AudioSource &source);  
-    void				 addRecog(unsigned long long time, const QString &recog, int procesID);
+    void				 addRecog(unsigned long long time, const QString &recog, int index);
 
   public slots:
 
