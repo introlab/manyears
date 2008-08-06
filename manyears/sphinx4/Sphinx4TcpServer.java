@@ -19,37 +19,125 @@ public class Sphinx4TcpServer {
 	private ServerSocket myServerSocket = null;
 	private Socket mySocket = null;
 	
-	private static final int PORT_NUMBER = 7000;
-	private int portNumber = PORT_NUMBER;
+	private static final int DEFAULT_PORT_NUMBER = 7000;
+	private static final String DEFAULT_CONFIG_FILE = "config.xml";
+	private static final String DEFAULT_WAV_FILE = "10001-90210-01803.wav"; // 12345.wav, 10001-90210-01803.wav
 	
+	private int portNumber = DEFAULT_PORT_NUMBER;
+	private URL configURL = null;
+	private URL audioFileURL = null;
+
 	private boolean initialized = false;
+	private boolean wavTest = false;
 	
 	public static void main(String[] args) {
 		Sphinx4TcpServer server = new Sphinx4TcpServer();
-		
-		boolean wavTest = false;
-		for(int i=0; i<args.length; i++) {
-			if(args[i].compareTo("-wav") == 0) {
-				wavTest = true;
-			}
-		}
-		if(wavTest) {
-			server.wavFileTest(args);
-		}
-		else {
-			server.tcpStreamTest(args);
-		}
+		server.run(args);
     }
 	
-	private boolean init(String[] args)
+	public void run(String[] args)
+	{
+		if(!parseArguments(args)) {
+			showUsage();
+			return;
+		}
+		
+		if(this.wavTest) {
+			wavFileTest();
+		}
+		else {
+			tcpStreamTest();
+		}
+	}
+	
+	private boolean parseArguments(String[] args)
+	{
+		this.configURL = Sphinx4TcpServer.class.getResource(DEFAULT_CONFIG_FILE);
+		this.audioFileURL = Sphinx4TcpServer.class.getResource(DEFAULT_WAV_FILE);
+		
+		for(int i=0; i<args.length; i++) {
+			if(args[i].compareTo("-help") == 0 || 
+			   args[i].compareTo("--help") == 0 || 
+			   args[i].compareTo("?") == 0) 
+			{
+				return false;
+			}
+			else if(args[i].compareTo("-p") == 0) {
+				if(i+1 >= args.length) {
+					System.err.println("Port required.");
+					return false;
+				}
+				try {
+					portNumber = Integer.parseInt(args[i+1]);
+				}
+				catch(NumberFormatException e) {
+					System.err.println("Port " + args[i+1] + " is not valid");
+					return false;
+				}
+			}
+			else  if(args[i].compareTo("-config") == 0) {
+				if(i+1 >= args.length) {
+					System.err.println("Config file required.");
+					return false;
+				}
+				URL tmpConfigURL = Sphinx4TcpServer.class.getResource(args[i+1]);
+				if(tmpConfigURL == null) {
+					System.err.println("The file " + args[i+1] + " is not a valid configuration file.");
+					return false;
+				}
+				else {
+					this.configURL = tmpConfigURL;
+				}
+				i++;
+			}
+			else if(args[i].compareTo("-wav") == 0) {
+				this.wavTest = true;
+				if(i+1 < args.length && args[i+1].charAt(0) != '-') {
+					URL tmpAudioFileURL = Sphinx4TcpServer.class.getResource(args[i+1]);
+					if(tmpAudioFileURL == null) {
+						System.err.println("The file " + args[i+1] + " is not a valid wav.");
+						return false;
+					}
+					else {
+						this.audioFileURL = tmpAudioFileURL;
+					}
+					i++;
+				}
+			}
+		}
+		
+		if(this.configURL == null) {
+			System.err.println("The default Sphinx4 configuration file \"" + DEFAULT_CONFIG_FILE + "\" not found.");
+			return false;
+		}
+		
+		 if(this.wavTest && audioFileURL==null) {
+         	System.err.println("wav file not found.");
+         	return false;
+         }
+		
+		return true;
+	}
+	
+	private void showUsage()
+	{
+		System.out.println("Usage : java Sphinx4TcpServer [options]");
+		System.out.println("Default:");
+		System.out.println("     Port :                      7000");
+		System.out.println("     Sphinx configuration file : config.xml");
+		System.out.println("     If using wav :              10001-90210-01803.wav.");
+		System.out.println("Options:");
+		System.out.println("    -p #####                     Specify a port.");
+		System.out.println("    -config fileName             Specify a sphinx4 configuration file.");
+		System.out.println("    -wav [fileName]              Use a wav for the input stream,");
+		System.out.println("                                    provided for convenience. The file");
+		System.out.println("                                    name must not begins with a '-'.");
+	}
+	
+	private boolean initTcp()
 	{
 		if(!initialized)
 		{
-			for(int i=0; i<args.length; i++) {
-				if(args[i].compareTo("-p") == 0 && (i+1 < args.length)) {
-					portNumber = Integer.parseInt(args[i+1]);
-				}
-			}
 			try {
 				myServerSocket = new ServerSocket(portNumber);
 				initialized = true;
@@ -61,7 +149,7 @@ public class Sphinx4TcpServer {
 		return initialized;
 	}
 	
-	private void deinit()
+	private void deinitTcp()
 	{
 		try {
 			if(mySocket != null) {
@@ -119,24 +207,16 @@ public class Sphinx4TcpServer {
 		}
 	}
 		
-	public void tcpStreamTest(String[] args)
+	public void tcpStreamTest()
 	{
-		if(!init(args)) {
+		if(!initTcp()) {
 			System.err.println("Initialization failed...");
 			return;
 		}
-		// TODO args set port
-		try {
-            URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
+		try {          
+            ConfigurationManager cm = new ConfigurationManager(this.configURL);
+
             System.err.println("Loading Recognizer...\n");
-            
-            if(configURL==null) {
-            	System.err.println("Sphinx4 configuration file not found.");
-            	return;
-            }
-
-            ConfigurationManager cm = new ConfigurationManager(configURL);
-
             Recognizer recognizer = (Recognizer) cm.lookup("recognizer");
 
             /* allocate the resource necessary for the recognizer */
@@ -172,7 +252,6 @@ public class Sphinx4TcpServer {
 		    initConnection(reader);
 		    
 		    System.err.println("Entering loop...");
-		    boolean done = false;
 		    while(true) {
 	            /* decode the audio file */
 	            Result result = recognizer.recognize();
@@ -199,38 +278,16 @@ public class Sphinx4TcpServer {
             System.err.println("Unknown exception: " + e);
             e.printStackTrace();
         }finally {
-        	deinit();
+        	deinitTcp();
         }
 	}
 
-	public void wavFileTest(String[] args)
+	public void wavFileTest()
 	{
 		try {
-			//Default
-			String defaultWav = "10001-90210-01803.wav"; // 12345.wav, 10001-90210-01803.wav
-            URL audioFileURL = Sphinx4TcpServer.class.getResource(defaultWav);
-            
-            for(int i=0; i<args.length; i++) {
-    			if(args[i].compareTo("-wav") == 0 && i+1 < args.length) {
-    				audioFileURL = Sphinx4TcpServer.class.getResource(args[i+1]);
-    				if(audioFileURL == null) {
-    					System.err.println("The file " + args[i+1] + " is not a valid wav.");
-    					return;
-    				}
-    				break;
-    			}
-    		}
-            
-            if(audioFileURL==null) {
-            	System.err.println("wav file not found.");
-            	return;
-            }
+			System.err.println("Loading Recognizer...\n");
 
-            URL configURL = Sphinx4TcpServer.class.getResource("config.xml");
-
-            System.err.println("Loading Recognizer...\n");
-
-            ConfigurationManager cm = new ConfigurationManager(configURL);
+            ConfigurationManager cm = new ConfigurationManager(this.configURL);
 
             Recognizer recognizer = (Recognizer) cm.lookup("recognizer");
 
