@@ -32,6 +32,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QLabel>
 #include <QProcess>
 #include <map>
+#include "SNCRZ30Cam.h"
 
 
 class TrackAudioWidget : public QWidget
@@ -76,6 +77,7 @@ protected:
     QLabel*      sourcePhi[4];
     QLabel*      sourceStrength[4];
     QLabel*      sourceDistance[4];
+    SNCRZ30View*	 m_cameraView;
     QButtonGroup* buttonGroup;
     //ImageView*    imageView;
     QTimer*       timer;

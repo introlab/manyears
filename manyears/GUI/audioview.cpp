@@ -29,6 +29,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QGraphicsScene>
 #include <QGraphicsEllipseItem>
 
+
 #define marginH    40
 
 using namespace std;
@@ -39,7 +40,7 @@ AudioView::AudioView(QWidget* parent)
 {
 
     //Create graphics scene
-    QGraphicsScene *my_scene = new QGraphicsScene(0,0,1024,heightLine * (nbLines + 1) + 50,this);
+    QGraphicsScene *my_scene = new QGraphicsScene(0,0,1024,heightLine * (nbLines + 1) + 50 ,this);
     setScene(my_scene);
 
     //set graphics line configuration
@@ -139,10 +140,10 @@ void AudioView::drawTimeLine(unsigned long long elapsedTime)
 	scene()->addItem(my_text);
 	
 	//UPDATE SCENE SIZE
-	float scene_width = elapsedTime * timeScale;
-	float scene_height = max((float)scene()->height(),(float)(heightLine * nbLines + 30));	
-	scene()->setSceneRect (0,0,scene_width,scene_height);
-
+	//float scene_width = elapsedTime * timeScale;
+	//float scene_height = max((float)scene()->height(),(float)(heightLine * nbLines + 30));	
+	//scene()->setSceneRect (0,0,scene_width,scene_height);
+	scene()->setSceneRect(scene()->itemsBoundingRect()); 
 	
 	//DRAW HORIZONTAL LINE LABELS
 	if (elapsedTime % (unsigned long long)(50E6) == 0)
@@ -165,6 +166,8 @@ void AudioView::drawTimeLine(unsigned long long elapsedTime)
 		line.setLength(max(line.length(),elapsedTime * timeScale));
 		m_horizlines[i]->setLine(line);		
 	}
+	
+	//setRect(scene()->getRect());
 }
 
 void AudioView::timerEvent(QTimerEvent *)

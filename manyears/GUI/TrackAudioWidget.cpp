@@ -92,7 +92,9 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent, bool _startSphinxServers, in
         //sourceDistance[i]->hide();
     }
    
- 
+    m_cameraView = new SNCRZ30View(this);
+    bottomLayout->addWidget(m_cameraView);
+    
     bottomLayout->addLayout(gridLayout);
     Form1Layout->activate();
     

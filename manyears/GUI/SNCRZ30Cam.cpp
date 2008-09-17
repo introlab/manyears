@@ -23,12 +23,12 @@ SNCRZ30_Capture::SNCRZ30_Capture(std::string hostname, int port, int fps)
         :    m_hostname(hostname), m_port(port), m_fps(fps)
 {
     //must be called first
-    q3InitNetworkProtocols();
+    //q3InitNetworkProtocols();
 
-    m_http = new Q3Http(m_hostname.c_str(),m_port);
+    m_http = new QHttp(m_hostname.c_str(),m_port);
 
     //Connect signals
-    connect(m_http, SIGNAL(readyRead ( const Q3HttpResponseHeader&)), this, SLOT(dataReady(const Q3HttpResponseHeader &)));
+    connect(m_http, SIGNAL(readyRead ( const QHttpResponseHeader&)), this, SLOT(dataReady(const QHttpResponseHeader &)));
 
     //init
     init();
@@ -42,7 +42,7 @@ SNCRZ30_Capture::~SNCRZ30_Capture()
     }
 }
 
-void SNCRZ30_Capture::dataReady(const Q3HttpResponseHeader & resp )
+void SNCRZ30_Capture::dataReady(const QHttpResponseHeader & resp )
 {
     static char JPEG_MARKER_START[] = {0xff,0xd8};
     static char JPEG_MARKER_END[] = {0xff,0xd9};
@@ -53,14 +53,15 @@ void SNCRZ30_Capture::dataReady(const Q3HttpResponseHeader & resp )
     //std::cerr<<"SNCRZ30_Capture::dataReady() got bytes :"<<array.size()<<std::endl;
 
     //update string
-    input_string += std::string(array.at(0),array.size());
+    input_string += std::string(array.constData () ,array.size());
 
     unsigned int jpeg_start_pos = input_string.find(std::string(JPEG_MARKER_START,2));
 
     if (jpeg_start_pos != std::string::npos)
     {
         //std::cerr<<"SNCRZ30_Capture::dataReady() JPEG START AT"<<jpeg_start_pos<<std::endl;
-        unsigned int jpeg_end_pos = input_string.find(std::string(JPEG_MARKER_END,2),jpeg_start_pos);
+    	unsigned int jpeg_end_pos = input_string.find(std::string(JPEG_MARKER_END,2),jpeg_start_pos);
+        //unsigned int jpeg_end_pos = input_string.rfind(std::string(JPEG_MARKER_END,2),std::string::npos);
 
         if (jpeg_end_pos != std::string::npos)
         {
@@ -69,7 +70,8 @@ void SNCRZ30_Capture::dataReady(const Q3HttpResponseHeader & resp )
             if (m_image.loadFromData((unsigned char*) &input_string[jpeg_start_pos],(jpeg_end_pos + 2 - jpeg_start_pos)))
             {
                 //std::cerr<<"SNCRZ30_Capture::dataReady() emit putImage signal"<<std::endl;
-                putImage(m_image.mirror(true,true));
+                //putImage(m_image.mirror(true,true));
+            	emit putImage(m_image);
             }
 
             //cleanup memory

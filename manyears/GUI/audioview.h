@@ -96,6 +96,7 @@ class AudioView : public QGraphicsView {
 
 
 
+
     int                  nbLines;
     int                  heightLine;
 

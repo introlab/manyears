@@ -7,6 +7,8 @@
 #finding qt
 
 SET(QT_USE_QTNETWORK TRUE)
+SET(QT_USE_QTWEBKIT TRUE)
+
 
 find_package(Qt4 REQUIRED)
 
@@ -29,12 +31,14 @@ SET(AUDIOVIEWERSHARED_SRCS
    audioview.cpp
    TrackAudioWidget.cpp
    ImageView.cpp
+   SNCRZ30Cam.cpp
 )
 
 SET(AUDIOVIEWERSHARED_HEADERS 
    audioview.h
    TrackAudioWidget.h 
    ImageView.h
+   SNCRZ30Cam.h
 )
 
 #Sources for Probes used in FlowDesigner
@@ -64,7 +68,7 @@ add_executable(audioviewer ${AUDIOVIEWER_SRCS} ${AUDIOVIEWER_MOC_SRCS} ${AUDIOVI
 
 # Linking with libflow and Qt libraries
 
-target_link_libraries(audioviewer  ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
+target_link_libraries(audioviewer  ${QT_LIBRARIES} -L${FLOWDESIGNER_LIB_DIR} -lflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
 
 #install application
 install(TARGETS audioviewer DESTINATION bin)
@@ -84,5 +88,5 @@ IF (APPLE)
 ENDIF(APPLE)
 
 
-target_link_libraries(libmanyears-probe-dynamic ${QT_QTCORE_LIBRARY} ${QT_QTNETWORK_LIBRARY} ${QT_QTGUI_LIBRARY} -L${FLOWDESIGNER_LIB_DIR} -lflow -lqtflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
+target_link_libraries(libmanyears-probe-dynamic ${QT_LIBRARIES} -L${FLOWDESIGNER_LIB_DIR} -lflow -lqtflow ${LIBXML2_LIBRARIES} libmanyears-dynamic)
 install(TARGETS libmanyears-probe-dynamic DESTINATION ${FLOWDESIGNER_TOOLBOX_DIR}/ManyEars/lib)

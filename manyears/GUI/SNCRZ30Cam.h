@@ -18,11 +18,13 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #ifndef _SNCRZ30_CAPTURE_H_
 #define _SNCRZ30_CAPTURE_H_
 
-#include <Qt3Support/q3urloperator.h> 
-#include <Qt3Support/q3network.h>
-#include <Qt3Support/q3http.h> 
-#include <qimage.h> 
+
+#include <QHttp>
+#include <QPixmap> 
+#include <QGraphicsView>
+#include <QGraphicsPixmapItem>
 #include <string>
+#include <iostream>
 #include <sstream>
 
 
@@ -35,17 +37,61 @@ class SNCRZ30_Capture : public QObject {
 	  ~SNCRZ30_Capture();
 	     	  
      public slots:
-	  void dataReady(const Q3HttpResponseHeader & resp );
+	  void dataReady(const QHttpResponseHeader & resp );
 	  
      signals:
-	  void putImage(const QImage &image);
+	  void putImage(const QPixmap &image);
 	    
      protected:  
+    	 
 	  void init();
-	  Q3Http *m_http;
+	  QHttp *m_http;
 	  std::string m_hostname;
 	  int m_port;
 	  int m_fps;
-	  QImage m_image;
+	  QPixmap m_image;
 };
+
+class SNCRZ30View : public QGraphicsView
+{
+	Q_OBJECT;
+
+public:
+	
+	SNCRZ30View(QWidget* parent)
+		: QGraphicsView(parent)
+		{
+			QGraphicsScene *m_scene = new QGraphicsScene(this);
+			setScene(m_scene);
+			
+			m_pixmapItem = new QGraphicsPixmapItem(NULL);
+			m_pixmapItem->rotate(180);
+			m_scene->addItem(m_pixmapItem);
+			centerOn(m_pixmapItem);
+			
+			QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+		    sizePolicy1.setHorizontalStretch(0);
+		    sizePolicy1.setVerticalStretch(0);
+		    sizePolicy1.setHeightForWidth(sizePolicy().hasHeightForWidth());
+		    setSizePolicy(sizePolicy1);
+		    setMinimumSize(QSize(340, 260));
+			
+			m_capture = new SNCRZ30_Capture("192.168.3.3", 80, 10);
+			connect(m_capture,SIGNAL(putImage(const QPixmap&)), this,SLOT(putImage(const QPixmap&)));
+			
+		}
+		
+    public slots:
+	  void putImage(const QPixmap &image)
+	  {
+		  //std::cerr<<"void putImage(const QPixmap &image)"<<std::endl;
+		  m_pixmapItem->setPixmap(image);
+	  }
+	
+protected:
+
+	QGraphicsScene *m_scene;
+	QGraphicsPixmapItem *m_pixmapItem;
+	SNCRZ30_Capture *m_capture;
+};	
 #endif
