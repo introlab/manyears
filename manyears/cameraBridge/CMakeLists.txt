@@ -18,12 +18,32 @@ include(${QT_USE_FILE})
 
 #Sources for the BRIDGE application
 SET(BRIDGE_SRCS
-
+	qextserialbase.cpp       
+	qextserialport.cpp
+	qextserialenumerator.cpp 
 )
 
 SET(BRIDGE_HEADERS 
-
+	qextserialenumerator.h 
+	qextserialbase.h       
+	qextserialport.h
 )
+
+
+#POSIX/UNIX SPECIFIC FILES & DEFINES
+IF (UNIX)
+    ADD_DEFINITIONS(-D_TTY_POSIX_)
+	SET(BRIDGE_SRCS ${BRIDGE_SRCS} posix_qextserialport.cpp)
+	SET(BRIDGE_HEADERS ${BRIDGE_HEADERS} posix_qextserialport.h)
+ENDIF(UNIX)
+
+#WINDOWS SPECIFIC FILES	& DEFINES
+IF (WIN32)
+	SET(BRIDGE_SRCS ${BRIDGE_SRCS} 	win_qextserialport.cpp)
+	SET(BRIDGE_HEADERS ${BRIDGE_HEADERS} win_qextserialport.h)
+ENDIF(WIN32)
+
+
 
 #This will generate moc_* for Qt
 QT4_WRAP_CPP(BRIDGE_MOC_SRCS ${BRIDGE_HEADERS})
