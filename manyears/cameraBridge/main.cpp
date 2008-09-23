@@ -4,10 +4,10 @@
 int main(int argc, char* argv[])
 {
 	QApplication app(argc,argv, true);
-	
-	CameraBridge *bridge = new CameraBridge(NULL);
-	
-	bridge->show();
-	
+
+	CameraBridge bridge(NULL);
+
+	bridge.show();
+
 	return app.exec();
 }
