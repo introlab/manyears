@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+
 #finding qt
 SET(QT_USE_QTNETWORK TRUE)
 SET(QT_USE_QTWEBKIT TRUE)
@@ -12,13 +14,16 @@ include(${QT_USE_FILE})
 #Sources for the BRIDGE application
 SET(BRIDGE_SRCS
     CameraBridge.cpp
+    OSCReceiver.cpp
 	qextserialbase.cpp       
 	qextserialport.cpp
 	qextserialenumerator.cpp 
+
 )
 
 SET(BRIDGE_HEADERS 
     CameraBridge.h
+    OSCReceiver.h
 	qextserialenumerator.h 
 	qextserialbase.h       
 	qextserialport.h

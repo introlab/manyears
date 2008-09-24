@@ -1,0 +1,90 @@
+#!/usr/bin/env batchflow
+<?xml version="1.0"?>
+<Document docName="TestSphinx.n" connectionPort="0">
+  <Network type="subnet" name="MAIN">
+    <Node name="LoadFile_5" type="LoadFile" x="-147.000000" y="-35.000000">
+      <Parameter name="FILENAME" type="string" value="/Users/dominic/WA/ManyEars/config/robot_mic_pos.mat" description="No description available"/>
+    </Node>
+    <Node name="loop_0" type="loop" x="33.000000" y="4.000000">
+      <Parameter name="DOWHILE" type="bool" value="" description="No description available"/>
+    </Node>
+    <ProbeLink id="1" from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS"/>
+    <ProbeLink id="2" from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS1"/>
+    <NetOutput name="OUTPUT_SOURCES" node="loop_0" terminal="OUTPUT_SOURCES" object_type="any" description="No description available"/>
+    <NetOutput name="BOOLWRITE" node="loop_0" terminal="BOOLWRITE" object_type="any" description="No description available"/>
+    <NetOutput name="OUTPUT_WAV" node="loop_0" terminal="OUTPUT_WAV" object_type="any" description="No description available"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
+  </Network>
+  <Network type="iterator" name="loop">
+    <Node name="Constant_0" type="Constant" x="-851.000000" y="-445.000000">
+      <Parameter name="VALUE" type="bool" value="true" description="The value"/>
+    </Node>
+    <Node name="EqualGains_0" type="EqualGains" x="-686.000000" y="-282.262054">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description="Number of channels"/>
+      <Parameter name="GAINS" type="object" value="&lt;Vector&lt;float&gt;  0.84949  0.89852  0.97388  0.90652  1.11227  1.22576  0.88225  0.86558 &gt;" description="Value of the gains"/>
+    </Node>
+    <Node name="LocalizeBeam_0" type="LocalizeBeam" x="-424.000000" y="-247.000000">
+      <Parameter name="NB_CHANNELS" type="int" value="8" description="Number of channels"/>
+      <Parameter name="LENGTH" type="int" value="1024" description="Size of the frames (per channel)"/>
+      <Parameter name="SPEED_OF_SOUND" type="float" value="343" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
+      <Parameter name="REVERB_LEVEL" type="float" value="0.3" description="Level of instantaneous reverberation attenuation (between 0 and 1)"/>
+      <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
+    </Node>
+    <Node name="SourceTrack_1" type="SourceTrack" x="-241.000000" y="-338.000000"/>
+    <Node name="ToString_0" type="ToString" x="234.000000" y="-186.000000"/>
+    <Node name="QtSendString_1" type="QtSendString" x="337.000000" y="-186.000000">
+      <Parameter name="HOSTNAME" type="string" value="127.0.0.1" description="Hostname"/>
+      <Parameter name="PORT" type="int" value="30011" description="Port"/>
+      <Parameter name="WAITFORCONNECTED" type="int" value="1000" description="How ms that the node wait for connected"/>
+    </Node>
+    <Node name="SeparGSS_0" type="SeparGSS" x="-18.000000" y="-219.000000">
+      <Parameter name="LENGTH" type="int" value="1024" description="Frame size"/>
+      <Parameter name="SPEED_OF_SOUND" type="float" value="343" description="Speed of sound (m/s)"/>
+      <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
+      <Parameter name="LOC_DELAY" type="int" value="1" description="Delay (in frames) introduced by localization"/>
+      <Parameter name="REVERB_LEVEL" type="float" value="0.3" description="Amount of reverberation present"/>
+      <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
+    </Node>
+    <Node name="openStreamManyEars_0" type="openStreamManyEars" x="-929.000000" y="-281.000000">
+      <Parameter name="DEVICE" type="string" value="any" description="device name"/>
+      <Parameter name="SAMPLERATE" type="int" value="48000" description="sampleRate"/>
+      <Parameter name="LENGTH" type="int" value="8192" description="number of samples"/>
+      <Parameter name="ADVANCE" type="int" value="4096" description="number of samples"/>
+      <Parameter name="NCHANNELS" type="int" value="8" description="number of channels"/>
+      <Parameter name="FIRSTCHANNEL" type="int" value="0" description="first Channel"/>
+    </Node>
+    <Node name="SaveAudioStreamTCP_8" type="SaveAudioStreamTCP" x="110.000000" y="-284.000000">
+      <Parameter name="HOST0" type="string" value="localhost" description="Hostname of the server receiving the audio stream 0"/>
+      <Parameter name="PORT0" type="int" value="7000" description="Port number of the server receiving the audio stream 0"/>
+      <Parameter name="HOST1" type="string" value="localhost" description="Hostname of the server receiving the audio stream 1"/>
+      <Parameter name="PORT1" type="int" value="7001" description="Port number of the server receiving the audio stream 1"/>
+      <Parameter name="HOST2" type="string" value="localhost" description="Hostname of the server receiving the audio stream 2"/>
+      <Parameter name="PORT2" type="int" value="7002" description="Port number of the server receiving the audio stream 2"/>
+      <Parameter name="HOST3" type="string" value="localhost" description="Hostname of the server receiving the audio stream 3"/>
+      <Parameter name="PORT3" type="int" value="7003" description="Port number of the server receiving the audio stream 3"/>
+    </Node>
+    <Node name="SaveWavWin32_9" type="SaveWavWin32" x="5.897453" y="-404.958435">
+      <Parameter name="BASENAME" type="string" value="/tmp/source_" description="Base string for file names"/>
+    </Node>
+    <ProbeLink id="3" from="LocalizeBeam_0" output="OUTPUT" to="SourceTrack_1" input="INPUT"/>
+    <ProbeLink id="4" from="ToString_0" output="OUTPUT" to="QtSendString_1" input="STRING"/>
+    <ProbeLink id="5" from="EqualGains_0" output="OUTPUT" to="LocalizeBeam_0" input="INPUT"/>
+    <ProbeLink id="6" from="LocalizeBeam_0" output="FRAMES" to="SeparGSS_0" input="INPUT"/>
+    <ProbeLink id="7" from="LocalizeBeam_0" output="NOISE" to="SeparGSS_0" input="NOISE"/>
+    <ProbeLink id="8" from="SourceTrack_1" output="OUTPUT" to="SeparGSS_0" input="SOURCES"/>
+    <ProbeLink id="9" from="openStreamManyEars_0" output="OUTPUT" to="EqualGains_0" input="INPUT"/>
+    <ProbeLink id="10" from="SourceTrack_1" output="OUTPUT" to="SaveAudioStreamTCP_8" input="SRC_POS"/>
+    <ProbeLink id="11" from="SeparGSS_0" output="OUTPUT" to="SaveAudioStreamTCP_8" input="SOURCES"/>
+    <ProbeLink id="12" from="SaveAudioStreamTCP_8" output="OUTPUT_SRC_POS" to="ToString_0" input="INPUT"/>
+    <ProbeLink id="13" from="SourceTrack_1" output="OUTPUT" to="SaveWavWin32_9" input="SRC_POS"/>
+    <ProbeLink id="14" from="SeparGSS_0" output="OUTPUT" to="SaveWavWin32_9" input="SOURCES"/>
+    <NetCondition name="CONDITION" node="Constant_0" terminal="VALUE"/>
+    <NetOutput name="BOOLWRITE" node="QtSendString_1" terminal="BOOLWRITE" object_type="any" description="No description available"/>
+    <NetInput name="MIC_POS" node="LocalizeBeam_0" terminal="MIC_POS" object_type="any" description="No description available"/>
+    <NetInput name="MIC_POS1" node="SeparGSS_0" terminal="MIC_POS" object_type="any" description="No description available"/>
+    <NetOutput name="OUTPUT_SOURCES" node="SaveAudioStreamTCP_8" terminal="OUTPUT_SOURCES" object_type="any" description="No description available"/>
+    <NetOutput name="OUTPUT_WAV" node="SaveWavWin32_9" terminal="OUTPUT" object_type="any" description="No description available"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
+  </Network>
+</Document>

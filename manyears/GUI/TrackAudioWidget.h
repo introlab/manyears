@@ -52,6 +52,7 @@ public slots:
     void selectedTime(unsigned long long time);
     void playClicked(int source_id);
     void timeout();
+    void cameraTimeout();
     void setRecogString(int sourceID, QString recogString);
 
 protected slots:
@@ -81,6 +82,7 @@ protected:
     QButtonGroup* buttonGroup;
     //ImageView*    imageView;
     QTimer*       timer;
+    QTimer*		  m_cameraTimer;
     std::map<int,QString> m_recogString;
     QProcess *m_sphinxProcess[4];
     int		m_sphinxBasePort;

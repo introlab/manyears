@@ -38,6 +38,11 @@ class SNCRZ30_Capture : public QObject {
 	     	  
      public slots:
 	  void dataReady(const QHttpResponseHeader & resp );
+	  void dataReadyCommands(const QHttpResponseHeader & resp );
+	  void panTilt(int abs_pan, int abs_tilt);
+	  void home();
+	  void reset();
+	  void autoPanTiltSpeed(bool enabled);
 	  
      signals:
 	  void putImage(const QPixmap &image);
@@ -46,6 +51,7 @@ class SNCRZ30_Capture : public QObject {
     	 
 	  void init();
 	  QHttp *m_http;
+	  QHttp *m_httpCommands;
 	  std::string m_hostname;
 	  int m_port;
 	  int m_fps;
@@ -80,6 +86,8 @@ public:
 			connect(m_capture,SIGNAL(putImage(const QPixmap&)), this,SLOT(putImage(const QPixmap&)));
 			
 		}
+	
+		SNCRZ30_Capture* getCapture() {return m_capture;}
 		
     public slots:
 	  void putImage(const QPixmap &image)

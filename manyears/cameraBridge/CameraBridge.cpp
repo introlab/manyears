@@ -23,7 +23,7 @@ CameraBridge::CameraBridge (QWidget *parent)
 	s.Parity = PAR_NONE;
 	s.StopBits = STOP_1;
 	s.Timeout_Millisec = 1000;
-	m_serialPort = new QextSerialPort("COM3", s);
+	m_serialPort = new QextSerialPort("/dev/tty.usbserial", s);
 
 	m_connected = m_serialPort->open(QIODevice::ReadWrite);
 

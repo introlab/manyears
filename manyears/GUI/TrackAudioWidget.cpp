@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <iostream>
 #include <QProcess>
 #include <QStringList>
+#include <Phonon>
 
 #define MAX_NUM_SOURCES 4
 
@@ -107,11 +108,31 @@ TrackAudioWidget::TrackAudioWidget(QWidget* parent, bool _startSphinxServers, in
     timer->start(500);
     
     
+    //Camera update
+    m_cameraTimer = new QTimer(this);
+    connect(m_cameraTimer,SIGNAL(timeout()), this, SLOT(cameraTimeout()));
+    m_cameraTimer->start(1000);
+    
+    
     if (_startSphinxServers)
     {
     	startSphinxServers(m_sphinxBasePort);
     }
     
+}
+
+void TrackAudioWidget::cameraTimeout()
+{
+	//std::cerr<<"void TrackAudioWidget::cameraTimeout()"<<std::endl;
+	//double theta = 180.0 * atan2((*info).x[1],(*info).x[0]) / M_PI;
+    std::vector<AudioSource> sources = audioView->getSourcesAtTime(audioView->getCurrentTime() - 1000000);
+    
+    //std::cerr<<"source size : "<<sources.size()<<std::endl;
+    
+    if (sources.size() > 0)
+    {
+    	m_cameraView->getCapture()->panTilt(sources[0].m_theta*10.0,sources[0].m_phi * 10.0 - 425);
+    }
 }
 
 void TrackAudioWidget::startSphinxServers(int basePort)
@@ -341,9 +362,18 @@ bool TrackAudioWidget::isSourceActive(int id)
 void TrackAudioWidget::playClicked(int source_id)
 {
     std::cerr<<"TrackAudioWidget::playClicked with source_id : "<<source_id<<std::endl;
-    QProcess *process = new QProcess(this);
-    QString prog;
-    QStringList args;
+
+	
+	Phonon::MediaObject *music =
+	Phonon::createPlayer(Phonon::MusicCategory,
+						 Phonon::MediaSource(QString("/tmp/source_") + QString::number(source_id) + QString(".wav")));
+	music->play();
+/*	
+						 
+	QProcess *process = new QProcess(this);
+	QString prog;
+	QStringList args;						 
+						 
  #ifdef WIN32
     prog = QString("sndrec32.exe");
     args += QString("/play");
@@ -364,7 +394,9 @@ void TrackAudioWidget::playClicked(int source_id)
     if (process)
     {        
         process->start(prog,args);                
-    }         
+    }
+						 
+*/						 
 }
 
 void TrackAudioWidget::getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources)
@@ -375,7 +407,7 @@ void TrackAudioWidget::getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources)
     //add sources
     for (unsigned int i =0 ; i < sources->size(); i++)
     {
-    	FD::RCPtr<SourceInfo> info = (*sources)[i];   	
+    	FD::RCPtr<SourceInfo> info = (*sources)[i];   
         audioView->addSource(time,info.get());
     }      
 
