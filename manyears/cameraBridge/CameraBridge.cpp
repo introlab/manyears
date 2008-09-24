@@ -50,7 +50,7 @@ CameraBridge::~CameraBridge()
 void CameraBridge::updateTimeout()
 {
 	cerr<<"void CameraBridge::updateTimeout()"<<endl;
-	absolutePanTilt(0,0);
+	absolutePanTilt(1400,0);
 	inquiry_pan_tilt();
 }
 

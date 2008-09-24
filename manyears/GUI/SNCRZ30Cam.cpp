@@ -56,7 +56,7 @@ SNCRZ30_Capture::~SNCRZ30_Capture()
 
 void SNCRZ30_Capture::autoPanTiltSpeed(bool enabled)
 {
-	
+	/*
 	QString path = "/command/ptzf.cgi";
 	QByteArray data;
 	if (enabled)
@@ -68,9 +68,9 @@ void SNCRZ30_Capture::autoPanTiltSpeed(bool enabled)
 		data += "VISCA=8101062403FF";
 	}
 	m_httpCommands->post(path,data);
-
+    */
 	
-	/*
+	
 	QTcpSocket m_socket;
 	m_socket.connectToHost(QHostAddress("192.168.3.3"), 80);
 	QByteArray data;
@@ -90,7 +90,7 @@ void SNCRZ30_Capture::autoPanTiltSpeed(bool enabled)
 	m_socket.write(data);
 	m_socket.waitForBytesWritten(1000);
 	m_socket.flush();
-	*/
+	
 }
 
 void SNCRZ30_Capture::home()
