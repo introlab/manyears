@@ -65,13 +65,25 @@ audacity
 Compiling the FlowDesigner toolbox
 ----------------------------------
 
-CXXFLAGS="-march=pentium3 -O3" ./autogen.sh (with optional parameters)
-make
-make install
+1) Generate Makefiles with CMake
+
+cmake .
+
+2) Compile & Install 
+
+make;make install
+
+You might want to change the default prefix. This is located in CMakeLists.txt. The variable name is FD_PREFIX.
+
+You should also make sure your architecture is properly set in src/CMakeLists.txt
+
+Edit this line to fit your setup :
+
+SET(CMAKE_CXX_FLAGS "-msse -O3")
 
 parameters:
 
-Note: replace -march=pentium3 with your real architecture
+Note: replace -msse by -march=<architecture> for better performances.
 
 Tools
 -----
