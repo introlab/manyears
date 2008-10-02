@@ -14,7 +14,6 @@ include(${QT_USE_FILE})
 #Sources for the BRIDGE application
 SET(BRIDGE_SRCS
     CameraBridge.cpp
-    OSCReceiver.cpp
 	qextserialbase.cpp       
 	qextserialport.cpp
 	qextserialenumerator.cpp 
@@ -23,7 +22,6 @@ SET(BRIDGE_SRCS
 
 SET(BRIDGE_HEADERS 
     CameraBridge.h
-    OSCReceiver.h
 	qextserialenumerator.h 
 	qextserialbase.h       
 	qextserialport.h
