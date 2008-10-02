@@ -1,0 +1,12 @@
+Updated Oct 2 2008
+
+= TODO for Jean-Marc =
+* Make the 3D algorithm work with a big array (change char by short?)
+* Code cleanup, remove useless #if 0
+* Make the 3D algorithm work with full sphere
+* Merge 3D and standard code ?
+
+
+= General TODO =
+* Make ManyEars a stand alone C library.
+* Redo FlowDesigner wrappers
