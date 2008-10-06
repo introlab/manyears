@@ -25,7 +25,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <iostream>
 #include <QProcess>
 #include <QStringList>
+
+#ifdef _HAVE_PHONON_
 #include <Phonon>
+#endif
 
 #define MAX_NUM_SOURCES 4
 
@@ -363,12 +366,14 @@ void TrackAudioWidget::playClicked(int source_id)
 {
     std::cerr<<"TrackAudioWidget::playClicked with source_id : "<<source_id<<std::endl;
 
-	
+#ifdef _HAVE_PHONON_
 	Phonon::MediaObject *music =
 	Phonon::createPlayer(Phonon::MusicCategory,
-						 Phonon::MediaSource(QString("/tmp/source_") + QString::number(source_id) + QString(".wav")));
+						 Phonon::MediaSource(QString("log/source_") + QString::number(source_id) + QString(".wav")));
 	music->play();
-/*	
+
+#else
+
 						 
 	QProcess *process = new QProcess(this);
 	QString prog;
@@ -396,7 +401,8 @@ void TrackAudioWidget::playClicked(int source_id)
         process->start(prog,args);                
     }
 						 
-*/						 
+#endif
+ 
 }
 
 void TrackAudioWidget::getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources)

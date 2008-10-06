@@ -1,5 +1,5 @@
 /* XPM */
-static char * Default_xpm[] = {
+static const char * Default_xpm[] = {
 "320 240 1786 2",
 "  	c #FFFFFF",
 ". 	c #FEFFFF",
