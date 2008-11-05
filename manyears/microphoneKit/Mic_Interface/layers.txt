@@ -1,0 +1,8 @@
+.top	top layer
+.bot	bottom layer
+.gko	board edge
+.smt	solder mask top
+.smb	solder mask bottom
+.sst	silk screen top
+.ssb	silk screen bottom
+.tap	excellon drill
