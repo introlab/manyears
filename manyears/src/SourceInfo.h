@@ -20,6 +20,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <cmath>
 #include "misc.h"
 #include <string>
+#include <string.h>
 
 class SourceInfo : public FD::Object {
 public:

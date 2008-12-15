@@ -24,6 +24,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 #include <QtCore/QList>
 #include "Buffer.h"
 #include <fstream>
+#include <string.h>
 
 using namespace std;
 

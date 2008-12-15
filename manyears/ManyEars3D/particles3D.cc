@@ -5,6 +5,7 @@
 #include "particles3D.h"
 #include <math.h>
 #include <iostream>
+#include <cstdlib>
 
 using namespace std;
 
