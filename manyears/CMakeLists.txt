@@ -12,7 +12,7 @@ SET(CMAKE_VERBOSE_MAKEFILE ON)
 IF (WIN32)
 	SET(FD_PREFIX "C:/Progra~1/FlowDesigner")
 ELSE(WIN32)
-	SET(FD_PREFIX "/usr/local")
+	SET(FD_PREFIX "/Volumes/FlowDesigner-0.10.0/FlowDesigner.app/Contents/Resources/")
 ENDIF(WIN32)
 	
 SET (FLOWDESIGNER_BIN_DIR "${FD_PREFIX}/bin/")

@@ -99,11 +99,14 @@ namespace FD {
 				   float strength = info->strength;
 				   float phi = -180.0 * atan2(info->x[2], info->x[1]) / M_PI;;
 				   float theta = 180.0 * atan2(info->x[1],info->x[0]) / M_PI;
-				  			   
+				   float distance = sqrt(info->x[0] * info->x[0] + info->x[1] * info->x[1] + info->x[2] * info->x[2]);
+				 
+
+				   
 				   stringstream outputString;
 				   
 				   char header[12] = {'/','m','a','n','y','e','a','r','s', '\0', '\0','\0'};
-				   char tags[12] = {',','i','f','f','f','f','f','f','\0','\0','\0','\0'};
+				   char tags[12] = {',','i','f','f','f','f','f','f','f','\0','\0','\0'};
 				   
 				   outputString.write(header,12);
 				   outputString.write(tags,12);
@@ -115,6 +118,7 @@ namespace FD {
 				   BinIO::write<float>(outputString,&strength,1);
 				   BinIO::write<float>(outputString,&theta,1);
 				   BinIO::write<float>(outputString,&phi,1);
+				   BinIO::write<float>(outputString,&distance,1);
 				   
 				   
 				   //write to the socket
