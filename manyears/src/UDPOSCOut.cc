@@ -77,7 +77,7 @@ namespace FD {
 		      portnumber = dereference_cast<int>(parameters.get("PORT"));
 		      
 		      //Initialize socket
-		      //socket.bind(QHostAddress(hostname.c_str()),portnumber);
+		      //socket.bind(QHostAddress::Any,portnumber);
 		      
 		   }
 
@@ -127,9 +127,8 @@ namespace FD {
 				   
 				   if (size < 0)
 				   {
-					   cerr << "size =" << size << socket.errorString().toStdString() << endl;
+					   //cerr << "size =" << size << socket.errorString().toStdString() << endl;
 				   }
-				   
 
 				   outputs->push_back(ObjectRef(new String(outputString.str())));
 				   

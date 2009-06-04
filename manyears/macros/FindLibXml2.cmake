@@ -14,7 +14,6 @@
 # Redistribution and use is allowed according to the terms of the BSD license.
 # For details see the accompanying COPYING-CMAKE-SCRIPTS file.
 
-MESSAGE (STATUS "CHECKING FOR LIBXML2 ...")
 
 IF (LIBXML2_INCLUDE_DIR AND LIBXML2_LIBRARIES)
    # in cache already
@@ -30,20 +29,18 @@ IF (NOT WIN32)
 ENDIF (NOT WIN32)
 
 FIND_PATH(LIBXML2_INCLUDE_DIR libxml/xpath.h
-   PATHS "C:/Dev-Cpp/include"
+   PATHS "C:/FlowDesigner/include"
+   "C:/MinGW/include"
    ${_LibXml2IncDir}
    PATH_SUFFIXES libxml2
    )
 
-MESSAGE (STATUS "LIBXML2_INCLUDE_DIR : ${LIBXML2_INCLUDE_DIR}")
-   
 FIND_LIBRARY(LIBXML2_LIBRARIES NAMES xml2 libxml2
    PATHS
+   "C:/FlowDesigner/lib"
    ${_LibXml2LinkDir}
    )
 
-MESSAGE (STATUS "LIBXML2_LIBRARIES : ${LIBXML2_LIBRARIES}")
-   
 IF (LIBXML2_INCLUDE_DIR AND LIBXML2_LIBRARIES)
    SET(LIBXML2_FOUND TRUE)
 ELSE (LIBXML2_INCLUDE_DIR AND LIBXML2_LIBRARIES)

@@ -41,25 +41,24 @@ namespace FD {
     
     int inOpenStream( void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames,
         double streamTime, RtAudioStreamStatus status, void *data )
-    {        
+    {        	
         if ( status ) std::cout << "Stream over/underflow detected." << std::endl;
         
         short* in = (short*) inputBuffer;
         
         Vector<float>* buffer = Vector<float>::alloc(nBufferFrames * 8);
+		
         QList<Vector<float>*>* buffersList = (QList<Vector<float>*>*) data;   
         for(int i=0; i<nBufferFrames*8; i++)
         {
             (*buffer)[i]= (float)(in[i]);            
-            //TESTING RAW OUPTUT
-            //rawOutputTest.write((char*) &in[i],sizeof(short));
         }
+		
         buffersList_openStreamManyEars.lock();
         buffersList->append( buffer );        
         buffersList_openStreamManyEars.unlock();
         
         newSamplesSemaphore_openStreamManyEars.release(1);
-        
         return 0;
     }    
     
@@ -177,7 +176,7 @@ namespace FD {
                 //GET THE FIRST DEVICE WITH ENOUGH AUDIO INPUTS (8)
                 if (m_device == "any")
                 {
-                	if (info.inputChannels >= m_nChannels)
+                	if (info.inputChannels >= m_nChannels && info.probed)
                 	{
                 		m_device = info.name;
                         cout << "Using audio device = " << info.name << endl;
@@ -221,7 +220,7 @@ namespace FD {
             }
             
             unsigned int nSamples = (int)(m_advance / m_nChannels);
-            
+ 
             try
             {
                 m_adac.openStream( NULL, &iParams, RTAUDIO_SINT16, m_sampleRate, &nSamples, &inOpenStream, &m_buffersList);                
@@ -254,7 +253,6 @@ namespace FD {
         
         void calculate(int output_id, int count, Buffer &out)
         {
-            
             Vector<float> *output = Vector<float>::alloc(m_length);            
             
             int outputSize = 0;
@@ -264,35 +262,32 @@ namespace FD {
                 
                 while( outputSize < m_length)
                 {
-                    
                     newSamplesSemaphore_openStreamManyEars.acquire(1);
-                    
                     buffersList_openStreamManyEars.lock();
                     Vector<float> *buffer = m_buffersList.takeFirst();
                     buffersList_openStreamManyEars.unlock();
-                    memcpy(&((*output)[outputSize]),&((*buffer)[0]),m_advance * sizeof(float));
-                    buffer->destroy();
-                    outputSize += m_advance;
+                    memcpy(&((*output)[outputSize]),&((*buffer)[0]),buffer->size() * sizeof(float));
+					outputSize += buffer->size();
+					buffer->destroy();
                 }                
                 
             }
             else
             {
                 Vector<float> *previous = &(object_cast<Vector<float> > ((*(outputs[m_outputID].buffer))[count-1]));
+				
                 memcpy(&((*output)[outputSize]),&((*previous)[m_advance]),(m_length - m_advance) * sizeof(float));
-                outputSize += m_length - m_advance;                
+                outputSize += m_length - m_advance;
+				
                 while( outputSize < m_length)
                 {
-                    
                     newSamplesSemaphore_openStreamManyEars.acquire(1);
-                    
                     buffersList_openStreamManyEars.lock();
                     Vector<float> *buffer = m_buffersList.takeFirst();
                     buffersList_openStreamManyEars.unlock();
-                    
-                    memcpy(&((*output)[outputSize]),&((*buffer)[0]),m_advance * sizeof(float));        
-                    buffer->destroy();
-                    outputSize += m_advance;
+                    memcpy(&((*output)[outputSize]),&((*buffer)[0]),buffer->size() * sizeof(float));        
+					outputSize += buffer->size();
+					buffer->destroy();
                 }
             }
             

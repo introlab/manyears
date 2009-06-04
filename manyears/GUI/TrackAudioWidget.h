@@ -49,6 +49,7 @@ public:
     
 public slots:
     void getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources);
+	void sourceReady(AudioSource source);
     void selectedTime(unsigned long long time);
     void playClicked(int source_id);
     void timeout();

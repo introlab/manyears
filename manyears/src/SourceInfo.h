@@ -14,6 +14,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 */
+#ifndef _SOURCE_INFO_H_
+#define _SOURCE_INFO_H_
 
 #include "Object.h"
 #include "ObjectParser.h"
@@ -106,3 +108,6 @@ inline std::istream &operator >> (std::istream &in, SourceInfo &src)
    src.readFrom(in);
    return in;
 }
+
+#endif
+

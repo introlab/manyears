@@ -87,7 +87,9 @@ ENDIF(QT4_FOUND)
 IF(WIN32)
 
 	SET(FFTW3_DLL
- 		C:/Dev-Cpp/lib/fftw3.dll
+ 		"C:/FlowDesigner/fftw-3.2.1-dll/libfftw3f-3.dll"
+		"C:/FlowDesigner/fftw-3.2.1-dll/libfftw3-3.dll"
+		
 	)
 	INSTALL(FILES ${FFTW3_DLL} DESTINATION bin)
 

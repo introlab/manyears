@@ -49,6 +49,7 @@ int main( int argc, char **argv)
 	
 	//FlowDesigner SourceInfo reader
     QObject::connect(&fdReader, SIGNAL(putData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)), &audioview, SLOT(getData(FD::RCPtr<FD::Vector<FD::ObjectRef> >)));
+	 QObject::connect(&fdReader, SIGNAL(sourceReady(AudioSource)), &audioview, SLOT(sourceReady(AudioSource)));
 	
 	mainWindow.setCentralWidget(&audioview);
 

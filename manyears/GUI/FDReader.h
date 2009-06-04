@@ -20,11 +20,12 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
 
 #include <QTcpServer> 
 #include <QTcpSocket> 
+#include <QUdpSocket>
 #include <string>
 #include <sstream>
 #include "Vector.h"
+#include "AudioSource.h"
 
-class SourceInfo;
 
 class FDReader : public QTcpServer {
      
@@ -39,16 +40,20 @@ class FDReader : public QTcpServer {
     public slots:
 
     void dataReady();
-
+	void udpDataReady();
+	
     signals:
       
     void putData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources);
+	void sourceReady(AudioSource source);
 
     protected:  
 
     virtual void incomingConnection ( int socketDescriptor );
 
     std::vector<QTcpSocket*> m_sockets;
+	
+	QUdpSocket *m_udpSocket;
 
 };
 #endif
