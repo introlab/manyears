@@ -53,7 +53,7 @@ FDReader::~FDReader()
 
 void FDReader::udpDataReady()
 {
-	qDebug("void FDReader::udpDataReady()");
+	//qDebug("void FDReader::udpDataReady()");
 	
 	 while (m_udpSocket->hasPendingDatagrams()) 
 	 {
@@ -65,57 +65,38 @@ void FDReader::udpDataReady()
          m_udpSocket->readDatagram(datagram.data(), datagram.size(),
                                  &sender, &senderPort);
 								 
-		 qDebug("datagram size : %i",datagram.size());
-		 
-		 int id;
-		 float x;
-		 float y;
-		 float z ;
-		 float strength;
-		 float phi;
-		 float theta;
-		 float distance;
-		 
-		 std::stringstream inputString(std::string(datagram.constData(),datagram.size()));
+		 if (datagram.size() == 56)
+		 {
+			 //qDebug("datagram size : %i",datagram.size());
+			 
+			 int id = 0;
+			 float x = 0;
+			 float y = 0;
+			 float z = 0;
+			 float strength = 0;
+			 float phi = 0;
+			 float theta = 0;
+			 float distance = 0;
+			 
+			 std::istringstream inputString(std::string(&datagram.constData()[24],datagram.size() - 24));
+	 
+			FD::BinIO::read<int>(inputString,&id,1);
+			FD::BinIO::read<float>(inputString,&x,1);
+			FD::BinIO::read<float>(inputString,&y,1);
+			FD::BinIO::read<float>(inputString,&z,1);
+			FD::BinIO::read<float>(inputString,&strength,1);
+			FD::BinIO::read<float>(inputString,&theta,1);
+			FD::BinIO::read<float>(inputString,&phi,1);
+			FD::BinIO::read<float>(inputString,&distance,1);
 
-		FD::BinIO::read<int>(inputString,&id,1);
-		FD::BinIO::read<float>(inputString,&x,1);
-		FD::BinIO::read<float>(inputString,&y,1);
-		FD::BinIO::read<float>(inputString,&z,1);
-		FD::BinIO::read<float>(inputString,&strength,1);
-		FD::BinIO::read<float>(inputString,&theta,1);
-		FD::BinIO::read<float>(inputString,&phi,1);
-		FD::BinIO::read<float>(inputString,&distance,1);
-
-		//int _id, float _theta, float _phi, float _strength, float _distance,
-		
-		qDebug("id %i x %f y %f z %f s %f theta %f phi %f dist %f", id,x,y,z,strength,theta,phi,distance);
-		
-		AudioSource mySource(id,theta,phi,strength,distance);
-		
-		
-		emit sourceReady(mySource);
-		
-		/*
-		FD::RCPtr<FD::Vector<FD::ObjectRef> > data;
-		
-		//Fill Vector
-		SourceInfo *myInfo = new SourceInfo;
-		
-		myInfo->x[0] = x;
-		myInfo->x[1] = y;
-		myInfo->x[2] = z;
-		myInfo->source_id = id;
-		myInfo->strength = strength;
-		
-		
-		data->push_back(FD::ObjectRef(myInfo));
-		
-		
-		emit putData(data); 
-		*/
+			//int _id, float _theta, float _phi, float _strength, float _distance,
+			//qDebug("id %i x %f y %f z %f s %f theta %f phi %f dist %f", id,x,y,z,strength,theta,phi,distance);
+			
+			AudioSource mySource(id,theta,phi,strength,distance);
+			
+			emit sourceReady(mySource);
+		}
 	}							 
-
 }
 
 void FDReader::dataReady()

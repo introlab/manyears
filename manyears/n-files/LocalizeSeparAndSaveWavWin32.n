@@ -1,17 +1,17 @@
 #!/usr/bin/env batchflow
 <?xml version="1.0"?>
-<Document>
+<Document docName="LocalizeSeparAndSaveWavWin32.n" connectionPort="0">
   <Network type="subnet" name="MAIN">
     <Node name="LoadFile_5" type="LoadFile" x="-222.000000" y="-136.000000">
-      <Parameter name="FILENAME" type="string" value="cube_mic_pos.mat" description="No description available"/>
+      <Parameter name="FILENAME" type="string" value="C:\work-DL\MY\config\robot_mic_pos.mat" description="No description available"/>
     </Node>
     <Node name="loop_0" type="loop" x="-7.000000" y="-117.000000">
       <Parameter name="DOWHILE" type="bool" value="" description="No description available"/>
     </Node>
-    <Link from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS"/>
-    <Link from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS1"/>
+    <ProbeLink id="1" from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS"/>
+    <ProbeLink id="2" from="LoadFile_5" output="OUTPUT" to="loop_0" input="MIC_POS1"/>
     <NetOutput name="OUTPUT" node="loop_0" terminal="OUTPUT" object_type="any" description="No description available"/>
-    <NetOutput name="BOOLWRITE" node="loop_0" terminal="BOOLWRITE" object_type="any" description="No description available"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
     <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
   </Network>
   <Network type="iterator" name="loop">
@@ -31,12 +31,6 @@
       <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
     </Node>
     <Node name="SourceTrack_1" type="SourceTrack" x="-241.000000" y="-338.000000"/>
-    <Node name="ToString_0" type="ToString" x="-36.000000" y="-342.000000"/>
-    <Node name="QtSendString_1" type="QtSendString" x="143.000000" y="-342.000000">
-      <Parameter name="HOSTNAME" type="string" value="127.0.0.1" description="Hostname"/>
-      <Parameter name="PORT" type="int" value="30011" description="Port"/>
-      <Parameter name="WAITFORCONNECTED" type="int" value="1000" description="How ms that the node wait for connected"/>
-    </Node>
     <Node name="SeparGSS_0" type="SeparGSS" x="-18.000000" y="-219.000000">
       <Parameter name="LENGTH" type="int" value="1024" description="Frame size"/>
       <Parameter name="SPEED_OF_SOUND" type="float" value="343" description="Speed of sound (m/s)"/>
@@ -56,21 +50,19 @@
     <Node name="SaveWavWin32_1" type="SaveWavWin32" x="208.000000" y="-228.000000">
       <Parameter name="BASENAME" type="string" value="log/source_" description="Base string for file names"/>
     </Node>
-    <Link from="LocalizeBeam_0" output="OUTPUT" to="SourceTrack_1" input="INPUT"/>
-    <Link from="SourceTrack_1" output="OUTPUT" to="ToString_0" input="INPUT"/>
-    <Link from="ToString_0" output="OUTPUT" to="QtSendString_1" input="STRING"/>
-    <Link from="EqualGains_0" output="OUTPUT" to="LocalizeBeam_0" input="INPUT"/>
-    <Link from="LocalizeBeam_0" output="FRAMES" to="SeparGSS_0" input="INPUT"/>
-    <Link from="LocalizeBeam_0" output="NOISE" to="SeparGSS_0" input="NOISE"/>
-    <Link from="SourceTrack_1" output="OUTPUT" to="SeparGSS_0" input="SOURCES"/>
-    <Link from="openStreamManyEars_0" output="OUTPUT" to="EqualGains_0" input="INPUT"/>
-    <Link from="SeparGSS_0" output="OUTPUT" to="SaveWavWin32_1" input="SOURCES"/>
-    <Link from="SourceTrack_1" output="OUTPUT" to="SaveWavWin32_1" input="SRC_POS"/>
+    <ProbeLink id="3" from="LocalizeBeam_0" output="OUTPUT" to="SourceTrack_1" input="INPUT"/>
+    <ProbeLink id="4" from="EqualGains_0" output="OUTPUT" to="LocalizeBeam_0" input="INPUT"/>
+    <ProbeLink id="5" from="LocalizeBeam_0" output="FRAMES" to="SeparGSS_0" input="INPUT"/>
+    <ProbeLink id="6" from="LocalizeBeam_0" output="NOISE" to="SeparGSS_0" input="NOISE"/>
+    <ProbeLink id="7" from="SourceTrack_1" output="OUTPUT" to="SeparGSS_0" input="SOURCES"/>
+    <ProbeLink id="8" from="openStreamManyEars_0" output="OUTPUT" to="EqualGains_0" input="INPUT"/>
+    <ProbeLink id="9" from="SeparGSS_0" output="OUTPUT" to="SaveWavWin32_1" input="SOURCES"/>
+    <ProbeLink id="10" from="SourceTrack_1" output="OUTPUT" to="SaveWavWin32_1" input="SRC_POS"/>
     <NetCondition name="CONDITION" node="Constant_0" terminal="VALUE"/>
     <NetOutput name="OUTPUT" node="SaveWavWin32_1" terminal="OUTPUT" object_type="any" description="No description available"/>
-    <NetOutput name="BOOLWRITE" node="QtSendString_1" terminal="BOOLWRITE" object_type="any" description="No description available"/>
     <NetInput name="MIC_POS" node="LocalizeBeam_0" terminal="MIC_POS" object_type="any" description="No description available"/>
     <NetInput name="MIC_POS1" node="SeparGSS_0" terminal="MIC_POS" object_type="any" description="No description available"/>
+    <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
     <Note x="0" y="0" visible="0" text="Created with FlowDesigner TESTING" label="No Label"/>
   </Network>
 </Document>

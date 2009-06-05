@@ -101,8 +101,6 @@ namespace FD {
 				   float theta = 180.0 * atan2(info->x[1],info->x[0]) / M_PI;
 				   float distance = sqrt(info->x[0] * info->x[0] + info->x[1] * info->x[1] + info->x[2] * info->x[2]);
 				 
-
-				   
 				   stringstream outputString;
 				   
 				   char header[12] = {'/','m','a','n','y','e','a','r','s', '\0', '\0','\0'};
@@ -119,15 +117,14 @@ namespace FD {
 				   BinIO::write<float>(outputString,&theta,1);
 				   BinIO::write<float>(outputString,&phi,1);
 				   BinIO::write<float>(outputString,&distance,1);
-				   
-				   
+				   				   
 				   //write to the socket
 				   int size = socket.writeDatagram(outputString.str().c_str(),outputString.str().size(),
 						   QHostAddress(hostname.c_str()),portnumber);
 				   
 				   if (size < 0)
 				   {
-					   //cerr << "size =" << size << socket.errorString().toStdString() << endl;
+					   cerr << "UdpSocket error send size =" << size << socket.errorString().toStdString() << endl;
 				   }
 
 				   outputs->push_back(ObjectRef(new String(outputString.str())));

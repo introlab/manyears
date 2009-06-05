@@ -422,7 +422,7 @@ void TrackAudioWidget::getData(FD::RCPtr<FD::Vector<FD::ObjectRef> > sources)
 
 void TrackAudioWidget::sourceReady(AudioSource source)
 {
-	qDebug("TrackAudioWidget::sourceReady(AudioSource source)");
+	//qDebug("TrackAudioWidget::sourceReady(AudioSource source)");
 	long long time = getTime(); 
 	audioView->addSource(time,source);
 }

@@ -2,19 +2,27 @@
 <?xml version="1.0"?>
 <Document docName="tracking3D.n" connectionPort="51115">
   <Network type="subnet" name="MAIN">
-    <Node name="Constant_1" type="Constant" x="-127,000000" y="82,000000">
+    <Node name="Constant_1" type="Constant" x="-155.000000" y="154.000000">
       <Parameter name="VALUE" type="object" value="&lt;Matrix&#13;&#13;&#13;&lt;rows 8&gt;&#13;&#13;&#13;&lt;cols 3&gt;&#13;&#13;&#13;&lt;data&#13;&#13;&#13;12.5 30 0&#13;-12.5 30 0&#13;-30 12.5 0&#13;-30 -12.5 0&#13;-12.5 -30 0&#13;12.5 -30 0&#13;30 -12.5 0&#13;30 12.5 0&#13;&#13;&gt;&#13;&#13;&#13;&gt;" description="The value"/>
     </Node>
-    <Node name="MAIN_LOOP_0" type="MAIN_LOOP" x="26,811321" y="118,650940">
+    <Node name="MAIN_LOOP_0" type="MAIN_LOOP" x="26.000000" y="118.000000">
       <Parameter name="SPEED_OF_SOUND" type="float" value="343,00" description="Speed of sound (m/s)"/>
       <Parameter name="SAMPLING_RATE" type="int" value="48000" description="Sampling Rate (Hz)"/>
       <Parameter name="DOWHILE" type="bool" value="" description="No description available"/>
     </Node>
     <ProbeLink id="1" from="Constant_1" output="VALUE" to="MAIN_LOOP_0" input="MIC_POS"/>
     <NetOutput name="SOURCE_INFO" node="MAIN_LOOP_0" terminal="SOURCE_INFO" object_type="any" description="No description available"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
+    <Note x="-348.5" y="103" visible="1" text="Type description here" label="Modify Constant_1 for array configuration"/>
   </Network>
   <Network type="iterator" name="MAIN_LOOP">
-    <Node name="node_Localize_1" type="Localize3D" x="51,000000" y="144,000000">
+    <Node name="node_Localize_1" type="Localize3D" x="51.000000" y="144.000000">
       <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
       <Parameter name="LENGTH" type="int" value="1024" description=""/>
       <Parameter name="SPEED_OF_SOUND" type="subnet_param" value="SPEED_OF_SOUND" description="Speed of sound (m/s)"/>
@@ -22,13 +30,13 @@
       <Parameter name="REVERB_LEVEL" type="float" value="0.3" description="Level of instantaneous reverberation attenuation (between 0 and 1)"/>
       <Parameter name="REVERB_DECAY" type="float" value="0.65" description="Reverberation decay (per frame)"/>
     </Node>
-    <Node name="node_NOP_1" type="NOP" x="-165,000000" y="259,000000"/>
-    <Node name="node_EqualGains_2" type="EqualGains3D" x="-163,000000" y="136,000000">
+    <Node name="node_NOP_1" type="NOP" x="-165.000000" y="259.000000"/>
+    <Node name="node_EqualGains_2" type="EqualGains3D" x="-163.000000" y="136.000000">
       <Parameter name="NB_CHANNELS" type="int" value="8" description=""/>
-      <Parameter name="GAINS" type="object" value="&lt;Vector&lt;float&gt;   1.00531  0.63716  0.86715  0.65750  1.48937  0.90189  1.07071  0.93074 &gt;" description=""/>
+      <Parameter name="GAINS" type="object" value="&lt;Vector&lt;float&gt;   1.0 1.0 1.0 1.0 1.0 1.0 1.0 1.0  &gt;" description=""/>
     </Node>
-    <Node name="node_SourceTrack_1" type="SourceTrack3D" x="206,000000" y="119,000000"/>
-    <Node name="openStreamManyEars_4" type="openStreamManyEars" x="-323,000000" y="135,000000">
+    <Node name="node_SourceTrack_1" type="SourceTrack3D" x="165.000000" y="121.000000"/>
+    <Node name="openStreamManyEars_4" type="openStreamManyEars" x="-323.000000" y="135.000000">
       <Parameter name="DEVICE" type="string" value="any" description="device name"/>
       <Parameter name="SAMPLERATE" type="int" value="48000" description="sampleRate"/>
       <Parameter name="LENGTH" type="int" value="8192" description="number of samples"/>
@@ -36,17 +44,30 @@
       <Parameter name="NCHANNELS" type="int" value="8" description="number of channels"/>
       <Parameter name="FIRSTCHANNEL" type="int" value="0" description="first Channel"/>
     </Node>
-    <Node name="Constant_5" type="Constant" x="-91,000000" y="23,000000">
+    <Node name="Constant_5" type="Constant" x="-91.000000" y="23.000000">
       <Parameter name="VALUE" type="bool" value="true" description="The value"/>
     </Node>
-    <Node name="NOP_6" type="NOP" x="348,000000" y="120,000000"/>
+    <Node name="NOP_6" type="NOP" x="430.000000" y="119.000000"/>
+    <Node name="UDPOSCOut_7" type="UDPOSCOut" x="287.000000" y="120.000000">
+      <Parameter name="HOST" type="string" value="127.0.0.1" description="The host where to connect"/>
+      <Parameter name="PORT" type="int" value="5678" description="the port number"/>
+    </Node>
     <ProbeLink id="2" from="node_NOP_1" output="OUTPUT" to="node_Localize_1" input="MIC_POS"/>
     <ProbeLink id="3" from="node_EqualGains_2" output="OUTPUT" to="node_Localize_1" input="INPUT"/>
     <ProbeLink id="4" from="node_Localize_1" output="OUTPUT" to="node_SourceTrack_1" input="INPUT"/>
     <ProbeLink id="5" from="openStreamManyEars_4" output="OUTPUT" to="node_EqualGains_2" input="INPUT"/>
-    <ProbeLink id="6" from="node_SourceTrack_1" output="OUTPUT" to="NOP_6" input="INPUT"/>
+    <ProbeLink id="6" from="node_SourceTrack_1" output="OUTPUT" to="UDPOSCOut_7" input="INPUT"/>
+    <ProbeLink id="7" from="UDPOSCOut_7" output="OUTPUT" to="NOP_6" input="INPUT"/>
     <NetInput name="MIC_POS" node="node_NOP_1" terminal="INPUT" object_type="any" description="The input"/>
     <NetCondition name="CONDITION" node="Constant_5" terminal="VALUE"/>
     <NetOutput name="SOURCE_INFO" node="NOP_6" terminal="OUTPUT" object_type="any" description="No description available"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address and port for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address and port for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address and port for OSC"/>
+    <Note x="189" y="43" visible="1" text="Type description here" label="Modify UDPOSCOut_7 for IP Address and port for OSC"/>
   </Network>
 </Document>
