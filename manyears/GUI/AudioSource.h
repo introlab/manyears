@@ -48,10 +48,8 @@ class AudioSource {
 				//m_phi = -180.0 * atan2(source->x[2], source->x[1]) / M_PI;
 				
 				//This is a coordinate change for spartacus
-				float z2 = std::min(1.0f,source->x[2] * source->x[2]);
-				m_phi = 180.0 * atan(- source->x[2] / sqrt(1.0001-z2) - .3) / M_PI;
-				
-				
+				//float z2 = std::min(1.0f,source->x[2] * source->x[2]);
+				m_phi = - 180.0 * atan2(source->x[2],sqrt(source->x[0] * source->x[0] + source->x[1] * source->x[1])) / M_PI;
                 m_theta = 180.0 * atan2(source->x[1],source->x[0]) / M_PI;
                 m_strength = source->strength;
                 m_distance = source->x[0] * source->x[0] + source->x[1] * source->x[1] + source->x[2] * source->x[2];

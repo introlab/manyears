@@ -97,7 +97,7 @@ namespace FD {
 				   float y = info->x[1];
 				   float z = info->x[2];
 				   float strength = info->strength;
-				   float phi = -180.0 * atan2(info->x[2], info->x[1]) / M_PI;;
+				   float phi = -180.0 * atan2(info->x[2], sqrt(info->x[0] * info->x[0] + info->x[1] * info->x[1])) / M_PI;;
 				   float theta = 180.0 * atan2(info->x[1],info->x[0]) / M_PI;
 				   float distance = sqrt(info->x[0] * info->x[0] + info->x[1] * info->x[1] + info->x[2] * info->x[2]);
 				 
