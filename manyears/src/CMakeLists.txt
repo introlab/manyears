@@ -21,6 +21,7 @@ SET(manyears_SRCS
    sphere.cc
    particles.cc   
    UDPOSCOut.cc
+   QtTCPBinarySend.cc
    SaveAudioStreamTCP.cc
    ../ManyEars3D/EqualGains3D.cc
    ../ManyEars3D/SourceTrack3D.cc
