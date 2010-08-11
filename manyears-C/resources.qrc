@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>README.TXT</file>
+        <file>COPYING.TXT</file>
+        <file>Images/logoonly.png</file>
+        <file>Images/logo5_bgwhite.png</file>
+        <file>Configuration_Vectors/default.mes</file>
+    </qresource>
+</RCC>

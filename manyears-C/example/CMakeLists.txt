@@ -1,0 +1,25 @@
+#ManyEars Executable
+
+#add source here
+SET(SRCS
+   manyears_console.c
+)
+
+
+SET(SAMPLES
+    "${PROJECT_SOURCE_DIR}/Samples/rawdata_2srcs_90_90.raw"
+)
+
+#INCLUDES IF NECESSARY
+
+
+add_executable(manyears_console manyears_console.c)
+set_target_properties(manyears_console PROPERTIES LINK_FLAGS "--enable-auto-import")
+target_link_libraries(manyears_console ManyEarsLib -lm)
+
+
+#INSTALL DEMONSTRATION FILES
+INSTALL(FILES ${SRCS} DESTINATION example)
+
+#INSTALL SAMPLE FILES
+INSTALL(FILES ${SAMPLES} DESTINATION samples)

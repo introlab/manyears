@@ -1,0 +1,546 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+   <FileVersion major="1" minor="6" />
+   <Project>
+      <Option title="INTROLAB-ManyEars" />
+      <Option makefile_is_custom="1" />
+      <Option compiler="gcc" />
+      <Option virtualFolders="CMake Files\;CMake Files\dsplib\;CMake Files\RTAudio\;CMake Files\example\;" />
+      <Build>
+      <Target title="all">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; all" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="ManyEars">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/ManyEars.app/Contents/MacOS/ManyEars" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/WA/manyears/trunk/manyears-C/bin" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; ManyEars" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="ManyEars/fast">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/ManyEars.app/Contents/MacOS/ManyEars" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/WA/manyears/trunk/manyears-C/bin" />
+         <Option object_output="./" />
+         <Option type="0" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; ManyEars/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="dist">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; dist" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; install" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/local">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; install/local" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="install/strip">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; install/strip" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="list_install_components">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; list_install_components" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="package">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; package" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="package_source">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; package_source" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="rebuild_cache">
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C" />
+         <Option type="4" />
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; rebuild_cache" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="ManyEarsLib">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/libmanyears.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/ManyEars" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; ManyEarsLib" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="ManyEarsLib/fast">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/libmanyears.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/ManyEars" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; ManyEarsLib/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/dsplib/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="RTAudioLib">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/librtaudio.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; RTAudioLib" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="RTAudioLib/fast">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/librtaudio.a" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio" />
+         <Option object_output="./" />
+         <Option type="2" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; RTAudioLib/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/RTAudio/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="manyears_console">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/manyears_console" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/WA/manyears/trunk/manyears-C/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; manyears_console" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      <Target title="manyears_console/fast">
+         <Option output="/Users/dominic/WA/manyears/trunk/manyears-C/bin/manyears_console" prefix_auto="0" extension_auto="0" />
+         <Option working_dir="/Users/dominic/WA/manyears/trunk/manyears-C/bin" />
+         <Option object_output="./" />
+         <Option type="1" />
+         <Option compiler="gcc" />
+         <Compiler>
+            <Add directory="/usr/include" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/optimized" />
+            <Add directory="/Library/Frameworks/QtCore.framework" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/debug" />
+            <Add directory="/Library/Frameworks/QtOpenGL.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtScript.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtSvg.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtGui.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtXml.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtNetwork.framework/Headers" />
+            <Add directory="/Library/Frameworks/QtCore.framework/Headers" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib" />
+            <Add directory="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio" />
+         </Compiler>
+         <MakeCommands>
+            <Build command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; manyears_console/fast" />
+            <CompileFile command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; &quot;$file&quot;" />
+            <Clean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; clean" />
+            <DistClean command="/usr/bin/make -f &quot;/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/example/Makefile&quot; clean" />
+         </MakeCommands>
+      </Target>
+      </Build>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_aboutDialog.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_colorID.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_colorPalette.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_configurationVector.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_coreThread.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_graph2D.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_graph3D.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_inputOutputManager.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_mdiSubWindow.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_mdiWindow.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_parametersManager.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_property.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_propertyEditor.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sourceBuffer.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sourceEvents.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sphereObj.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/qrc_resources.cxx">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/RtAudio.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/aboutDialog.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/colorID.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/colorPalette.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/configurationVector.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/coreThread.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/beamformer.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/dynamicMemory.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/fft.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/filter.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/micSoundTrack.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/mixture.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/overallContext.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/parameters.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/potentialSources.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/randGen.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/sphere.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/trackedSources.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/example/manyears_console.c">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/graph2D.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/graph3D.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/inputOutputManager.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/main.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/mdiSubWindow.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/mdiWindow.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/parametersManager.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/property.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/propertyEditor.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sourceBuffer.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sourceEvents.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sphereObj.cpp">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_aboutDialog.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_colorID.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_colorPalette.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_configurationVector.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_coreThread.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_graph2D.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_graph3D.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_inputOutputManager.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_mdiSubWindow.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_mdiWindow.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_parametersManager.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_property.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_propertyEditor.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sourceBuffer.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sourceEvents.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/Documents/working_area/manyears/trunk/manyears-C/moc_sphereObj.cxx.rule">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/RtAudio.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/RtError.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/ginclude.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/soundcard.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/aboutDialog.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/colorID.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/colorPalette.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/configurationVector.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/coreThread.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/beamformer.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/dynamicMemory.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/fft.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/filter.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/hardware.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/mathadvanced.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/micSoundTrack.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/mixture.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/overallContext.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/parameters.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/potentialSources.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/randGen.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/sphere.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/trackedSources.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/graph2D.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/graph3D.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/inputOutputManager.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/mdiSubWindow.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/mdiWindow.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/parametersManager.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/property.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/propertyEditor.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/resources.qrc">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sourceBuffer.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sourceEvents.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/sphereObj.h">
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\" />
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/dsplib/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\dsplib\" />
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/RTAudio/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\RTAudio\" />
+      </Unit>
+      <Unit filename="/Users/dominic/WA/manyears/trunk/manyears-C/example/CMakeLists.txt">
+          <Option virtualFolder="CMake Files\example\" />
+      </Unit>
+   </Project>
+</CodeBlocks_project_file>
