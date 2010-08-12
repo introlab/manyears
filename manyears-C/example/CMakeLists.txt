@@ -10,7 +10,12 @@ SET(SAMPLES
     "${PROJECT_SOURCE_DIR}/Samples/rawdata_2srcs_90_90.raw"
 )
 
-#INCLUDES IF NECESSARY
+#Include directories
+INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
+                    ${PROJECT_SOURCE_DIR}/
+                    ${PROJECT_SOURCE_DIR}/dsplib
+                    ${PROJECT_SOURCE_DIR}/RTAudio
+                    )
 
 
 add_executable(manyears_console manyears_console.c)

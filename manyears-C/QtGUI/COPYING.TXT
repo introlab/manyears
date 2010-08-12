@@ -1,0 +1,5 @@
+(C) IntRoLab 2002-2010 - 
+Francois Grondin, 
+Jean-Marc Valin, 
+Dominic Letourneau
+
