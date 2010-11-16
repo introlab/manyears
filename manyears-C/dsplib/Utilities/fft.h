@@ -1,12 +1,12 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: FFT - Header                                                      *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: June 29th, 2010                                                       *
+ * Date: June 29th , 2010                                                      *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,61 +87,125 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef FFT_H
+#define FFT_H
 
-// =============================================================================
+#include <math.h>
+
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Structure                                                                   *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+struct objFFT
+{
 
-#ifdef USE_SIMD
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+    // Number of points in the FFT (must be a power of 2)
+    int FFT_SIZE;
 
-#ifdef __GNUC__
+    // Number of levels in the FFT (number of poinst = 2^(number of levels)
+    int FFT_NBLEVELS;
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+    // Half the number of points in the FFT
+    int FFT_HALFSIZE;
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+    // Inverse of the number of points in the FFT
+    float FFT_SIZE_INV;
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+    // Number of elements in the array for SIMD group optimization
+    int FFT_SIMD_GROUP;
 
-#endif //USE_SIMD
+    // Number of elements in the array for SIMD individual optimization
+    int FFT_SIMD_INDIVIDUAL;
 
-// =============================================================================
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
+    // Define the FFT factor
+    // The FFT factor is Wn(r) = exp(-j*2*pi*r/N) for r = 0 ... (N/2 - 1)
+    // It is precomputed when the FFT module is initialized. Once this is done,
+    // the results will be used for each FFT to be computed
+    //
+    // Size: [FFT_HALFSIZE]
+    float* WnReal;
+    float* WnImag;
+    // Size: [FFT_SIMD_GROUP*4]
+    float* simdWnReal;
+    float* simdWnImag;
 
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    // Define working array
+    // This array is used during the FFT computations. It is set as a global
+    // variable to avoid stacking and unstacking all these values when there is
+    // a function call. This will speed up the computations.
+    //
+    // Size: [FFT_SIZE]
+    float* workingArrayReal;
+    float* workingArrayImag;
+
+    // Define arrays to compute 2 FFTs with only one FFT for real signals
+    //
+    // Size: [FFT_SIZE]
+    float* fftTwiceReal;
+    float* fftTwiceRealFlipped;
+    float* fftTwiceImag;
+    float* fftTwiceImagFlipped;
+
+    // Define array to compute 1 FFT for real signals
+    //
+    // Size: [FFT_SIZE]
+    float* emptyArray;
+
+    // Define array to trash unused result from IFFT
+    //
+    // Size: [FFT_SIZE]
+    float* trashArray;
+
+    // Define array to store the reverse bit order addressing
+    //
+    // Size: [FFT_SIZE]
+    unsigned int* revBitOrderArray;
+
+    // Define arrays to store the a indexes for SIMD optimization
+    //
+    // Size: [FFT_SIMD_GROUP]
+    float** simdARealGroups;
+    float** simdAImagGroups;
+    float** simdBRealGroups;
+    float** simdBImagGroups;
+    float** simdRRealGroups;
+    float** simdRImagGroups;
+    // Size: [FFT_SIMD_INDIVIDUAL]
+    float** simdAIndividual;
+    float** simdBIndividual;
+
+};
+
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
+
+void fftInit(struct objFFT* myFFT, struct ParametersStruct* myParameters, unsigned int size);
+
+void fftTerminate(struct objFFT* myFFT);
+
+void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArrayImag, float* destArrayReal, float* destArrayImag);
+
+void fftComputeOnce(struct objFFT* myFFT, float *sourceArray, float *destArrayReal, float *destArrayImag);
+
+void fftComputeTwice(struct objFFT* myFFT, float *sourceArray1, float *sourceArray2, float *destArray1Real, float *destArray1Imag, float *destArray2Real, float *destArray2Imag);
+
+void ifftCompute(struct objFFT* myFFT, float *sourceArrayReal, float *sourceArrayImag, float *destArrayReal, float *destArrayImag);
+
+void ifftComputeOnce(struct objFFT* myFFT, float *sourceArray1Real, float *sourceArray1Imag, float *destArray1);
+
+void ifftComputeTwice(struct objFFT* myFFT, float *sourceArray1Real, float *sourceArray1Imag, float *sourceArray2Real, float *sourceArray2Imag, float *destArray1, float *destArray2);
 
 #endif

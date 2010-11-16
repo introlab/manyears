@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Dynamic Memory Manager - Header                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: June 29th, 2010                                                       *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -86,83 +86,25 @@
  *     (ICASSP), pp. 221-224, 2004.                                            *
  *                                                                             *
  ******************************************************************************/
+#ifndef DYNAMICMEMORY_H
+#define DYNAMICMEMORY_H
 
-#include "overallContext.h"
-
-/*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
- ******************************************************************************/
-
-struct objOverall createEmptyOverallContext()
-{
-
-    struct objOverall tmp;
-
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
-
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
-
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
-
-    return tmp;
-
-}
+#include <stdlib.h>
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+void* newTable1D(int len, int sizeOneElement);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+void** newTable2D(int firstDim, int secondDim, int sizeOneElement);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+void*** newTable3D(int firstDim, int secondDim, int thirdDim, int sizeOneElement);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+void deleteTable1D(void* tablePtr);
 
-    free((void*) myContext.myParameters);
+void deleteTable2D(void** tablePtr);
 
-}
+void deleteTable3D(void*** tablePtr);
+
+#endif

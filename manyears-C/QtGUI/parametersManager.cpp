@@ -332,320 +332,310 @@ Property* ParametersManager::initSystem()
     Property* system = new Property("System","","",Property::P_NOTYPE);
 
         // +---------------------------------------------------+
+        // | A. Geometry                                       |
+        // +---------------------------------------------------+
+
+        Property* geo = new Property("Geometry","","geo",Property::P_NOTYPE);
+
+            // +-----------------------------------------------+
+            // | I. Microphones                                |
+            // +-----------------------------------------------+
+
+                Property* geo_mics = new Property("Microphones","","geo_mics",Property::P_NOTYPE);
+
+                // +-----------------------------------+
+                // | i. Microphone 1                   |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic1 = new Property("Microphone 1","","geo_mics_mic1",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC1_GAIN
+                            Property* geo_mics_mic1_gain = new Property("Gain","Gain of microphone 1","GEO_MICS_MIC1_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic1->addChild(geo_mics_mic1_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic1_pos = new Property("Position","","geo_mics_mic1_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC1_X
+                                    Property* geo_mics_mic1_pos_x = new Property("x","Position of microphone 1 on x-axis (in meter)","GEO_MICS_MIC1_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC1_Y
+                                    Property* geo_mics_mic1_pos_y = new Property("y","Position of microphone 1 on y-axis (in meter)","GEO_MICS_MIC1_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC1_Z
+                                    Property* geo_mics_mic1_pos_z = new Property("z","Position of microphone 1 on z-axis (in meter)","GEO_MICS_MIC1_Z",Property::P_FLOAT);
+
+                                geo_mics_mic1_pos->addChild(geo_mics_mic1_pos_x);
+                                geo_mics_mic1_pos->addChild(geo_mics_mic1_pos_y);
+                                geo_mics_mic1_pos->addChild(geo_mics_mic1_pos_z);
+
+                            geo_mics_mic1->addChild(geo_mics_mic1_pos);
+
+                // +-----------------------------------+
+                // | ii. Microphone 2                  |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic2 = new Property("Microphone 2","","geo_mics_mic2",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC2_GAIN
+                            Property* geo_mics_mic2_gain = new Property("Gain","Gain of microphone 2","GEO_MICS_MIC2_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic2->addChild(geo_mics_mic2_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic2_pos = new Property("Position","","geo_mics_mic2_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC2_X
+                                    Property* geo_mics_mic2_pos_x = new Property("x","Position of microphone 2 on x-axis (in meter)","GEO_MICS_MIC2_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC2_Y
+                                    Property* geo_mics_mic2_pos_y = new Property("y","Position of microphone 2 on y-axis (in meter)","GEO_MICS_MIC2_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC2_Z
+                                    Property* geo_mics_mic2_pos_z = new Property("z","Position of microphone 2 on z-axis (in meter)","GEO_MICS_MIC2_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic2_pos->addChild(geo_mics_mic2_pos_x);
+                                    geo_mics_mic2_pos->addChild(geo_mics_mic2_pos_y);
+                                    geo_mics_mic2_pos->addChild(geo_mics_mic2_pos_z);
+
+                                geo_mics_mic2->addChild(geo_mics_mic2_pos);
+
+                // +-----------------------------------+
+                // | iii. Microphone 3                 |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic3 = new Property("Microphone 3","","geo_mics_mic3",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC3_GAIN
+                            Property* geo_mics_mic3_gain = new Property("Gain","Gain of microphone 3","GEO_MICS_MIC3_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic3->addChild(geo_mics_mic3_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic3_pos = new Property("Position","","geo_mics_mic3_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC3_X
+                                    Property* geo_mics_mic3_pos_x = new Property("x","Position of microphone 3 on x-axis (in meter)","GEO_MICS_MIC3_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC3_Y
+                                    Property* geo_mics_mic3_pos_y = new Property("y","Position of microphone 3 on y-axis (in meter)","GEO_MICS_MIC3_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC3_Z
+                                    Property* geo_mics_mic3_pos_z = new Property("z","Position of microphone 3 on z-axis (in meter)","GEO_MICS_MIC3_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic3_pos->addChild(geo_mics_mic3_pos_x);
+                                    geo_mics_mic3_pos->addChild(geo_mics_mic3_pos_y);
+                                    geo_mics_mic3_pos->addChild(geo_mics_mic3_pos_z);
+
+                                geo_mics_mic3->addChild(geo_mics_mic3_pos);
+
+                // +-----------------------------------+
+                // | iv. Microphone 4                  |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic4 = new Property("Microphone 4","","geo_mics_mic4",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC4_GAIN
+                            Property* geo_mics_mic4_gain = new Property("Gain","Gain of microphone 4","GEO_MICS_MIC4_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic4->addChild(geo_mics_mic4_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic4_pos = new Property("Position","","geo_mics_mic4_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC4_X
+                                    Property* geo_mics_mic4_pos_x = new Property("x","Position of microphone 4 on x-axis (in meter)","GEO_MICS_MIC4_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC4_Y
+                                    Property* geo_mics_mic4_pos_y = new Property("y","Position of microphone 4 on y-axis (in meter)","GEO_MICS_MIC4_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC4_Z
+                                    Property* geo_mics_mic4_pos_z = new Property("z","Position of microphone 4 on z-axis (in meter)","GEO_MICS_MIC4_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic4_pos->addChild(geo_mics_mic4_pos_x);
+                                    geo_mics_mic4_pos->addChild(geo_mics_mic4_pos_y);
+                                    geo_mics_mic4_pos->addChild(geo_mics_mic4_pos_z);
+
+                                geo_mics_mic4->addChild(geo_mics_mic4_pos);
+
+                // +-----------------------------------+
+                // | v. Microphone 5                   |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic5 = new Property("Microphone 5","","geo_mics_mic5",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC5_GAIN
+                            Property* geo_mics_mic5_gain = new Property("Gain","Gain of microphone 5","GEO_MICS_MIC5_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic5->addChild(geo_mics_mic5_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic5_pos = new Property("Position","","geo_mics_mic5_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC5_X
+                                    Property* geo_mics_mic5_pos_x = new Property("x","Position of microphone 5 on x-axis (in meter)","GEO_MICS_MIC5_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC5_Y
+                                    Property* geo_mics_mic5_pos_y = new Property("y","Position of microphone 5 on y-axis (in meter)","GEO_MICS_MIC5_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC5_Z
+                                    Property* geo_mics_mic5_pos_z = new Property("z","Position of microphone 5 on z-axis (in meter)","GEO_MICS_MIC5_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic5_pos->addChild(geo_mics_mic5_pos_x);
+                                    geo_mics_mic5_pos->addChild(geo_mics_mic5_pos_y);
+                                    geo_mics_mic5_pos->addChild(geo_mics_mic5_pos_z);
+
+                                geo_mics_mic5->addChild(geo_mics_mic5_pos);
+
+                // +-----------------------------------+
+                // | vi. Microphone 6                  |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic6 = new Property("Microphone 6","","geo_mics_mic6",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC6_GAIN
+                            Property* geo_mics_mic6_gain = new Property("Gain","Gain of microphone 6","GEO_MICS_MIC6_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic6->addChild(geo_mics_mic6_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic6_pos = new Property("Position","","geo_mics_mic6_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC6_X
+                                    Property* geo_mics_mic6_pos_x = new Property("x","Position of microphone 6 on x-axis (in meter)","GEO_MICS_MIC6_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC6_Y
+                                    Property* geo_mics_mic6_pos_y = new Property("y","Position of microphone 6 on y-axis (in meter)","GEO_MICS_MIC6_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC6_Z
+                                    Property* geo_mics_mic6_pos_z = new Property("z","Position of microphone 6 on z-axis (in meter)","GEO_MICS_MIC6_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic6_pos->addChild(geo_mics_mic6_pos_x);
+                                    geo_mics_mic6_pos->addChild(geo_mics_mic6_pos_y);
+                                    geo_mics_mic6_pos->addChild(geo_mics_mic6_pos_z);
+
+                                geo_mics_mic6->addChild(geo_mics_mic6_pos);
+
+                // +-----------------------------------+
+                // | vii. Microphone 7                 |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic7 = new Property("Microphone 7","","geo_mics_mic7",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC7_GAIN
+                            Property* geo_mics_mic7_gain = new Property("Gain","Gain of microphone 7","GEO_MICS_MIC7_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic7->addChild(geo_mics_mic7_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic7_pos = new Property("Position","","geo_mics_mic7_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC7_X
+                                    Property* geo_mics_mic7_pos_x = new Property("x","Position of microphone 7 on x-axis (in meter)","GEO_MICS_MIC7_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC7_Y
+                                    Property* geo_mics_mic7_pos_y = new Property("y","Position of microphone 7 on y-axis (in meter)","GEO_MICS_MIC7_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC7_Z
+                                    Property* geo_mics_mic7_pos_z = new Property("z","Position of microphone 7 on z-axis (in meter)","GEO_MICS_MIC7_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic7_pos->addChild(geo_mics_mic7_pos_x);
+                                    geo_mics_mic7_pos->addChild(geo_mics_mic7_pos_y);
+                                    geo_mics_mic7_pos->addChild(geo_mics_mic7_pos_z);
+
+                                geo_mics_mic7->addChild(geo_mics_mic7_pos);
+
+                // +-----------------------------------+
+                // | viii. Microphone 8                |
+                // +-----------------------------------+
+
+                        Property* geo_mics_mic8 = new Property("Microphone 8","","geo_mics_mic8",Property::P_NOTYPE);
+
+                            // GEO_MICS_MIC8_GAIN
+                            Property* geo_mics_mic8_gain = new Property("Gain","Gain of microphone 8","GEO_MICS_MIC8_GAIN",Property::P_FLOAT_POS);
+
+                            geo_mics_mic8->addChild(geo_mics_mic8_gain);
+
+                            // +-----------------------+
+                            // | a. Position           |
+                            // +-----------------------+
+
+                                Property* geo_mics_mic8_pos = new Property("Position","","mics_mic8_pos",Property::P_NOTYPE);
+
+                                    // GEO_MICS_MIC8_X
+                                    Property* geo_mics_mic8_pos_x = new Property("x","Position of microphone 8 on x-axis (in meter)","GEO_MICS_MIC8_X",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC8_Y
+                                    Property* geo_mics_mic8_pos_y = new Property("y","Position of microphone 8 on y-axis (in meter)","GEO_MICS_MIC8_Y",Property::P_FLOAT);
+
+                                    // GEO_MICS_MIC8_Z
+                                    Property* geo_mics_mic8_pos_z = new Property("z","Position of microphone 8 on z-axis (in meter)","GEO_MICS_MIC8_Z",Property::P_FLOAT);
+
+                                    geo_mics_mic8_pos->addChild(geo_mics_mic8_pos_x);
+                                    geo_mics_mic8_pos->addChild(geo_mics_mic8_pos_y);
+                                    geo_mics_mic8_pos->addChild(geo_mics_mic8_pos_z);
+
+                                geo_mics_mic8->addChild(geo_mics_mic8_pos);
+
+                    geo_mics->addChild(geo_mics_mic1);
+                    geo_mics->addChild(geo_mics_mic2);
+                    geo_mics->addChild(geo_mics_mic3);
+                    geo_mics->addChild(geo_mics_mic4);
+                    geo_mics->addChild(geo_mics_mic5);
+                    geo_mics->addChild(geo_mics_mic6);
+                    geo_mics->addChild(geo_mics_mic7);
+                    geo_mics->addChild(geo_mics_mic8);
+
+                geo->addChild(geo_mics);
+
+        // +---------------------------------------------------+
         // | A. Beamformer                                     |
         // +---------------------------------------------------+
 
                 Property* beamformer = new Property("Beamformer","","beamformer",Property::P_NOTYPE);
 
                 // +-------------------------------------------+
-                // | I. Microphones                            |
+                // | I. Potential sources                      |
                 // +-------------------------------------------+
 
-                        Property* beamformer_mics = new Property("Microphones","","beamformer_mics",Property::P_NOTYPE);
+                        // BEAMFORMER_MAXSOURCES
+                        Property* beamformer_maxsources = new Property("Number of potential sources", "Number of potential sources found by the beamformer", "BEAMFORMER_MAXSOURCES", Property::P_INT_POS);
 
-                        // +-----------------------------------+
-                        // | i. Microphone 1                   |
-                        // +-----------------------------------+
+                        // BEAMFORMER_ET
+                        Property* beamformer_et = new Property("Et","Threshold to normalize the energy","BEAMFORMER_ET", Property::P_FLOAT_POS);
 
-                                Property* beamformer_mics_mic1 = new Property("Microphone 1","","beamformer_mics_mic1",Property::P_NOTYPE);
+                        // BEAMFORMER_FILTERRANGE
+                        Property* beamformer_filterrange = new Property("Filter range","Range of maxima scanned","BEAMFORMER_FILTERRANGE",Property::P_INT_POS);
 
-                                    // BEAMFORMER_MIC1_GAIN
-                                    Property* beamformer_mics_mic1_gain = new Property("Gain","Gain of microphone 1","BEAMFORMER_MIC1_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic1->addChild(beamformer_mics_mic1_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic1_pos = new Property("Position","","beamformer_mics_mic1_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC1_X
-                                            Property* beamformer_mics_mic1_pos_x = new Property("x","Position of microphone 1 on x-axis (in meter)","BEAMFORMER_MIC1_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC1_Y
-                                            Property* beamformer_mics_mic1_pos_y = new Property("y","Position of microphone 1 on y-axis (in meter)","BEAMFORMER_MIC1_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC1_Z
-                                            Property* beamformer_mics_mic1_pos_z = new Property("z","Position of microphone 1 on z-axis (in meter)","BEAMFORMER_MIC1_Z",Property::P_FLOAT);
-
-                                        beamformer_mics_mic1_pos->addChild(beamformer_mics_mic1_pos_x);
-                                        beamformer_mics_mic1_pos->addChild(beamformer_mics_mic1_pos_y);
-                                        beamformer_mics_mic1_pos->addChild(beamformer_mics_mic1_pos_z);
-
-                                    beamformer_mics_mic1->addChild(beamformer_mics_mic1_pos);
-
-                        // +-----------------------------------+
-                        // | ii. Microphone 2                  |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic2 = new Property("Microphone 2","","beamformer_mics_mic2",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC2_GAIN
-                                    Property* beamformer_mics_mic2_gain = new Property("Gain","Gain of microphone 2","BEAMFORMER_MIC2_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic2->addChild(beamformer_mics_mic2_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic2_pos = new Property("Position","","beamformer_mics_mic2_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC2_X
-                                            Property* beamformer_mics_mic2_pos_x = new Property("x","Position of microphone 2 on x-axis (in meter)","BEAMFORMER_MIC2_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC2_Y
-                                            Property* beamformer_mics_mic2_pos_y = new Property("y","Position of microphone 2 on y-axis (in meter)","BEAMFORMER_MIC2_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC2_Z
-                                            Property* beamformer_mics_mic2_pos_z = new Property("z","Position of microphone 2 on z-axis (in meter)","BEAMFORMER_MIC2_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic2_pos->addChild(beamformer_mics_mic2_pos_x);
-                                            beamformer_mics_mic2_pos->addChild(beamformer_mics_mic2_pos_y);
-                                            beamformer_mics_mic2_pos->addChild(beamformer_mics_mic2_pos_z);
-
-                                        beamformer_mics_mic2->addChild(beamformer_mics_mic2_pos);
-
-                        // +-----------------------------------+
-                        // | iii. Microphone 3                 |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic3 = new Property("Microphone 3","","beamformer_mics_mic3",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC3_GAIN
-                                    Property* beamformer_mics_mic3_gain = new Property("Gain","Gain of microphone 3","BEAMFORMER_MIC3_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic3->addChild(beamformer_mics_mic3_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic3_pos = new Property("Position","","beamformer_mics_mic3_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC3_X
-                                            Property* beamformer_mics_mic3_pos_x = new Property("x","Position of microphone 3 on x-axis (in meter)","BEAMFORMER_MIC3_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC3_Y
-                                            Property* beamformer_mics_mic3_pos_y = new Property("y","Position of microphone 3 on y-axis (in meter)","BEAMFORMER_MIC3_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC3_Z
-                                            Property* beamformer_mics_mic3_pos_z = new Property("z","Position of microphone 3 on z-axis (in meter)","BEAMFORMER_MIC3_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic3_pos->addChild(beamformer_mics_mic3_pos_x);
-                                            beamformer_mics_mic3_pos->addChild(beamformer_mics_mic3_pos_y);
-                                            beamformer_mics_mic3_pos->addChild(beamformer_mics_mic3_pos_z);
-
-                                        beamformer_mics_mic3->addChild(beamformer_mics_mic3_pos);
-
-                        // +-----------------------------------+
-                        // | iv. Microphone 4                  |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic4 = new Property("Microphone 4","","beamformer_mics_mic4",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC4_GAIN
-                                    Property* beamformer_mics_mic4_gain = new Property("Gain","Gain of microphone 4","BEAMFORMER_MIC4_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic4->addChild(beamformer_mics_mic4_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic4_pos = new Property("Position","","beamformer_mics_mic4_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC4_X
-                                            Property* beamformer_mics_mic4_pos_x = new Property("x","Position of microphone 4 on x-axis (in meter)","BEAMFORMER_MIC4_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC4_Y
-                                            Property* beamformer_mics_mic4_pos_y = new Property("y","Position of microphone 4 on y-axis (in meter)","BEAMFORMER_MIC4_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC4_Z
-                                            Property* beamformer_mics_mic4_pos_z = new Property("z","Position of microphone 4 on z-axis (in meter)","BEAMFORMER_MIC4_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic4_pos->addChild(beamformer_mics_mic4_pos_x);
-                                            beamformer_mics_mic4_pos->addChild(beamformer_mics_mic4_pos_y);
-                                            beamformer_mics_mic4_pos->addChild(beamformer_mics_mic4_pos_z);
-
-                                        beamformer_mics_mic4->addChild(beamformer_mics_mic4_pos);
-
-                        // +-----------------------------------+
-                        // | v. Microphone 5                   |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic5 = new Property("Microphone 5","","beamformer_mics_mic5",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC5_GAIN
-                                    Property* beamformer_mics_mic5_gain = new Property("Gain","Gain of microphone 5","BEAMFORMER_MIC5_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic5->addChild(beamformer_mics_mic5_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic5_pos = new Property("Position","","beamformer_mics_mic5_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC5_X
-                                            Property* beamformer_mics_mic5_pos_x = new Property("x","Position of microphone 5 on x-axis (in meter)","BEAMFORMER_MIC5_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC5_Y
-                                            Property* beamformer_mics_mic5_pos_y = new Property("y","Position of microphone 5 on y-axis (in meter)","BEAMFORMER_MIC5_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC5_Z
-                                            Property* beamformer_mics_mic5_pos_z = new Property("z","Position of microphone 5 on z-axis (in meter)","BEAMFORMER_MIC5_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic5_pos->addChild(beamformer_mics_mic5_pos_x);
-                                            beamformer_mics_mic5_pos->addChild(beamformer_mics_mic5_pos_y);
-                                            beamformer_mics_mic5_pos->addChild(beamformer_mics_mic5_pos_z);
-
-                                        beamformer_mics_mic5->addChild(beamformer_mics_mic5_pos);
-
-                        // +-----------------------------------+
-                        // | vi. Microphone 6                  |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic6 = new Property("Microphone 6","","beamformer_mics_mic6",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC6_GAIN
-                                    Property* beamformer_mics_mic6_gain = new Property("Gain","Gain of microphone 6","BEAMFORMER_MIC6_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic6->addChild(beamformer_mics_mic6_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic6_pos = new Property("Position","","beamformer_mics_mic6_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC6_X
-                                            Property* beamformer_mics_mic6_pos_x = new Property("x","Position of microphone 6 on x-axis (in meter)","BEAMFORMER_MIC6_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC6_Y
-                                            Property* beamformer_mics_mic6_pos_y = new Property("y","Position of microphone 6 on y-axis (in meter)","BEAMFORMER_MIC6_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC6_Z
-                                            Property* beamformer_mics_mic6_pos_z = new Property("z","Position of microphone 6 on z-axis (in meter)","BEAMFORMER_MIC6_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic6_pos->addChild(beamformer_mics_mic6_pos_x);
-                                            beamformer_mics_mic6_pos->addChild(beamformer_mics_mic6_pos_y);
-                                            beamformer_mics_mic6_pos->addChild(beamformer_mics_mic6_pos_z);
-
-                                        beamformer_mics_mic6->addChild(beamformer_mics_mic6_pos);
-
-                        // +-----------------------------------+
-                        // | vii. Microphone 7                 |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic7 = new Property("Microphone 7","","beamformer_mics_mic7",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC7_GAIN
-                                    Property* beamformer_mics_mic7_gain = new Property("Gain","Gain of microphone 7","BEAMFORMER_MIC7_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic7->addChild(beamformer_mics_mic7_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic7_pos = new Property("Position","","beamformer_mics_mic7_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC7_X
-                                            Property* beamformer_mics_mic7_pos_x = new Property("x","Position of microphone 7 on x-axis (in meter)","BEAMFORMER_MIC7_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC7_Y
-                                            Property* beamformer_mics_mic7_pos_y = new Property("y","Position of microphone 7 on y-axis (in meter)","BEAMFORMER_MIC7_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC7_Z
-                                            Property* beamformer_mics_mic7_pos_z = new Property("z","Position of microphone 7 on z-axis (in meter)","BEAMFORMER_MIC7_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic7_pos->addChild(beamformer_mics_mic7_pos_x);
-                                            beamformer_mics_mic7_pos->addChild(beamformer_mics_mic7_pos_y);
-                                            beamformer_mics_mic7_pos->addChild(beamformer_mics_mic7_pos_z);
-
-                                        beamformer_mics_mic7->addChild(beamformer_mics_mic7_pos);
-
-                        // +-----------------------------------+
-                        // | viii. Microphone 8                |
-                        // +-----------------------------------+
-
-                                Property* beamformer_mics_mic8 = new Property("Microphone 8","","beamformer_mics_mic8",Property::P_NOTYPE);
-
-                                    // BEAMFORMER_MIC8_GAIN
-                                    Property* beamformer_mics_mic8_gain = new Property("Gain","Gain of microphone 8","BEAMFORMER_MIC8_GAIN",Property::P_FLOAT_POS);
-
-                                    beamformer_mics_mic8->addChild(beamformer_mics_mic8_gain);
-
-                                    // +-----------------------+
-                                    // | a. Position           |
-                                    // +-----------------------+
-
-                                        Property* beamformer_mics_mic8_pos = new Property("Position","","beamformer_mics_mic8_pos",Property::P_NOTYPE);
-
-                                            // BEAMFORMER_MIC8_X
-                                            Property* beamformer_mics_mic8_pos_x = new Property("x","Position of microphone 8 on x-axis (in meter)","BEAMFORMER_MIC8_X",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC8_Y
-                                            Property* beamformer_mics_mic8_pos_y = new Property("y","Position of microphone 8 on y-axis (in meter)","BEAMFORMER_MIC8_Y",Property::P_FLOAT);
-
-                                            // BEAMFORMER_MIC8_Z
-                                            Property* beamformer_mics_mic8_pos_z = new Property("z","Position of microphone 8 on z-axis (in meter)","BEAMFORMER_MIC8_Z",Property::P_FLOAT);
-
-                                            beamformer_mics_mic8_pos->addChild(beamformer_mics_mic8_pos_x);
-                                            beamformer_mics_mic8_pos->addChild(beamformer_mics_mic8_pos_y);
-                                            beamformer_mics_mic8_pos->addChild(beamformer_mics_mic8_pos_z);
-
-                                        beamformer_mics_mic8->addChild(beamformer_mics_mic8_pos);
-
-                        beamformer_mics->addChild(beamformer_mics_mic1);
-                        beamformer_mics->addChild(beamformer_mics_mic2);
-                        beamformer_mics->addChild(beamformer_mics_mic3);
-                        beamformer_mics->addChild(beamformer_mics_mic4);
-                        beamformer_mics->addChild(beamformer_mics_mic5);
-                        beamformer_mics->addChild(beamformer_mics_mic6);
-                        beamformer_mics->addChild(beamformer_mics_mic7);
-                        beamformer_mics->addChild(beamformer_mics_mic8);
-
-                // +-------------------------------------------+
-                // | II. Potential sources                     |
-                // +-------------------------------------------+
-
-                        // BEAMFORMER_MAXPOTENTIAL
-                        Property* beamformer_maxsources = new Property("Max number of potential sources","Maximum number of potential sources","BEAMFORMER_MAXPOTENTIAL",Property::P_INT_POS);
-
-                        // BEAMFORMER_NUMBERMAX
-                        Property* beamformer_numbermax = new Property("Number of maxima kept in memory","Number of maxima to keep in memory in order to find the one that best fits","BEAMFORMER_NUMBERMAX",Property::P_INT_POS);
-
-                        // BEAMFORMER_MAXTHRESHOLD
-                        Property* beamformer_maxthres = new Property("Threshold for maxima","Threshold for maxima that are considered relative to the maximum","BEAMFORMER_MAXTHRESHOLD",Property::P_FLOAT_POS);
-
-                        // BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL
-                        Property* beamformer_angleh = new Property("Horizontal angle tolerance (first)","Horizontal angle tolerance for the first source (rad)","BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL",Property::P_FLOAT_POS);
-
-                        // BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL_NEXT
-                        Property* beamformer_anglehnext = new Property("Horizontal angle tolerance (next)","Horizontal angle tolerance for the next sources (rad)","BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL_NEXT",Property::P_FLOAT_POS);
-
-                        // BEAMFORMER_ANGLE_TOLERANCE_VERTICAL
-                        Property* beamformer_anglev = new Property("Vertical angle tolerance","Vertical angle tolerance for the all sources (rad)","BEAMFORMER_ANGLE_TOLERANCE_VERTICAL",Property::P_FLOAT_POS);
-
-                        // BEAMFORMER_MAXRANGE
-                        Property* beamformer_scanrange = new Property("Scan range","Range of maxima scanned","BEAMFORMER_MAXRANGE",Property::P_INT_POS);
-
-                        // BEAMFORMER_DELAYS_RESET
-                        Property* beamformer_delaysreset = new Property("Number of delays reset","Number of delays reset after each potential source","BEAMFORMER_DELAYS_RESET",Property::P_INT_POS);
+                        // BEAMFORMER_RESETRANGE
+                        Property* beamformer_resetrange = new Property("Number of delays reset","Number of delays reset after each potential source","BEAMFORMER_RESETRANGE",Property::P_INT_POS);
 
                         beamformer->addChild(beamformer_maxsources);
-                        beamformer->addChild(beamformer_numbermax);
-                        beamformer->addChild(beamformer_maxthres);
-                        beamformer->addChild(beamformer_angleh);
-                        beamformer->addChild(beamformer_anglehnext);
-                        beamformer->addChild(beamformer_anglev);
-                        beamformer->addChild(beamformer_scanrange);
-                        beamformer->addChild(beamformer_delaysreset);
-
-                beamformer->addChild(beamformer_mics);
+                        beamformer->addChild(beamformer_et);
+                        beamformer->addChild(beamformer_filterrange);
+                        beamformer->addChild(beamformer_resetrange);
 
         // +---------------------------------------------------+
         // | B. Particle filters                               |
@@ -796,7 +786,7 @@ Property* ParametersManager::initSystem()
                 Property* mixture = new Property("Mixture","","mixture",Property::P_NOTYPE);
 
                     // MIXTURE_MAX_FILTERS
-                    Property* mixture_nbfilters = new Property("Max number of filters","Maximum number of filters to track sources","MIXTURE_MAX_FILTERS",Property::P_INT_POS);
+                    Property* mixture_nbfilters = new Property("Max number of tracked sources","Maximum number of sources that can be tracked simultaneously","GEN_DYNSOURCES",Property::P_INT_POS);
 
                     // MIXTURE_PNEW
                     Property* mixture_pnew = new Property("P_new", "Probability a new source appears", "MIXTURE_PNEW", Property::P_FLOAT_POS);
@@ -804,13 +794,9 @@ Property* ParametersManager::initSystem()
                     // MIXTURE_PFALSE
                     Property* mixture_pfalse = new Property("P_false", "Probability a false detection occurs", "MIXTURE_PFALSE", Property::P_FLOAT_POS);
 
-                    // MIXTURE_ET
-                    Property* mixture_et = new Property("Et","Threshold to normalize the energy from the beamformer","MIXTURE_ET", Property::P_FLOAT_POS);
-
                     mixture->addChild(mixture_nbfilters);
                     mixture->addChild(mixture_pnew);
                     mixture->addChild(mixture_pfalse);
-                    mixture->addChild(mixture_et);
 
                     // +-----------------------------------------------+
                     // | I. New source                                 |
@@ -958,6 +944,7 @@ Property* ParametersManager::initSystem()
 
                 micst->addChild(micst_mcra);
 
+        system->addChild(geo);
         system->addChild(beamformer);
         system->addChild(filter);
         system->addChild(mixture);
@@ -1029,47 +1016,45 @@ void ParametersManager::loadSystemDefault()
 
     // Load properties from the default parameters in the core
 
+    // Microphones
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC1_GAIN"), parametersStruct.P_GEO_MICS_MIC1_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC1_X"), parametersStruct.P_GEO_MICS_MIC1_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC1_Y"), parametersStruct.P_GEO_MICS_MIC1_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC1_Z"), parametersStruct.P_GEO_MICS_MIC1_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC2_GAIN"), parametersStruct.P_GEO_MICS_MIC2_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC2_X"), parametersStruct.P_GEO_MICS_MIC2_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC2_Y"), parametersStruct.P_GEO_MICS_MIC2_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC2_Z"), parametersStruct.P_GEO_MICS_MIC2_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC3_GAIN"), parametersStruct.P_GEO_MICS_MIC3_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC3_X"), parametersStruct.P_GEO_MICS_MIC3_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC3_Y"), parametersStruct.P_GEO_MICS_MIC3_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC3_Z"), parametersStruct.P_GEO_MICS_MIC3_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC4_GAIN"), parametersStruct.P_GEO_MICS_MIC4_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC4_X"), parametersStruct.P_GEO_MICS_MIC4_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC4_Y"), parametersStruct.P_GEO_MICS_MIC4_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC4_Z"), parametersStruct.P_GEO_MICS_MIC4_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC5_GAIN"), parametersStruct.P_GEO_MICS_MIC5_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC5_X"), parametersStruct.P_GEO_MICS_MIC5_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC5_Y"), parametersStruct.P_GEO_MICS_MIC5_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC5_Z"), parametersStruct.P_GEO_MICS_MIC5_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC6_GAIN"), parametersStruct.P_GEO_MICS_MIC6_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC6_X"), parametersStruct.P_GEO_MICS_MIC6_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC6_Y"), parametersStruct.P_GEO_MICS_MIC6_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC6_Z"), parametersStruct.P_GEO_MICS_MIC6_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC7_GAIN"), parametersStruct.P_GEO_MICS_MIC7_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC7_X"), parametersStruct.P_GEO_MICS_MIC7_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC7_Y"), parametersStruct.P_GEO_MICS_MIC7_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC7_Z"), parametersStruct.P_GEO_MICS_MIC7_Z);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC8_GAIN"), parametersStruct.P_GEO_MICS_MIC8_GAIN);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC8_X"), parametersStruct.P_GEO_MICS_MIC8_X);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC8_Y"), parametersStruct.P_GEO_MICS_MIC8_Y);
+    configurationVector.addElement(QString::fromStdString("GEO_MICS_MIC8_Z"), parametersStruct.P_GEO_MICS_MIC8_Z);
+
     // Beamformer
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MAXPOTENTIAL"), parametersStruct.P_BF_MAXSOURCES);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_NUMBERMAX"), parametersStruct.P_BF_NUMBERMAX);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MAXTHRESHOLD"), parametersStruct.P_BF_VALUETS);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL"), parametersStruct.P_BF_HANGLETOL);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL_NEXT"), parametersStruct.P_BF_HANGLETOLNEXT);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_ANGLE_TOLERANCE_VERTICAL"), parametersStruct.P_BF_VANGLETOL);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MAXRANGE"), parametersStruct.P_BF_RANGE);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_DELAYS_RESET"), parametersStruct.P_BF_RIJDELAYS);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC1_GAIN"), parametersStruct.P_BF_MICSGAIN_1);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC1_X"), parametersStruct.P_BF_MICSPOSITIONS_1_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC1_Y"), parametersStruct.P_BF_MICSPOSITIONS_1_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC1_Z"), parametersStruct.P_BF_MICSPOSITIONS_1_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC2_GAIN"), parametersStruct.P_BF_MICSGAIN_2);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC2_X"), parametersStruct.P_BF_MICSPOSITIONS_2_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC2_Y"), parametersStruct.P_BF_MICSPOSITIONS_2_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC2_Z"), parametersStruct.P_BF_MICSPOSITIONS_2_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC3_GAIN"), parametersStruct.P_BF_MICSGAIN_3);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC3_X"), parametersStruct.P_BF_MICSPOSITIONS_3_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC3_Y"), parametersStruct.P_BF_MICSPOSITIONS_3_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC3_Z"), parametersStruct.P_BF_MICSPOSITIONS_3_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC4_GAIN"), parametersStruct.P_BF_MICSGAIN_4);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC4_X"), parametersStruct.P_BF_MICSPOSITIONS_4_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC4_Y"), parametersStruct.P_BF_MICSPOSITIONS_4_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC4_Z"), parametersStruct.P_BF_MICSPOSITIONS_4_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC5_GAIN"), parametersStruct.P_BF_MICSGAIN_5);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC5_X"), parametersStruct.P_BF_MICSPOSITIONS_5_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC5_Y"), parametersStruct.P_BF_MICSPOSITIONS_5_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC5_Z"), parametersStruct.P_BF_MICSPOSITIONS_5_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC6_GAIN"), parametersStruct.P_BF_MICSGAIN_6);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC6_X"), parametersStruct.P_BF_MICSPOSITIONS_6_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC6_Y"), parametersStruct.P_BF_MICSPOSITIONS_6_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC6_Z"), parametersStruct.P_BF_MICSPOSITIONS_6_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC7_GAIN"), parametersStruct.P_BF_MICSGAIN_7);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC7_X"), parametersStruct.P_BF_MICSPOSITIONS_7_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC7_Y"), parametersStruct.P_BF_MICSPOSITIONS_7_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC7_Z"), parametersStruct.P_BF_MICSPOSITIONS_7_Z);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC8_GAIN"), parametersStruct.P_BF_MICSGAIN_8);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC8_X"), parametersStruct.P_BF_MICSPOSITIONS_8_X);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC8_Y"), parametersStruct.P_BF_MICSPOSITIONS_8_Y);
-    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MIC8_Z"), parametersStruct.P_BF_MICSPOSITIONS_8_Z);
+    configurationVector.addElement(QString::fromStdString("BEAMFORMER_MAXSOURCES"), parametersStruct.P_BF_MAXSOURCES);
+    configurationVector.addElement(QString::fromStdString("BEAMFORMER_ET"), parametersStruct.P_BF_ET);
+    configurationVector.addElement(QString::fromStdString("BEAMFORMER_FILTERRANGE"), parametersStruct.P_BF_FILTERRANGE);
+    configurationVector.addElement(QString::fromStdString("BEAMFORMER_RESETRANGE"), parametersStruct.P_BF_RESETRANGE);
 
     // Filter
     configurationVector.addElement(QString::fromStdString("FILTER_STANDARDDEVIATION"), parametersStruct.P_FILTER_STDDEVIATION);
@@ -1094,10 +1079,9 @@ void ParametersManager::loadSystemDefault()
     configurationVector.addElement(QString::fromStdString("FILTER_BUFFERSIZE"), parametersStruct.P_FILTER_BUFFERSIZE);
 
     // Mixture
-    configurationVector.addElement(QString::fromStdString("MIXTURE_MAX_FILTERS"), parametersStruct.P_MIXTURE_NBFILTERS);
+    configurationVector.addElement(QString::fromStdString("GEN_DYNSOURCES"), parametersStruct.P_GEN_DYNSOURCES);
     configurationVector.addElement(QString::fromStdString("MIXTURE_PNEW"), parametersStruct.P_MIXTURE_PNEW);
     configurationVector.addElement(QString::fromStdString("MIXTURE_PFALSE"), parametersStruct.P_MIXTURE_PFALSE);
-    configurationVector.addElement(QString::fromStdString("MIXTURE_ET"), parametersStruct.P_MIXTURE_ET);
     configurationVector.addElement(QString::fromStdString("MIXTURE_NEWSOURCE_THRESHOLD"), parametersStruct.P_MIXTURE_NEWTHRESHOLD);
     configurationVector.addElement(QString::fromStdString("MIXTURE_CONFIRM_SOURCE_EXISTS"), parametersStruct.P_MIXTURE_CONFIRMEXISTS);
     configurationVector.addElement(QString::fromStdString("MIXTURE_CONFIRM_COUNT_THRESHOLD"), parametersStruct.P_MIXTURE_CONFIRMCOUNTTS);
@@ -1603,47 +1587,46 @@ struct ParametersStruct ParametersManager::getParametersSystem()
 
     // Load properties in the structure of parameters
 
+    // Microphones
+    parametersStruct.P_GEO_MICS_MIC1_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC1_GAIN");
+    parametersStruct.P_GEO_MICS_MIC1_X = configurationVector.getElementFloat("GEO_MICS_MIC1_X");
+    parametersStruct.P_GEO_MICS_MIC1_Y = configurationVector.getElementFloat("GEO_MICS_MIC1_Y");
+    parametersStruct.P_GEO_MICS_MIC1_Z = configurationVector.getElementFloat("GEO_MICS_MIC1_Z");
+    parametersStruct.P_GEO_MICS_MIC2_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC2_GAIN");
+    parametersStruct.P_GEO_MICS_MIC2_X = configurationVector.getElementFloat("GEO_MICS_MIC2_X");
+    parametersStruct.P_GEO_MICS_MIC2_Y = configurationVector.getElementFloat("GEO_MICS_MIC2_Y");
+    parametersStruct.P_GEO_MICS_MIC2_Z = configurationVector.getElementFloat("GEO_MICS_MIC2_Z");
+    parametersStruct.P_GEO_MICS_MIC3_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC3_GAIN");
+    parametersStruct.P_GEO_MICS_MIC3_X = configurationVector.getElementFloat("GEO_MICS_MIC3_X");
+    parametersStruct.P_GEO_MICS_MIC3_Y = configurationVector.getElementFloat("GEO_MICS_MIC3_Y");
+    parametersStruct.P_GEO_MICS_MIC3_Z = configurationVector.getElementFloat("GEO_MICS_MIC3_Z");
+    parametersStruct.P_GEO_MICS_MIC4_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC4_GAIN");
+    parametersStruct.P_GEO_MICS_MIC4_X = configurationVector.getElementFloat("GEO_MICS_MIC4_X");
+    parametersStruct.P_GEO_MICS_MIC4_Y = configurationVector.getElementFloat("GEO_MICS_MIC4_Y");
+    parametersStruct.P_GEO_MICS_MIC4_Z = configurationVector.getElementFloat("GEO_MICS_MIC4_Z");
+    parametersStruct.P_GEO_MICS_MIC5_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC5_GAIN");
+    parametersStruct.P_GEO_MICS_MIC5_X = configurationVector.getElementFloat("GEO_MICS_MIC5_X");
+    parametersStruct.P_GEO_MICS_MIC5_Y = configurationVector.getElementFloat("GEO_MICS_MIC5_Y");
+    parametersStruct.P_GEO_MICS_MIC5_Z = configurationVector.getElementFloat("GEO_MICS_MIC5_Z");
+    parametersStruct.P_GEO_MICS_MIC6_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC6_GAIN");
+    parametersStruct.P_GEO_MICS_MIC6_X = configurationVector.getElementFloat("GEO_MICS_MIC6_X");
+    parametersStruct.P_GEO_MICS_MIC6_Y = configurationVector.getElementFloat("GEO_MICS_MIC6_Y");
+    parametersStruct.P_GEO_MICS_MIC6_Z = configurationVector.getElementFloat("GEO_MICS_MIC6_Z");
+    parametersStruct.P_GEO_MICS_MIC7_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC7_GAIN");
+    parametersStruct.P_GEO_MICS_MIC7_X = configurationVector.getElementFloat("GEO_MICS_MIC7_X");
+    parametersStruct.P_GEO_MICS_MIC7_Y = configurationVector.getElementFloat("GEO_MICS_MIC7_Y");
+    parametersStruct.P_GEO_MICS_MIC7_Z = configurationVector.getElementFloat("GEO_MICS_MIC7_Z");
+    parametersStruct.P_GEO_MICS_MIC8_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC8_GAIN");
+    parametersStruct.P_GEO_MICS_MIC8_X = configurationVector.getElementFloat("GEO_MICS_MIC8_X");
+    parametersStruct.P_GEO_MICS_MIC8_Y = configurationVector.getElementFloat("GEO_MICS_MIC8_Y");
+    parametersStruct.P_GEO_MICS_MIC8_Z = configurationVector.getElementFloat("GEO_MICS_MIC8_Z");
+
     // Beamformer
-    parametersStruct.P_BF_MAXSOURCES = configurationVector.getElementInt("BEAMFORMER_MAXPOTENTIAL");
-    parametersStruct.P_BF_NUMBERMAX = configurationVector.getElementInt("BEAMFORMER_NUMBERMAX");
-    parametersStruct.P_BF_VALUETS = configurationVector.getElementFloat("BEAMFORMER_MAXTHRESHOLD");
-    parametersStruct.P_BF_HANGLETOL = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL");
-    parametersStruct.P_BF_HANGLETOLNEXT = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL_NEXT");
-    parametersStruct.P_BF_VANGLETOL = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_VERTICAL");
-    parametersStruct.P_BF_RANGE = configurationVector.getElementInt("BEAMFORMER_MAXRANGE");
-    parametersStruct.P_BF_RIJDELAYS = configurationVector.getElementInt("BEAMFORMER_DELAYS_RESET");
-    parametersStruct.P_BF_MICSGAIN_1 = configurationVector.getElementFloat("BEAMFORMER_MIC1_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_1_X = configurationVector.getElementFloat("BEAMFORMER_MIC1_X");
-    parametersStruct.P_BF_MICSPOSITIONS_1_Y = configurationVector.getElementFloat("BEAMFORMER_MIC1_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_1_Z = configurationVector.getElementFloat("BEAMFORMER_MIC1_Z");
-    parametersStruct.P_BF_MICSGAIN_2 = configurationVector.getElementFloat("BEAMFORMER_MIC2_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_2_X = configurationVector.getElementFloat("BEAMFORMER_MIC2_X");
-    parametersStruct.P_BF_MICSPOSITIONS_2_Y = configurationVector.getElementFloat("BEAMFORMER_MIC2_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_2_Z = configurationVector.getElementFloat("BEAMFORMER_MIC2_Z");
-    parametersStruct.P_BF_MICSGAIN_3 = configurationVector.getElementFloat("BEAMFORMER_MIC3_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_3_X = configurationVector.getElementFloat("BEAMFORMER_MIC3_X");
-    parametersStruct.P_BF_MICSPOSITIONS_3_Y = configurationVector.getElementFloat("BEAMFORMER_MIC3_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_3_Z = configurationVector.getElementFloat("BEAMFORMER_MIC3_Z");
-    parametersStruct.P_BF_MICSGAIN_4 = configurationVector.getElementFloat("BEAMFORMER_MIC4_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_4_X = configurationVector.getElementFloat("BEAMFORMER_MIC4_X");
-    parametersStruct.P_BF_MICSPOSITIONS_4_Y = configurationVector.getElementFloat("BEAMFORMER_MIC4_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_4_Z = configurationVector.getElementFloat("BEAMFORMER_MIC4_Z");
-    parametersStruct.P_BF_MICSGAIN_5 = configurationVector.getElementFloat("BEAMFORMER_MIC5_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_5_X = configurationVector.getElementFloat("BEAMFORMER_MIC5_X");
-    parametersStruct.P_BF_MICSPOSITIONS_5_Y = configurationVector.getElementFloat("BEAMFORMER_MIC5_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_5_Z = configurationVector.getElementFloat("BEAMFORMER_MIC5_Z");
-    parametersStruct.P_BF_MICSGAIN_6 = configurationVector.getElementFloat("BEAMFORMER_MIC6_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_6_X = configurationVector.getElementFloat("BEAMFORMER_MIC6_X");
-    parametersStruct.P_BF_MICSPOSITIONS_6_Y = configurationVector.getElementFloat("BEAMFORMER_MIC6_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_6_Z = configurationVector.getElementFloat("BEAMFORMER_MIC6_Z");
-    parametersStruct.P_BF_MICSGAIN_7 = configurationVector.getElementFloat("BEAMFORMER_MIC7_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_7_X = configurationVector.getElementFloat("BEAMFORMER_MIC7_X");
-    parametersStruct.P_BF_MICSPOSITIONS_7_Y = configurationVector.getElementFloat("BEAMFORMER_MIC7_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_7_Z = configurationVector.getElementFloat("BEAMFORMER_MIC7_Z");
-    parametersStruct.P_BF_MICSGAIN_8 = configurationVector.getElementFloat("BEAMFORMER_MIC8_GAIN");
-    parametersStruct.P_BF_MICSPOSITIONS_8_X = configurationVector.getElementFloat("BEAMFORMER_MIC8_X");
-    parametersStruct.P_BF_MICSPOSITIONS_8_Y = configurationVector.getElementFloat("BEAMFORMER_MIC8_Y");
-    parametersStruct.P_BF_MICSPOSITIONS_8_Z = configurationVector.getElementFloat("BEAMFORMER_MIC8_Z");
+    parametersStruct.P_BF_MAXSOURCES = configurationVector.getElementInt("BEAMFORMER_MAXSOURCES");
+    parametersStruct.P_BF_ET = configurationVector.getElementFloat("BEAMFORMER_ET");
+    parametersStruct.P_BF_FILTERRANGE = configurationVector.getElementInt("BEAMFORMER_FILTERRANGE");
+    parametersStruct.P_BF_RESETRANGE = configurationVector.getElementInt("BEAMFORMER_RESETRANGE");
+
 
     // Filter
     parametersStruct.P_FILTER_STDDEVIATION = configurationVector.getElementFloat("FILTER_STANDARDDEVIATION");
@@ -1668,10 +1651,9 @@ struct ParametersStruct ParametersManager::getParametersSystem()
     parametersStruct.P_FILTER_BUFFERSIZE = configurationVector.getElementInt("FILTER_BUFFERSIZE");
 
     // Mixture
-    parametersStruct.P_MIXTURE_NBFILTERS = configurationVector.getElementInt("MIXTURE_MAX_FILTERS");
+    parametersStruct.P_GEN_DYNSOURCES = configurationVector.getElementInt("P_GEN_DYNSOURCES");
     parametersStruct.P_MIXTURE_PNEW = configurationVector.getElementFloat("MIXTURE_PNEW");
     parametersStruct.P_MIXTURE_PFALSE = configurationVector.getElementFloat("MIXTURE_PFALSE");
-    parametersStruct.P_MIXTURE_ET = configurationVector.getElementFloat("MIXTURE_ET");
     parametersStruct.P_MIXTURE_NEWTHRESHOLD = configurationVector.getElementFloat("MIXTURE_NEWSOURCE_THRESHOLD");
     parametersStruct.P_MIXTURE_CONFIRMEXISTS = configurationVector.getElementFloat("MIXTURE_CONFIRM_SOURCE_EXISTS");
     parametersStruct.P_MIXTURE_CONFIRMCOUNTTS = configurationVector.getElementFloat("MIXTURE_CONFIRM_COUNT_THRESHOLD");

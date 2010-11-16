@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Rij - Header                                                      *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
- * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Version: 1.2.0                                                              *
+ * Date: November 10th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,74 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef RIJ_H
+#define RIJ_H
+
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Localisation/delays.h"
+#include "../Utilities/fft.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structures                                                                  *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objRij
 {
 
-    struct objOverall tmp;
+    // +-----------------------------------------------------------------------+
+    // | Parameters                                                            |
+    // +-----------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    unsigned int RIJ_FRAMESIZE;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    signed int RIJ_FILTERRANGE;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    signed int RIJ_RESETRANGE;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    // +-----------------------------------------------------------------------+
+    // | Objects                                                               |
+    // +-----------------------------------------------------------------------+
 
-    return tmp;
+    struct objFFT* myFFT;
+    struct objMicrophones* myMicrophones;
 
-}
+    // +-----------------------------------------------------------------------+
+    // | Parameters                                                            |
+    // +-----------------------------------------------------------------------+
+
+    signed int delayMin;
+    signed int delayMax;
+
+    float** freqReal;
+    float** freqImag;
+
+    float** crossCorr;
+    float** crossCorrFiltered;
+
+    float* workingArray1Real;
+    float* workingArray1Imag;
+    float* workingArray2Real;
+    float* workingArray2Imag;
+
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+    void rijInit(struct objRij* myRij, struct ParametersStruct* myParameters, struct objMicrophones* myMicrophones, struct objDelays* myDelays, unsigned int frameSize, unsigned int filterRange, unsigned int resetRange);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    void rijTerminate(struct objRij* myRij);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    void rijLoadFrame(struct objRij* myRij, unsigned int indexMic, float* frameReal, float* frameImag);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+    void rijProcess(struct objRij* myRij);
 
-    free((void*) myContext.myParameters);
+    void rijRemoveSource(struct objRij* myRij, struct objDelays* myDelays, unsigned int indexPoint);
 
-}
+    inline float rijGetEnergyFromMics(struct objRij* myRij, unsigned int iMic, unsigned int jMic, signed int delay);
+
+    inline float rijGetEnergyFromPair(struct objRij* myRij, unsigned int indexPair, signed int delay);
+
+#endif

@@ -36,13 +36,13 @@
 extern "C" {
 #endif
 
-#include "micSoundTrack.h"
-#include "parameters.h"
-#include "dynamicMemory.h"
-#include "randGen.h"
-#include "fft.h"
-#include "filter.h"
-#include "mixture.h"
+//#include "micSoundTrack.h"
+//#include "parameters.h"
+//#include "dynamicMemory.h"
+//#include "randGen.h"
+//#include "fft.h"
+//#include "filter.h"
+//#include "mixture.h"
 
 #ifdef __cplusplus
 }

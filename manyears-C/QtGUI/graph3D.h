@@ -8,7 +8,7 @@
 #include "sphereObj.h"
 #include "sourceBuffer.h"
 
-#include "sphere.h"
+//#include "sphere.h"
 
 class Graph3D: public QGLWidget
 {

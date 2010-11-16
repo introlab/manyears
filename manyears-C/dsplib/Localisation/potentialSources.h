@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Potential Sources - Header                                        *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: June 29th, 2010                                                       *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,56 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef POTENTIALSOURCES_H
+#define POTENTIALSOURCES_H
+
+#include "../parameters.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structures                                                                  *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objPotentialSources
 {
 
-    struct objOverall tmp;
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+        // Maximum number of potential sources
+        int BF_MAXSOURCES;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+        // Sources position
+        float **sourcesPosition;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+        // Sources probability (between 0 and 1)
+        float *sourcesProbability;
 
-    return tmp;
+        // Number of potential sources
+        int numberSources;
 
-}
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+void potentialSourcesInit(struct objPotentialSources *myPotentialSources, struct ParametersStruct *myParameters);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+unsigned int potentialSourcesGetNumberSources(struct objPotentialSources *myPotentialSources);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+float potentialSourcesGetX(struct objPotentialSources *myPotentialSources, unsigned int sourceIndex);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+float potentialSourcesGetY(struct objPotentialSources *myPotentialSources, unsigned int sourceIndex);
 
-    free((void*) myContext.myParameters);
+float potentialSourcesGetZ(struct objPotentialSources *myPotentialSources, unsigned int sourceIndex);
 
-}
+float potentialSourcesGetProbability(struct objPotentialSources *myPotentialSources, unsigned int sourceIndex);
+
+void potentialSourcesTerminate(struct objPotentialSources *myPotentialSources);
+
+#endif

@@ -1,5 +1,5 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: Sphere - Header                                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
@@ -87,61 +87,56 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef SPHERE_H
+#define SPHERE_H
 
-// =============================================================================
+#include <math.h>
+
+#include "../Utilities/dynamicMemory.h"
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Structures                                                                  *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+    struct objSphere
+    {
 
-#ifdef USE_SIMD
+        // +-------------------------------------------------------------------+
+        // | Parameters                                                        |
+        // +-------------------------------------------------------------------+
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+        // Number of recursive levels to generate the points on the sphere
+        int SPHERE_NUMBERLEVELS;
 
-#ifdef __GNUC__
+        // Number of triangles according to the number of levels
+        // SPHERE_NUMBERTRIANGLES = 20 * 4^(SPHERE_NUBMERLEVELS)
+        int SPHERE_NUMBERTRIANGLES;
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+        // Number of points according to the number of levels
+        // SPHERE_NUMBERPOINTS = SPHERE_NUMBERTRIANGLES / 2 + 2
+        int SPHERE_NUMBERPOINTS;
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+        // +-------------------------------------------------------------------+
+        // | Variables                                                         |
+        // +-------------------------------------------------------------------+
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+        // Points on the sphere: [SPHERE_NUMBERPOINTS][3]
+        float** spherePoints;
 
-#endif //USE_SIMD
+    };
 
-// =============================================================================
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
 
+    void sphereInit(struct objSphere *mySphere, int numberLevels);
 
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    void sphereClone(struct objSphere *sourceSphere, struct objSphere *destSphere);
+
+    void sphereTerminate(struct objSphere *mySphere);
+
+    inline float sphereGetX(struct objSphere* mySphere, unsigned int indexPoint);
+    inline float sphereGetY(struct objSphere* mySphere, unsigned int indexPoint);
+    inline float sphereGetZ(struct objSphere* mySphere, unsigned int indexPoint);
 
 #endif

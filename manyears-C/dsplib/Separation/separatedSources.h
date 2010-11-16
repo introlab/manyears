@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Separated Sources - Header                                        *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: September 9th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,63 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef SEPARATEDSOURCES_H
+#define SEPARATEDSOURCES_H
+
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/idManager.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Types (Do not edit)                                                         *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+// Define the value for an ID that represents no source
+#define      GSS_NOSOURCE              ID_NOSOURCE
+
+struct objSeparatedSources
 {
 
-    struct objOverall tmp;
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+        // Maximum number of separated sources
+        int GSS_NBSOURCES;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+        // Size of a long frame
+        int GSS_LONGFRAMESIZE;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+        // Sources ID
+        struct objIdList sourcesID;
 
-    return tmp;
+        // Sources frames
+        float** sourcesFramesReal;
+        float** sourcesFramesImag;
 
-}
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+void separatedSourcesInit(struct objSeparatedSources *mySeparatedSources, struct ParametersStruct *myParameters);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+unsigned int separatedSourcesGetMaxNumberSources(struct objSeparatedSources *mySeparatedSources);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+unsigned int separatedSourcesGetNumberSeparatedSources(struct objSeparatedSources *mySeparatedSources);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+ID_TYPE separatedSourcesGetID(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex);
 
-    free((void*) myContext.myParameters);
+float separatedSourcesGetFrameReal(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex, unsigned int k);
 
-}
+float separatedSourcesGetFrameImag(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex, unsigned int k);
+
+void separatedSourcesTerminate(struct objSeparatedSources *mySeparatedSources);
+
+#endif

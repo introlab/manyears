@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: idList - Header                                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: November 1st , 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,41 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef IDLIST_H
+#define IDLIST_H
 
-/*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
- ******************************************************************************/
+#include "../parameters.h"
+#include "../Utilities/idManager.h"
 
-struct objOverall createEmptyOverallContext()
+#define         ID_NOTFOUND             -1
+
+struct objIdList
 {
 
-    struct objOverall tmp;
+    ID_TYPE* list;
+    unsigned int maxNElements;
+    unsigned int nElements;
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+};
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+void idListInit(struct objIdList* myIdList, unsigned int maxNElements);
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+void idListTerminate(struct objIdList* myIdList);
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+void idListReset(struct objIdList* myIdList);
 
-    return tmp;
+signed int idListAdd(struct objIdList* myIdList, ID_TYPE ID);
 
-}
+signed int idListDelete(struct objIdList* myIdList, ID_TYPE ID);
 
-/*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
- ******************************************************************************/
+signed int idListGetIndex(struct objIdList* myIdList, ID_TYPE ID);
 
-void deleteOverallContext(struct objOverall myContext)
-{
+ID_TYPE idListGetID(struct objIdList* myIdList, unsigned int index);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+unsigned int idListGetMaxNElements(struct objIdList* myIdList);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+unsigned int idListGetNElements(struct objIdList* myIdList);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+void idListCompare(struct objIdList* myIdListOld, struct objIdList* myIdListNew, struct objIdList* myIdListAdded, struct objIdList* myIdListDeleted);
 
-    free((void*) myContext.myParameters);
-
-}
+#endif

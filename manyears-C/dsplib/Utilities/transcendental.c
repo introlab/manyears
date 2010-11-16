@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: transcendental - Source Code                                      *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: November 1st , 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,125 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#include "../Utilities/transcendental.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
+ * transcendentalInit                                                          *
  * --------------------------------------------------------------------------- *
  *                                                                             *
- * Inputs:      (none)                                                         *
+ * Inputs:      myTranscendental        The object to be initialized           *
  *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
+ * Outputs:     myTranscendental        The initialized object                 *
  *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
+ * Description: This function initializes the objTranscendental object         *
  *                                                                             *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+void transcendentalInit(struct objTranscendental* myTranscendental)
 {
 
-    struct objOverall tmp;
+    float numberElements;
+    unsigned int numberElementsRounded;
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    signed int index;
+    float v;
+    float intPart;
+    float fracPart;
+    float value;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    const float table[21] = {0.75008,0.93640,1.11688,1.28852,1.45013,1.60184,1.74422,
+                             1.87812,2.00448,2.12417,2.23799,2.34656,2.45053,2.55031,
+                             2.64646,2.73921,2.82895,2.91602,3.00049,3.08265,3.16270};
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    // Save parameters
+    myTranscendental->interval = TRANSCENDENTAL_INTERVAL;
+    myTranscendental->minValue = TRANSCENDENTAL_MINVALUE;
+    myTranscendental->maxValue = TRANSCENDENTAL_MAXVALUE;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    // Generate the array
+    numberElements = (myTranscendental->maxValue - myTranscendental->minValue) / myTranscendental->interval;
+    numberElementsRounded = floor(numberElements);
+    myTranscendental->numberElements = numberElementsRounded;
+    myTranscendental->results = (float*) newTable1D(myTranscendental->numberElements, sizeof(float));
 
-    return tmp;
+    // Fill the array
+    v = 0.0;
+
+    for (index = 0; index < myTranscendental->numberElements; index++)
+    {
+
+        if (v <= 9.5)
+        {
+            intPart = floor(2*v);
+            fracPart = 2*v - intPart;
+
+            value = ((1-fracPart) * table[(unsigned int) intPart] +
+                    fracPart * table[((unsigned int) intPart) + 1]) /
+                    sqrt(v + 0.0001);
+
+        }
+        else
+        {
+            value = 1.0;
+        }
+
+        myTranscendental->results[index] = value;
+        v += myTranscendental->interval;
+
+    }
 
 }
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
+ * transcendentalTerminate                                                     *
  * --------------------------------------------------------------------------- *
  *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
+ * Inputs:      myTranscendental        The object to be terminated            *
  *                                                                             *
  * Outputs:     (none)                                                         *
  *                                                                             *
- * Description: This function frees the memory used by the objects.            *
+ * Description: This function terminates the objTranscendental object          *
  *                                                                             *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
+void transcendentalTerminate(struct objTranscendental* myTranscendental)
 {
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    // Free memory
+    deleteTable1D((void*) myTranscendental->results);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+}
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+/*******************************************************************************
+ * transcendentalEvaluate                                                      *
+ * --------------------------------------------------------------------------- *
+ *                                                                             *
+ * Inputs:      myTranscendental        The object to be used                  *
+ *              value                   The argument of the transcendental     *
+ *                                      equation                               *
+ *                                                                             *
+ * Outputs:     (float)                 The transcendental value               *
+ *                                                                             *
+ * Description: This function evaluates a hardcoded transcendental function    *
+ *                                                                             *
+ ******************************************************************************/
 
-    free((void*) myContext.myParameters);
+float transcendentalEvaluate(struct objTranscendental* myTranscendental, float value)
+{
+
+    int index;
+
+    index = ((unsigned int) floor((value / myTranscendental->interval))) + 1;
+
+    if (index < 0)
+    {
+        index = 0;
+    }
+    if (index > (myTranscendental->numberElements - 1))
+    {
+        index = myTranscendental->numberElements - 1;
+    }
+
+    return myTranscendental->results[index];
 
 }

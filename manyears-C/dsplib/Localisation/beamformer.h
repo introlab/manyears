@@ -1,12 +1,12 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: Beamformer - Header                                               *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
- * Version: 1.1.0                                                              *
- * Date: June 29th, 2010                                                       *
+ * Version: 1.2.0                                                              *
+ * Date: November 9th, 2010                                                    *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,61 +87,73 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef BEAMFORMER_H
+#define BEAMFORMER_H
 
-// =============================================================================
+#include <math.h>
+
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Localisation/delays.h"
+#include "../Localisation/potentialSources.h"
+#include "../Localisation/rij.h"
+#include "../Localisation/sphere.h"
+#include "../Preprocessing/preprocessor.h"
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Structures                                                                  *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+struct objBeamformer
+{
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-#ifdef USE_SIMD
+    // Define the number of levels for the sphere
+    int BF_SPHERENBLEVELS;
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+    // Define the maximum number of sources that can be found
+    int BF_MAXSOURCES;
 
-#ifdef __GNUC__
+    // Define the range where the neighbour delays are used to refine
+    // the result
+    int BF_FILTERRANGE;
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+    // Define the number of delays next to the main delay to set to zero
+    // to find the peaks after the first one
+    int BF_RESETRANGE;
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+    // Threshold in order to get Pq from beamformer values
+    float BF_ET;
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-#endif //USE_SIMD
+    struct objMicrophones* myMicrophones;
 
-// =============================================================================
+    struct objSphere* mySphere;
 
+    struct objDelays* myDelays;
 
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    struct objRij* myRij;
+
+    signed int* maxIndexes;
+    float* maxValues;
+
+};
+
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
+
+    void beamformerInit(struct objBeamformer* myBeamformer, struct ParametersStruct* myParameters, struct objMicrophones* myMicrophones);
+
+    void beamformerTerminate(struct objBeamformer* myBeamformer);
+
+    void beamformerFindMaxima(struct objBeamformer *myBeamformer, struct objPreprocessor *myPreprocessor, struct objPotentialSources *mySources);
+
 
 #endif

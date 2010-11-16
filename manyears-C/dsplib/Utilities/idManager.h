@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: idManager - Header                                                *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: November 1st , 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,102 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef IDMANAGER_H
+#define IDMANAGER_H
+
+#include "../Utilities/dynamicMemory.h"
+#include <stdio.h>
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Constants                                                                   *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
-{
+// No source special ID
+#define     ID_NOSOURCE             -1
 
-    struct objOverall tmp;
+// No ID available
+#define     ID_NOID                 0
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+// Minimum ID value
+#define     ID_MIN                  1
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
-
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
-
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
-
-    return tmp;
-
-}
+// Maximum ID value
+#define     ID_MAX                  9999
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Types (do not edit)                                                         *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
+// Type of variables used to store ID
+#define     ID_TYPE                 signed int
+
+// Null pointer
+#define     ID_NULLPTR              0x0
+
+/*******************************************************************************
+ * Structure                                                                   *
+ ******************************************************************************/
+
+// +---------------------------------------------------------------------------+
+// | ID Object                                                                 |
+// +---------------------------------------------------------------------------+
+
+struct objID
 {
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    // ID value
+    ID_TYPE id;
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+    // Pointer to the next ID object
+    struct objID* next;
 
-    free((void*) myContext.myParameters);
+};
 
-}
+// +---------------------------------------------------------------------------+
+// | ID Manager Object                                                         |
+// +---------------------------------------------------------------------------+
+
+struct objIDManager
+{
+
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+    // List of ID objects
+    struct objID* listIDs;
+
+    // Pointer to the first used ID object
+    struct objID* firstUsed;
+
+    // Pointer to the first valid ID object
+    struct objID* firstValid;
+
+    // Pointer to the last valid ID object
+    struct objID* lastValid;
+
+    // Number of IDs used
+    unsigned int nUsedIDs;
+
+    // Number of available IDs
+    unsigned int nAvailableIDs;
+
+};
+
+void idManagerInit(struct objIDManager* myIDManager);
+
+void idManagerTerminate(struct objIDManager* myIDManager);
+
+ID_TYPE idManagerReserveID(struct objIDManager* myIDManager);
+
+void idManagerDeleteID(struct objIDManager* myIDManager, ID_TYPE ID);
+
+void idManagerRestoreID(struct objIDManager* myIDManager, ID_TYPE ID);
+
+void idManagerPrintf(struct objIDManager* myIDManager);
+
+#endif

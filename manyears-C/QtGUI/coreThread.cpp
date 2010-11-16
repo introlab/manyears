@@ -108,7 +108,52 @@ void CoreThread::run()
     this->libraryContext.myParameters = new struct ParametersStruct;
     *(this->libraryContext.myParameters) = this->libraryParameters;
 
-    beamformerInit(this->libraryContext.myBeamformer, this->libraryContext.myParameters);
+    microphonesInit(this->libraryContext.myMicrophones, 8);
+
+    microphonesAdd(this->libraryContext.myMicrophones, 0,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC1_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC1_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC1_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC1_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 1,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC2_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC2_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC2_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC2_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 2,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC3_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC3_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC3_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC3_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 3,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC4_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC4_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC4_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC4_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 4,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC5_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC5_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC5_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC5_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 5,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC6_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC6_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC6_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC6_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 6,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC7_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC7_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC7_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC7_GAIN);
+    microphonesAdd(this->libraryContext.myMicrophones, 7,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC8_X,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC8_Y,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC8_Z,
+                   this->libraryContext.myParameters->P_GEO_MICS_MIC8_GAIN);
+
+
+    preprocessorInit(this->libraryContext.myPreprocessor, this->libraryContext.myParameters, this->libraryContext.myMicrophones);
+    beamformerInit(this->libraryContext.myBeamformer, this->libraryContext.myParameters, this->libraryContext.myMicrophones);
     mixtureInit(this->libraryContext.myMixture, this->libraryContext.myParameters);
     potentialSourcesInit(this->libraryContext.myPotentialSources, this->libraryContext.myParameters);
     trackedSourcesInit(this->libraryContext.myTrackedSources, this->libraryContext.myParameters);
@@ -140,8 +185,10 @@ void CoreThread::run()
         for (int indexChannel = 0; indexChannel < numberChannels; indexChannel++)
         {
 
-            beamformerPushFrames(this->libraryContext.myBeamformer, hopSize, indexChannel);
-            beamformerAddFrame(this->libraryContext.myBeamformer, buffer[indexChannel], indexChannel, hopSize);
+            preprocessorPushFrames(this->libraryContext.myPreprocessor, hopSize, indexChannel);
+            preprocessorAddFrame(this->libraryContext.myPreprocessor, buffer[indexChannel], indexChannel, hopSize);
+            //beamformerPushFrames(this->libraryContext.myBeamformer, hopSize, indexChannel);
+            //beamformerAddFrame(this->libraryContext.myBeamformer, buffer[indexChannel], indexChannel, hopSize);
 
         }
 
@@ -152,10 +199,17 @@ void CoreThread::run()
         this->inputOutputManager->giveBackBuffer(buffer);
 
         // +-----------------------------------------------+
+        // | Apply preprocessing of the frames            |
+        // +-----------------------------------------------+
+
+        preprocessorProcessFrame(this->libraryContext.myPreprocessor);
+
+        // +-----------------------------------------------+
         // | Find potential sources                        |
         // +-----------------------------------------------+
 
-        beamformerFindMaxima(this->libraryContext.myBeamformer, this->libraryContext.myPotentialSources);
+        beamformerFindMaxima(this->libraryContext.myBeamformer, this->libraryContext.myPreprocessor, this->libraryContext.myPotentialSources);
+        //beamformerFindMaxima(this->libraryContext.myBeamformer, this->libraryContext.myPotentialSources);
 
         // +-----------------------------------------------+
         // | Find tracked sources                          |
@@ -174,7 +228,7 @@ void CoreThread::run()
             tmpPotential.pushSource(PotentialSource(potentialSourcesGetX(this->libraryContext.myPotentialSources, indexSource),
                                                     potentialSourcesGetY(this->libraryContext.myPotentialSources, indexSource),
                                                     potentialSourcesGetZ(this->libraryContext.myPotentialSources, indexSource),
-                                                    potentialSourcesGetEnergy(this->libraryContext.myPotentialSources, indexSource),
+                                                    potentialSourcesGetProbability(this->libraryContext.myPotentialSources, indexSource),
                                                     indexSource));
         }
         for (int indexReceiver = 0; indexReceiver < this->receiverPotentialSources.size(); indexReceiver++)
@@ -209,6 +263,8 @@ void CoreThread::run()
     // | Terminate                                         |
     // +---------------------------------------------------+
 
+    microphonesTerminate(this->libraryContext.myMicrophones);
+    preprocessorTerminate(this->libraryContext.myPreprocessor);
     beamformerTerminate(this->libraryContext.myBeamformer);
     mixtureTerminate(this->libraryContext.myMixture);
     potentialSourcesTerminate(this->libraryContext.myPotentialSources);
@@ -263,47 +319,45 @@ bool CoreThread::event(QEvent *event)
 
             // Load properties in the core
 
+            // Geometry
+            this->libraryParameters.P_GEO_MICS_MIC1_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC1_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC1_X = configurationVector.getElementFloat("GEO_MICS_MIC1_X");
+            this->libraryParameters.P_GEO_MICS_MIC1_Y = configurationVector.getElementFloat("GEO_MICS_MIC1_Y");
+            this->libraryParameters.P_GEO_MICS_MIC1_Z = configurationVector.getElementFloat("GEO_MICS_MIC1_Z");
+            this->libraryParameters.P_GEO_MICS_MIC2_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC2_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC2_X = configurationVector.getElementFloat("GEO_MICS_MIC2_X");
+            this->libraryParameters.P_GEO_MICS_MIC2_Y = configurationVector.getElementFloat("GEO_MICS_MIC2_Y");
+            this->libraryParameters.P_GEO_MICS_MIC2_Z = configurationVector.getElementFloat("GEO_MICS_MIC2_Z");
+            this->libraryParameters.P_GEO_MICS_MIC3_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC3_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC3_X = configurationVector.getElementFloat("GEO_MICS_MIC3_X");
+            this->libraryParameters.P_GEO_MICS_MIC3_Y = configurationVector.getElementFloat("GEO_MICS_MIC3_Y");
+            this->libraryParameters.P_GEO_MICS_MIC3_Z = configurationVector.getElementFloat("GEO_MICS_MIC3_Z");
+            this->libraryParameters.P_GEO_MICS_MIC4_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC4_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC4_X = configurationVector.getElementFloat("GEO_MICS_MIC4_X");
+            this->libraryParameters.P_GEO_MICS_MIC4_Y = configurationVector.getElementFloat("GEO_MICS_MIC4_Y");
+            this->libraryParameters.P_GEO_MICS_MIC4_Z = configurationVector.getElementFloat("GEO_MICS_MIC4_Z");
+            this->libraryParameters.P_GEO_MICS_MIC5_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC5_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC5_X = configurationVector.getElementFloat("GEO_MICS_MIC5_X");
+            this->libraryParameters.P_GEO_MICS_MIC5_Y = configurationVector.getElementFloat("GEO_MICS_MIC5_Y");
+            this->libraryParameters.P_GEO_MICS_MIC5_Z = configurationVector.getElementFloat("GEO_MICS_MIC5_Z");
+            this->libraryParameters.P_GEO_MICS_MIC6_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC6_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC6_X = configurationVector.getElementFloat("GEO_MICS_MIC6_X");
+            this->libraryParameters.P_GEO_MICS_MIC6_Y = configurationVector.getElementFloat("GEO_MICS_MIC6_Y");
+            this->libraryParameters.P_GEO_MICS_MIC6_Z = configurationVector.getElementFloat("GEO_MICS_MIC6_Z");
+            this->libraryParameters.P_GEO_MICS_MIC7_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC7_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC7_X = configurationVector.getElementFloat("GEO_MICS_MIC7_X");
+            this->libraryParameters.P_GEO_MICS_MIC7_Y = configurationVector.getElementFloat("GEO_MICS_MIC7_Y");
+            this->libraryParameters.P_GEO_MICS_MIC7_Z = configurationVector.getElementFloat("GEO_MICS_MIC7_Z");
+            this->libraryParameters.P_GEO_MICS_MIC8_GAIN = configurationVector.getElementFloat("GEO_MICS_MIC8_GAIN");
+            this->libraryParameters.P_GEO_MICS_MIC8_X = configurationVector.getElementFloat("GEO_MICS_MIC8_X");
+            this->libraryParameters.P_GEO_MICS_MIC8_Y = configurationVector.getElementFloat("GEO_MICS_MIC8_Y");
+            this->libraryParameters.P_GEO_MICS_MIC8_Z = configurationVector.getElementFloat("GEO_MICS_MIC8_Z");
+
             // Beamformer
-            this->libraryParameters.P_BF_MAXSOURCES = configurationVector.getElementInt("BEAMFORMER_MAXPOTENTIAL");
-            this->libraryParameters.P_BF_NUMBERMAX = configurationVector.getElementInt("BEAMFORMER_NUMBERMAX");
-            this->libraryParameters.P_BF_VALUETS = configurationVector.getElementFloat("BEAMFORMER_MAXTHRESHOLD");
-            this->libraryParameters.P_BF_HANGLETOL = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL");
-            this->libraryParameters.P_BF_HANGLETOLNEXT = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_HORIZONTAL_NEXT");
-            this->libraryParameters.P_BF_VANGLETOL = configurationVector.getElementFloat("BEAMFORMER_ANGLE_TOLERANCE_VERTICAL");
-            this->libraryParameters.P_BF_RANGE = configurationVector.getElementInt("BEAMFORMER_MAXRANGE");
-            this->libraryParameters.P_BF_RIJDELAYS = configurationVector.getElementInt("BEAMFORMER_DELAYS_RESET");
-            this->libraryParameters.P_BF_MICSGAIN_1 = configurationVector.getElementFloat("BEAMFORMER_MIC1_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_1_X = configurationVector.getElementFloat("BEAMFORMER_MIC1_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_1_Y = configurationVector.getElementFloat("BEAMFORMER_MIC1_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_1_Z = configurationVector.getElementFloat("BEAMFORMER_MIC1_Z");
-            this->libraryParameters.P_BF_MICSGAIN_2 = configurationVector.getElementFloat("BEAMFORMER_MIC2_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_2_X = configurationVector.getElementFloat("BEAMFORMER_MIC2_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_2_Y = configurationVector.getElementFloat("BEAMFORMER_MIC2_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_2_Z = configurationVector.getElementFloat("BEAMFORMER_MIC2_Z");
-            this->libraryParameters.P_BF_MICSGAIN_3 = configurationVector.getElementFloat("BEAMFORMER_MIC3_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_3_X = configurationVector.getElementFloat("BEAMFORMER_MIC3_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_3_Y = configurationVector.getElementFloat("BEAMFORMER_MIC3_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_3_Z = configurationVector.getElementFloat("BEAMFORMER_MIC3_Z");
-            this->libraryParameters.P_BF_MICSGAIN_4 = configurationVector.getElementFloat("BEAMFORMER_MIC4_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_4_X = configurationVector.getElementFloat("BEAMFORMER_MIC4_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_4_Y = configurationVector.getElementFloat("BEAMFORMER_MIC4_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_4_Z = configurationVector.getElementFloat("BEAMFORMER_MIC4_Z");
-            this->libraryParameters.P_BF_MICSGAIN_5 = configurationVector.getElementFloat("BEAMFORMER_MIC5_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_5_X = configurationVector.getElementFloat("BEAMFORMER_MIC5_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_5_Y = configurationVector.getElementFloat("BEAMFORMER_MIC5_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_5_Z = configurationVector.getElementFloat("BEAMFORMER_MIC5_Z");
-            this->libraryParameters.P_BF_MICSGAIN_6 = configurationVector.getElementFloat("BEAMFORMER_MIC6_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_6_X = configurationVector.getElementFloat("BEAMFORMER_MIC6_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_6_Y = configurationVector.getElementFloat("BEAMFORMER_MIC6_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_6_Z = configurationVector.getElementFloat("BEAMFORMER_MIC6_Z");
-            this->libraryParameters.P_BF_MICSGAIN_7 = configurationVector.getElementFloat("BEAMFORMER_MIC7_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_7_X = configurationVector.getElementFloat("BEAMFORMER_MIC7_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_7_Y = configurationVector.getElementFloat("BEAMFORMER_MIC7_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_7_Z = configurationVector.getElementFloat("BEAMFORMER_MIC7_Z");
-            this->libraryParameters.P_BF_MICSGAIN_8 = configurationVector.getElementFloat("BEAMFORMER_MIC8_GAIN");
-            this->libraryParameters.P_BF_MICSPOSITIONS_8_X = configurationVector.getElementFloat("BEAMFORMER_MIC8_X");
-            this->libraryParameters.P_BF_MICSPOSITIONS_8_Y = configurationVector.getElementFloat("BEAMFORMER_MIC8_Y");
-            this->libraryParameters.P_BF_MICSPOSITIONS_8_Z = configurationVector.getElementFloat("BEAMFORMER_MIC8_Z");
+            this->libraryParameters.P_BF_MAXSOURCES = configurationVector.getElementInt("BEAMFORMER_MAXSOURCES");
+            this->libraryParameters.P_BF_ET = configurationVector.getElementFloat("BEAMFORMER_ET");
+            this->libraryParameters.P_BF_FILTERRANGE = configurationVector.getElementInt("BEAMFORMER_FILTERRANGE");
+            this->libraryParameters.P_BF_RESETRANGE = configurationVector.getElementInt("BEAMFORMER_RESETRANGE");
 
             // Filter
             this->libraryParameters.P_FILTER_STDDEVIATION = configurationVector.getElementFloat("FILTER_STANDARDDEVIATION");
@@ -328,10 +382,9 @@ bool CoreThread::event(QEvent *event)
             this->libraryParameters.P_FILTER_BUFFERSIZE = configurationVector.getElementInt("FILTER_BUFFERSIZE");
 
             // Mixture
-            this->libraryParameters.P_MIXTURE_NBFILTERS = configurationVector.getElementInt("MIXTURE_MAX_FILTERS");
+            this->libraryParameters.P_GEN_DYNSOURCES = configurationVector.getElementInt("GEN_DYNSOURCES");
             this->libraryParameters.P_MIXTURE_PNEW = configurationVector.getElementFloat("MIXTURE_PNEW");
             this->libraryParameters.P_MIXTURE_PFALSE = configurationVector.getElementFloat("MIXTURE_PFALSE");
-            this->libraryParameters.P_MIXTURE_ET = configurationVector.getElementFloat("MIXTURE_ET");
             this->libraryParameters.P_MIXTURE_NEWTHRESHOLD = configurationVector.getElementFloat("MIXTURE_NEWSOURCE_THRESHOLD");
             this->libraryParameters.P_MIXTURE_CONFIRMEXISTS = configurationVector.getElementFloat("MIXTURE_CONFIRM_SOURCE_EXISTS");
             this->libraryParameters.P_MIXTURE_CONFIRMCOUNTTS = configurationVector.getElementFloat("MIXTURE_CONFIRM_COUNT_THRESHOLD");

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: GSS - Header                                                      *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: September 15th, 2010                                                  *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,174 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef GSS_H
+#define GSS_H
+
+#include <math.h>
+
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Preprocessing/preprocessor.h"
+#include "../Tracking/trackedSources.h"
+#include "../Separation/separatedSources.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/matrix.h"
+#include "../Localisation/sphere.h"
+#include "../hardware.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structure                                                                   *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objGSS
 {
 
-    struct objOverall tmp;
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    // Distance of the source from the center of the cube (in meters)
+    int GSS_SOURCEDISTANCE;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    // Sampling rate
+    int GSS_FS;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    // Speed of sound
+    float GSS_C;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    // Maximum number of separated sources
+    int GSS_NBSOURCES;
 
-    return tmp;
+    // Number of samples per frame
+    int GSS_NFRAMES;
 
-}
+    // Half number of samples per frame
+    int GSS_HALFNFRAMES;
+
+    // Half number of samples per frame plus one
+    int GSS_HALFNFRAMESPLUSONE;
+
+    // Lambda
+    float GSS_LAMBDA;
+
+    // Mu
+    float GSS_MU;
+
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+        // +---------------------------------------------------------------+
+        // | General                                                       |
+        // +---------------------------------------------------------------+
+
+        // Defines the smallest delay from a source to a microphone
+        // (this amount is removed from all delays to avoid delaying
+        // signals by too much)
+        int delayOffset;
+
+        // Defines the range of delays
+        int delayMinimum;
+        int delayMaximum;
+
+        // +---------------------------------------------------------------+
+        // | Microphones                                                   |
+        // +---------------------------------------------------------------+
+
+        // Object for the microphones configuration
+        struct objMicrophones* myMicrophones;
+
+        // +---------------------------------------------------------------+
+        // | Sources                                                       |
+        // +---------------------------------------------------------------+
+
+        // Current active sources
+        struct objIdList sourcesIDNow;
+
+        // Position of the active sources
+        float** sourcesPosition;
+
+        // Sources added since last frame
+        struct objIdList sourcesIDAdded;
+
+        // Sources deleted since last frame
+        struct objIdList sourcesIDDeleted;
+
+        // +---------------------------------------------------------------+
+        // | Matrices                                                      |
+        // +---------------------------------------------------------------+
+
+        // x(k)
+        struct objMatrix* x;
+
+        // xH(k)
+        struct objMatrix* xH;
+
+        // y(k)
+        struct objMatrix* y;
+        struct objMatrix* yFull;
+
+        // yH(k)
+        struct objMatrix* yH;
+
+        // Ryy(k)
+        struct objMatrix* Ryy_E;
+
+        // A(k)
+        struct objMatrix* A;
+
+        // AH(k)
+        struct objMatrix* AH;
+
+        // Alpha(k)
+        struct objMatrix* alpha;
+        struct objMatrix* alphatmp;
+
+        // W^n(k)
+        struct objMatrix* Wn;
+        struct objMatrix* Wntmp1;
+
+        // dJ1(k)
+        struct objMatrix* dJ1;
+        struct objMatrix* dJ1tmp1;
+        struct objMatrix* dJ1tmp2;
+        struct objMatrix* dJ1tmp3;
+        struct objMatrix* dJ1tmp4;
+
+        // dJ2(k)
+        struct objMatrix* dJ2;
+        struct objMatrix* dJ2tmp1;
+        struct objMatrix* dJ2tmp2;
+
+        // dJR'(k)
+        struct objMatrix* dJR;
+
+        // +---------------------------------------------------------------+
+        // | Math acceleration                                             |
+        // +---------------------------------------------------------------+
+
+        float** cosTable;
+        float** sinTable;
+
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct objMicrophones* myMicrophones);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+void gssTerminate(struct objGSS* myGSS);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float positionY, float positionZ);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+void gssDeleteSource(struct objGSS* myGSS, ID_TYPE deleteID);
 
-    free((void*) myContext.myParameters);
+void gssUpdateSource(struct objGSS* myGSS, ID_TYPE sourceID, float positionX, float positionY, float positionZ);
 
-}
+void gssRefreshSources(struct objGSS* myGSS, struct objTrackedSources* myTrackedSources);
+
+void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, struct objTrackedSources* myTrackedSources, struct objSeparatedSources* mySeparatedSources);
+
+#endif

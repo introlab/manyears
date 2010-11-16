@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Delays - Header                                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
- * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Version: 1.2.0                                                              *
+ * Date: November 10th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,65 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef DELAYS_H
+#define DELAYS_H
+
+#include <math.h>
+
+#include "../Geometry/microphones.h"
+#include "../Localisation/sphere.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structures                                                                  *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objDelays
 {
 
-    struct objOverall tmp;
+    // +-----------------------------------------------------------------------+
+    // | Parameters                                                            |
+    // +-----------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    float DELAYS_RADIUS;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    unsigned int DELAYS_SPHERENBLEVELS;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    unsigned int FS;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    float C;
 
-    return tmp;
+    // +-----------------------------------------------------------------------+
+    // | Objects                                                               |
+    // +-----------------------------------------------------------------------+
 
-}
+    struct objSphere* mySphere;
+    struct objMicrophones* myMicrophones;
+
+    // +-----------------------------------------------------------------------+
+    // | Variables                                                             |
+    // +-----------------------------------------------------------------------+
+
+    unsigned int nPoints;
+    unsigned int nMics;
+    unsigned int nPairs;
+    signed int** lookup;
+
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+    void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones, struct objSphere* mySphere, float c, float Fs, float radius);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    void delaysTerminate(struct objDelays* myDelays);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    signed int delaysGetMin(struct objDelays* myDelays);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+    signed int delaysGetMax(struct objDelays* myDelays);
 
-    free((void*) myContext.myParameters);
+    inline signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexPair);
 
-}
+    inline signed int delaysGetFromMics(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexMic1, unsigned int indexMic2);
+
+#endif

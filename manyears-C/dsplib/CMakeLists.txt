@@ -4,35 +4,68 @@ MESSAGE( STATUS "Buiding ManyEarsLib Library...")
 ADD_DEFINITIONS(-DUSE_SIMD)
 
 SET(ManyEarsLib_SRCS
-    beamformer.c
-    fft.c
-    filter.c
-    micSoundTrack.c
-    mixture.c
+    Geometry/microphones.c
+    Preprocessing/mcra.c
+    Preprocessing/micst.c
+    Preprocessing/preprocessor.c
+    Localisation/beamformer.c
+    Localisation/delays.c
+    Localisation/potentialSources.c
+    Localisation/rij.c
+    Localisation/sphere.c
+    Tracking/filter.c
+    Tracking/mixture.c
+    Tracking/trackedSources.c
+    Separation/gss.c
+    Separation/postfilter.c
+    Separation/postfilteredSources.c
+    Separation/separatedSources.c
+    Output/output.c
+    Postprocessing/postprocessor.c
+    Utilities/linearCorrelation.c
+    Utilities/dynamicMemory.c
+    Utilities/fft.c
+    Utilities/idList.c
+    Utilities/idManager.c
+    Utilities/matrix.c
+    Utilities/randGen.c
+    Utilities/transcendental.c
+    Utilities/window.c
     parameters.c
-    randGen.c
-    sphere.c
-    dynamicMemory.c
-    potentialSources.c
-    trackedSources.c
     overallContext.c
 )
 
 SET(ManyEarsLib_HEADERS
-    beamformer.h
-    fft.h
-    filter.h
-    hardware.h
-    micSoundTrack.h
-    mixture.h
+    Geometry/microphones.h
+    Preprocessing/mcra.h
+    Preprocessing/micst.h
+    Preprocessing/preprocessor.h
+    Localisation/beamformer.h
+    Localisation/delays.h
+    Localisation/potentialSources.h
+    Localisation/rij.h
+    Localisation/sphere.h
+    Tracking/filter.h
+    Tracking/mixture.h
+    Tracking/trackedSources.h
+    Separation/gss.h
+    Separation/postfilter.h
+    Separation/postfilteredSources.h
+    Separation/separatedSources.h
+    Output/output.h
+    Postprocessing/postprocessor.h
+    Utilities/linearCorrelation.h
+    Utilities/dynamicMemory.h
+    Utilities/fft.h
+    Utilities/idList.h
+    Utilities/idManager.h
+    Utilities/matrix.h
+    Utilities/randGen.h  
+    Utilities/transcendental.c
+    Utilities/window.h
     parameters.h
-    randGen.h
-    sphere.h
-    mathadvanced.h
-    dynamicMemory.h
-    potentialSources.h
-    trackedSources.h
     overallContext.h
+    hardware.h
 )
 
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/ManyEars )

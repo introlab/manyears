@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Window - Source code                                              *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: September 6th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,95 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#include "../Utilities/window.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
+ * Compatibility issues                                                        *
+ ******************************************************************************/
+
+// In some environment, the constant PI is not define with the math.h library
+#ifndef M_PI
+        #define M_PI	3.1415926535897932384626433832795
+#endif
+
+/*******************************************************************************
+ * generateHanningWindow                                                       *
  * --------------------------------------------------------------------------- *
  *                                                                             *
- * Inputs:      (none)                                                         *
+ * Inputs:      window      Pointer to the array that will contain the window  *
+ *              len         Size of the window                                 *
  *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
+ * Outputs:     window      This array is filled with the correct window       *
+ *                          elements                                           *
  *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
+ * Description: This function generate an hanning window with the following    *
+ *              shape:                                                         *
+ *                                                                             *
+ *              w[n] = 0.5 * (1 - cos (2*pi*n/(N+1))                           *
+ *                                                                             *
+ *              n = 1, 2, ... N                                                *
  *                                                                             *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+void generateHanningWindow(float *window, int len)
 {
 
-    struct objOverall tmp;
+    int k;
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    float lenf;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    lenf = ((float) len) + 1.0;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
-
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
-
-    return tmp;
+    for (k = 0; k < len; k++)
+    {
+        window[k] = 0.5 * ( 1.0 - cos( (2 * M_PI * (k+1)) / lenf ) );
+    }
 
 }
 
-/*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
- ******************************************************************************/
-
-void deleteOverallContext(struct objOverall myContext)
+void generatePowerComplementaryWindow(float *window, int len)
 {
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    int k;
+    float tmp;
+    char invert;
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    for (k = 0; k < len; k++)
+    {
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+        tmp = 4.0 * ( (float) k ) / len;
+        invert = 0;
 
-    free((void*) myContext.myParameters);
+        if (tmp < 1)
+        {
+
+        }
+        else if (tmp < 2)
+        {
+          tmp = 2.0 - tmp;
+          invert = 1;
+        }
+        else if (tmp < 3)
+        {
+          tmp = tmp - 2;
+          invert = 1;
+        }
+        else
+        {
+          tmp = 4.0 - tmp;
+        }
+
+        tmp *= 1.9979;
+
+        window[k] = (0.5 - 0.5 * cos(tmp)) * (0.5 - 0.5 * cos(tmp));
+
+        if (invert == 1)
+        {
+          window[k] = 1.0 - window[k];
+        }
+
+        window[k] = sqrt(window[k]);
+
+    }
 
 }

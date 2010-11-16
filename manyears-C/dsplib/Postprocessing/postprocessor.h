@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Postprocessor - Header                                            *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: September 6th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,89 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef POSTPROCESSOR_H
+#define POSTPROCESSOR_H
+
+#include "../Tracking/trackedSources.h"
+#include "../Separation/postfilteredSources.h"
+#include "../Separation/separatedSources.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/fft.h"
+#include "../Utilities/idManager.h"
+#include "../Utilities/window.h"
+#include "../parameters.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structures                                                                  *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objPostprocessor
 {
 
-    struct objOverall tmp;
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    // Size of a frame
+    int PP_FRAMESIZE;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    // Hop size
+    int PP_HOPSIZE;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    // Size of the circular buffer
+    int PP_BUFFERSIZE;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    // Maximum number of separated sources
+    int PP_NSOURCES;
 
-    return tmp;
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-}
+    // Create a FFT object
+    struct objFFT* myFFT;
+
+    // Window
+    float* window;
+
+    // Source IDs
+    ID_TYPE* sourcesID;
+
+    // Source position
+    float** sourcesPosition;
+
+    // Number of active sources
+    int nActiveSources;
+
+    // Circular buffer to perform overlap-add operations
+    float** circularBuffer;
+    int circularBufferIndexWrite;
+    int circularBufferIndexRead;
+
+    // Frames in frequency domain
+    float** frameFrequencyReal;
+    float** frameFrequencyImag;
+
+    // Frames in time domain
+    float** frameTime;
+
+    // Windowed frame in time domain
+    float** frameTimeWindowed;
+
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+    void postprocessorInit(struct objPostprocessor *myPreprocessor, struct ParametersStruct *myParameters);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    void postprocessorTerminate(struct objPostprocessor *myPostprocessor);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    void postprocessorProcessFrameSeparated(struct objPostprocessor *myPostprocessor, struct objTrackedSources* myTrackedSources, struct objSeparatedSources* mySeparatedSources);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+    void postprocessorProcessFramePostfiltered(struct objPostprocessor *myPostprocessor, struct objTrackedSources* myTrackedSources, struct objPostfilteredSources* myPostfilteredSources);
 
-    free((void*) myContext.myParameters);
+    void postprocessorExtractHop(struct objPostprocessor *myPostprocessor, signed int sourceID, float* outputArray);
 
-}
+#endif

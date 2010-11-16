@@ -1,12 +1,12 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: MCRA noise estimator - Header                                     *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: June 29th, 2010                                                       *
+ * Date: August 12th, 2010                                                     *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,61 +87,123 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef MCRA_H
+#define MCRA_H
 
-// =============================================================================
+#include <math.h>
+#include <stdio.h>
+
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Structures                                                                  *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+struct objMcra
+{
 
-#ifdef USE_SIMD
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+    // MCRA: Size of the window to smooth spectrum in frequency
+    int MCRA_BSIZE;
 
-#ifdef __GNUC__
+    // MCRA: Window to smooth spectrum in frequency
+    float* MCRA_WINDOW;
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+    // MCRA: Coefficient to smooth the spectrum in time (alphaS)
+    float MCRA_ALPHAS;
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+    // MCRA: Probability smoothing parameter (alphaP)
+    float MCRA_ALPHAP;
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+    // MCRA: Constant smoothing parameter (alphaD)
+    float MCRA_ALPHAD;
 
-#endif //USE_SIMD
+    // MCRA: Maximum number of frames to refresh (L)
+    int MCRA_L;
 
-// =============================================================================
+    // MCRA: Decision parameter (delta)
+    float MCRA_DELTA;
+
+    // Number of samples per frame (need to be a power of 2)
+    int MICST_FRAMESIZE;
+
+    // Half the number of samples per frame
+    int MICST_HALFFRAMESIZE;
+
+    // Long frame size
+    int MICST_LONGFRAMESIZE;
+
+    // Half the number of samples per long frame size
+    int MICST_HALFLONGFRAMESIZE;
 
 
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+    // Window to smooth the spectrum in frequency
+    // Size: MCRA_BSIZE
+    float* b;                                // b(i) for all i
+
+    // Power spectrum which is smoothed in frequency
+    // Size: MICST_FRAMESIZE
+    float* Sf;                              // Sf(k,l) for all k
+
+    // Power spectrum which is smoothed in time
+    // Size: MICST_FRAMESIZE
+    float* S;                               // S(k,l) for all k
+
+    // Previous power spectrum which was smooted in time
+    // Size: MICST_FRAMESIZE
+    float* S_prev;                          // S(k,l-1) for all k
+
+    // Minimum power spectrum
+    // Size: MICST_FRAMESIZE
+    float* S_min;                           // Smin(k,l) for all k
+
+    // Previous minimum power spectrum
+    // Size: MICST_FRAMESIZE
+    float* S_min_prev;                      // Smin(k,l-1) for all k
+
+    // Temporary power spectrum
+    // Size: MICST_FRAMESIZE
+    float* S_tmp;                           // Stmp(k,l) for all k
+
+    // Previous temporary power spectrum
+    // Size: MICST_FRAMESIZE
+    float* S_tmp_prev;                      // Stmp(k,l-1) for all k
+
+    // Noise
+    // Size: MICST_FRAMESIZE
+    float* lambdaD_next;                    // lambdaD(k,l+1) for all k
+
+    // Previous noise
+    // Size: MICST_FRAMESIZE
+    float* lambdaD;                         // lambdaD(k,l) for all k
+
+    // Counts the number of frame
+    unsigned int l;                         // l
+
+    // Flag if this is the first group of frames to be processed
+    unsigned char firstProcessing;
+
+};
+
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
+
+void mcraInit(struct objMcra *myMCRA, struct ParametersStruct *myParameters, unsigned int size);
+
+void mcraTerminate(struct objMcra *myMCRA);
+
+void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource);
+
+void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma);
 
 #endif

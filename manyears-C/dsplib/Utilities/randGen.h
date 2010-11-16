@@ -1,5 +1,5 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: Random Number Generator - Header                                  *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
@@ -87,61 +87,33 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
-
-// =============================================================================
+#ifndef RANDGEN_H
+#define RANDGEN_H
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Constants                                                                   *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+    // Linear Congruential Generator: X_(n+1) = (a * X_n + c) mod (2^32)
+    #define     RAND_LCG_A          214013
+    #define     RAND_LCG_C          2531011
 
-#ifdef USE_SIMD
+    // Define the number of points in the normal distribution function
+    // Must be an even number
+    #define     RAND_NORMALSIZE     10000
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
 
-#ifdef __GNUC__
+    void initLCG(void);
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+    void LCG(void);
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+    void randInit(void);
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+    float randu(void);
 
-#endif //USE_SIMD
-
-// =============================================================================
-
-
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    float randn(void);
 
 #endif

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Output - Header                                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: November 16th, 2010                                                   *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,109 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef OUTPUT_H
+#define OUTPUT_H
+
+#include <stdio.h>
+#include <string.h>
+
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Postprocessing/postprocessor.h"
+#include "../parameters.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Types (Do not edit)                                                         *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
-{
-
-    struct objOverall tmp;
-
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
-
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
-
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
-
-    return tmp;
-
-}
+    // Define the value for an ID that represents no source
+    #define      OUTPUT_NOSOURCE              -1
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Structure                                                                   *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
+struct objOutput
 {
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+    // Maximum number of sources
+    int OUT_NBSOURCES;
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+    // Hop size
+    int OUT_HOPSIZE;
 
-    free((void*) myContext.myParameters);
+    // Sample rate
+    int OUT_SAMPLERATE;
 
-}
+    // Gain
+    float OUT_GAIN;
+
+    // Size of the wave header
+    int OUT_WAVEHEADERSIZE;
+
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+    // Path of the file name for tracking
+    char* pathTracking;
+
+    // Path of the file name for separation
+    char* pathSeparation;
+
+    // Path of the file name for separation wave
+    char* pathSeparationWave;
+
+    // Wave file header
+    char* waveHeader;
+
+    // Flag to output tracking
+    char outputTracking;
+
+    // Flag to output separation
+    char outputSeparation;
+
+    // List of file names
+    char** listFilenameTracking;
+    char** listFilenameSeparation;
+    char* filenameSeparation;
+    char* filenameSeparationWave;
+
+    // List of IDs
+    signed int* listID;
+
+    // List of file pointers
+    FILE** listPointersTracking;
+    FILE** listPointersSeparation;
+
+    // Wildcard character
+    char wildcardChar;
+
+    // Temporary array
+    float* tmpArray;
+
+    // Flag
+    char deleteSeparated;
+
+};
+
+
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
+
+void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameters, char* myPathTracking, char* myPathSeparation, char* myPathSeparationWave, char wildcardChar);
+
+void outputTerminate(struct objOutput* myOutput);
+
+void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostprocessor);
+
+void outputGeneratePath(struct objOutput* myOutput, const char* model, char* result, ID_TYPE id);
+
+void outputGenerateWave(struct objOutput* myOutput, ID_TYPE id);
+
+#endif

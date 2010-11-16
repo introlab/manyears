@@ -232,46 +232,48 @@ SourceDisplayed PotentialSourceOneFrame::getSourceDisplayed(const int _indexSour
 
     PotentialSource tmp = this->getSourcePotential(_indexSource);
 
-    float v = tmp.getE() / _ET;
+    float Pq = tmp.getE();
 
-    float Pq;
-
-    switch (tmp.getIndex())
-    {
-
-
-    case 0:
-
-        if (v <= 1)
-        {
-            Pq = v*v/2.0;
-        }
-        else
-        {
-            Pq = 1 - 1/(2*v*v);
-        }
-        break;
-
-    case 1:
-
-        Pq = 0.3;
-
-        break;
-
-    case 2:
-
-        Pq = 0.16;
-
-        break;
-
-    case 3:
-
-        Pq = 0.03;
-
-        break;
-
-
-    }
+//    float v = tmp.getE() / _ET;
+//
+//    float Pq;
+//
+//    switch (tmp.getIndex())
+//    {
+//
+//
+//    case 0:
+//
+//        if (v <= 1)
+//        {
+//            Pq = v*v/2.0;
+//        }
+//        else
+//        {
+//            Pq = 1 - 1/(2*v*v);
+//        }
+//        break;
+//
+//    case 1:
+//
+//        Pq = 0.3;
+//
+//        break;
+//
+//    case 2:
+//
+//        Pq = 0.16;
+//
+//        break;
+//
+//    case 3:
+//
+//        Pq = 0.03;
+//
+//        break;
+//
+//
+//    }
 
     //CHANGE COLOR HERE
     QColor myColor(0,0,0);

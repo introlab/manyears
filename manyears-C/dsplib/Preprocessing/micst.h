@@ -1,5 +1,5 @@
-/*******************************************************************************
- * ManyEars: Hardware configuration - Header                                   *
+/******************************************************************************* 
+ * ManyEars: Microphone Sound Track - Header                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
@@ -87,61 +87,139 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifndef HARDWARE_H
-#define HARDWARE_H
+#ifndef MICSOUNDTRACK_H
+#define MICSOUNDTRACK_H
 
-// =============================================================================
+#include <math.h>
+#include <stdio.h>
+
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Preprocessing/mcra.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/fft.h"
 
 /*******************************************************************************
- * Hardware acceleration                                                       *
+ * Structures                                                                  *
  ******************************************************************************/
 
-// This "patch" is required since the type m128 is not always recognized
-// in all environments.
+struct objMicST
+{
 
-#ifdef USE_SIMD
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
 
-#include <xmmintrin.h>
-#include <sys/types.h>
+    // Number of samples per frame (need to be a power of 2)
+    int MICST_FRAMESIZE;  
 
-#ifdef __GNUC__
+    // Half the number of samples per frame
+    int MICST_HALFFRAMESIZE;
 
-#ifndef WIN32
-#define __int64 long
-#define __int8 char
-#define __int16 short
-#define __int32 int
-#define __int64 long
-#endif
+    // Frame overlap (1 = 100%, 0.5 = 50%, 0.25 = 25%, ...)
+    float MICST_OVERLAP;
 
-typedef union {
-    __m128              m128;
-    float               m128_f32[4];
-    unsigned __int64    m128_u64[2];
-    __int8              m128_i8[16];
-    __int16             m128_i16[8];
-    __int32             m128_i32[4];
-    __int64             m128_i64[2];
-    unsigned __int8     m128_u8[16];
-    unsigned __int16    m128_u16[8];
-    unsigned __int32    m128_u32[4];
-} __m128_mod __attribute__ ((aligned (16)));
+    // Speed of sound (in meters / sec)
+    float MICST_C;
 
-#else
-    typedef __m128 __m128_mod;
-#endif
+    // Sampling rate (in samples / sec)
+    int MICST_FS;
 
-#endif //USE_SIMD
+    // Adaptation rate (alphaD)
+    float MICST_ALPHAD;
 
-// =============================================================================
+    // Reverberation decay (gamma)
+    float MICST_GAMMA;
 
+    // Level of reverberation (delta)
+    float MICST_DELTA;
 
-#ifdef __GNUC__
-    #define MSVC_ALIGN_PREFIX
-    #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-#else
-    #define MSVC_ALIGN_PREFIX __declspec(align(16))
-    #define GCC_ALIGN_SUFFIX
-#endif
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+        // +---------------------------------------------------------------+
+        // | General                                                       |
+        // +---------------------------------------------------------------+
+
+        // Gain to equalize microphones
+        float gain;
+
+        // Microphone position on the cube (in meter)
+        // Index 0 : x-coord, Index 1: y-coord, Index 2: z-coord
+        float position[3];
+
+        // Microphone current frame not windowed (in time domain)
+        // Size: MICST_FRAMESIZE
+        float* xtime;                                   // x_nw[n]
+
+        // Microphone current frame windowed (in time domain)
+        // Size: MICST_FRAMESIZE
+        float* xtime_windowed;                          // x[n] = x_nw[n] * w[n]
+
+        // Microphone current frame (in frequency domain)
+        // Size: MICST_FRAMESIZE
+        float* xfreqReal;                               // Re{X[k]} for all k
+        float* xfreqImag;                               // Im{X[k]} for all k
+
+        // Microphone current frame power (in frequency domain)
+        // Size: MICST_FRAMESIZE
+        float* xpower;                                  // |X[k]|^2 for all k
+
+        // Microphone current frame half power (in frequency domain)
+        // Size: MICST_HALFFRAMESIZE
+        float *xhalfpower;                              // |X[k]|^2 for k = 1,...,N/2
+
+        // Microphone previous frame power (in frequency domain)
+        // Size: MICST_FRAMESIZE
+        float* xpower_prev;                             // |X[k]_n-1|^2 for all k
+
+        // Microphone previous frame half power (in frequency domain)
+        // Size: MICST_HALFFRAMESIZE
+        float *xhalfpower_prev;                         // |X[k]_n-1|^2 for k = 1,...,N/2
+
+        // Weighting function
+        // Size: MICST_FRAMESIZE
+        float* zeta;                                    // zeta_n_i(k) for all k
+
+        // Previous weighting function
+        // Size: MICST_FRAMESIZE
+        float* zeta_prev;                               // zeta_n-1_i(k) for all k
+
+        // Estimate of the a priori SNR
+        // Size: MICST_FRAMESIZE
+        float* ksi;                                     // ksi_n_i(k) for all k
+
+        // Noise estimated with the MCRA method
+        // Size: MICST_FRAMESIZE
+        float* sigma;                                   // sigma_i_2(k) for all k
+
+        // Reverberation term
+        // Size: MICST_FRAMESIZE
+        float* lambda;                                  // lambda_rev_n,i(k) for all k
+
+        // Previous reverberation term
+        // Size: MICST_FRAMESIZE
+        float* lambda_prev;                             // lambda_rev_n-1,i(k) for all k
+
+        // Weighted result (real part)
+        // Size: MICST_FRAMESIZE
+        float* weightedResultReal;                      // Real{ zeta(k) * X(k) / |X(k)| } fpr all k
+        float* weightedResultImag;                      // Im{ zeta(k) * X(k) / |X(k)| } for all k
+
+        // Include the mcra object to estimate noise
+        struct objMcra* noiseEstimator;
+
+};
+
+/*******************************************************************************
+ * Prototypes                                                                  *
+ ******************************************************************************/
+
+void micstInit(struct objMicST *myMicST, struct ParametersStruct *myParameters, float *position, float gain);
+
+void micstTerminate(struct objMicST *myMicST);
+
+void micstProcessFrame(struct objMicST *myMicST);
 
 #endif

@@ -1,12 +1,12 @@
 /*******************************************************************************
- * ManyEars: Overall context - Header                                          *
+ * ManyEars: Matrix - Header                                                   *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Author: François Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
  * Modified Code: Simon Brière                                                 *
  * Version: 1.1.0                                                              *
- * Date: July 1st, 2010                                                        *
+ * Date: August 31st, 2010                                                     *
  *                                                                             *
  * Disclaimer: This software is provided "as is". Use it at your own risk.     *
  *                                                                             *
@@ -87,82 +87,97 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "overallContext.h"
+#ifndef MATRIX_H
+#define MATRIX_H
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "../Utilities/dynamicMemory.h"
+#include "../hardware.h"
 
 /*******************************************************************************
- * createEmptyOverallContext                                                   *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      (none)                                                         *
- *                                                                             *
- * Outputs:     (objOverall)    Structure with all the allocated objects for   *
- *                              processing                                     *
- *                                                                             *
- * Description: This function creates a structure with all the objects that    *
- *              need to be used to perform operations in the library.          *
- *                                                                             *
+ * Structure                                                                   *
  ******************************************************************************/
 
-struct objOverall createEmptyOverallContext()
+struct objMatrix
 {
 
-    struct objOverall tmp;
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
 
-    tmp.myMicrophones = (struct objMicrophones*) malloc(sizeof(struct objMicrophones));
-    tmp.myPreprocessor = (struct objPreprocessor*) malloc(sizeof(struct objPreprocessor));
-    tmp.myBeamformer = (struct objBeamformer*) malloc(sizeof(struct objBeamformer));
-    tmp.myMixture = (struct objMixture*) malloc(sizeof(struct objMixture));
-    tmp.myGSS = (struct objGSS*) malloc(sizeof(struct objGSS));
-    tmp.myPostfilter = (struct objPostfilter*) malloc(sizeof(struct objPostfilter));
-    tmp.myPostprocessorSeparated = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
-    tmp.myPostprocessorPostfiltered = (struct objPostprocessor*) malloc(sizeof(struct objPostprocessor));
+    // Number of rows in the matrix
+    int nRows;
 
-    tmp.myPotentialSources = (struct objPotentialSources*) malloc(sizeof(struct objPotentialSources));
-    tmp.myTrackedSources = (struct objTrackedSources*) malloc(sizeof(struct objTrackedSources));
-    tmp.mySeparatedSources = (struct objSeparatedSources*) malloc(sizeof(struct objSeparatedSources));
-    tmp.myPostfilteredSources = (struct objPostfilteredSources*) malloc(sizeof(struct objPostfilteredSources));
+    // Number of columns in the matrix
+    int nCols;
 
-    tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
-    tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
+    // Number of frames (must be a multiple of 4)
+    int nFrames;
 
-    tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
+    // Content of the matrix
+    float*** valueReal;
+    float*** valueImag;
 
-    return tmp;
-
-}
+};
 
 /*******************************************************************************
- * deleteOverallContext                                                        *
- * --------------------------------------------------------------------------- *
- *                                                                             *
- * Inputs:      myContext       The context to be deleted                      *
- *                                                                             *
- * Outputs:     (none)                                                         *
- *                                                                             *
- * Description: This function frees the memory used by the objects.            *
- *                                                                             *
+ * Prototypes                                                                  *
  ******************************************************************************/
 
-void deleteOverallContext(struct objOverall myContext)
-{
+struct objMatrix* matrixCreate(int nRows, int nCols, int nFrames);
 
-    free((void*) myContext.myMicrophones);
-    free((void*) myContext.myPreprocessor);
-    free((void*) myContext.myBeamformer);
-    free((void*) myContext.myMixture);
-    free((void*) myContext.myGSS);
-    free((void*) myContext.myPostfilter);
-    free((void*) myContext.myPostprocessorSeparated);
-    free((void*) myContext.myPostprocessorPostfiltered);
+void matrixDelete(struct objMatrix* matrix);
 
-    free((void*) myContext.myPotentialSources);
-    free((void*) myContext.myTrackedSources);
-    free((void*) myContext.mySeparatedSources);
-    free((void*) myContext.myPostfilteredSources);
+void matrixInit(struct objMatrix* matrix, int nRows, int nCols, int nFrames);
 
-    free((void*) myContext.myOutputSeparated);
-    free((void*) myContext.myOutputPostfiltered);
+void matrixTerminate(struct objMatrix* matrix);
 
-    free((void*) myContext.myParameters);
+float matrixGetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k);
 
-}
+float matrixGetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k);
+
+void matrixSetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value);
+
+void matrixSetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value);
+
+void matrixInsertRow(struct objMatrix* matrix, int newRowIndex);
+
+void matrixInsertCol(struct objMatrix* matrix, int newColIndex);
+
+void matrixDeleteRow(struct objMatrix* matrix, int deleteRowIndex);
+
+void matrixDeleteCol(struct objMatrix* matrix, int deleteColIndex);
+
+void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult);
+
+void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMatrix* matrixResult);
+
+void matrixRemoveIdentity(struct objMatrix* matrix);
+
+void matrixRemoveDiagonal(struct objMatrix* matrix);
+
+void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDest);
+
+void matrixResize(struct objMatrix* matrix, int nRows, int nCols, int nFrames);
+
+void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest);
+
+void matrixMultMatrixPerElement(struct objMatrix* matrixSource, struct objMatrix* matrixB, struct objMatrix* matrixResult);
+
+void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* matrixFrames, struct objMatrix* matrixResult);
+
+void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult);
+
+void matrixDividePerElement(struct objMatrix* matrixSource, struct objMatrix* matrixB, struct objMatrix* matrixResult);
+
+void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* matrixResult);
+
+void matrixMakeNonZero(struct objMatrix* matrix);
+
+void matrixPrint(struct objMatrix* matrix);
+
+void matrixPrintOneFrame(struct objMatrix* matrix, int k);
+
+#endif
