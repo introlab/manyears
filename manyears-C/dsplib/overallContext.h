@@ -2,25 +2,36 @@
  * ManyEars: Overall context - Header                                          *
  * --------------------------------------------------------------------------- *
  *                                                                             *
- * Author: François Grondin                                                    *
+ * Author: Francois Grondin                                                    *
  * Original Code: Jean-Marc Valin                                              *
- * Modified Code: Simon Brière                                                 *
+ * Modified Code: Simon Briere                                                 *
  * Version: 1.1.0                                                              *
  * Date: July 1st, 2010                                                        *
- *                                                                             *
- * Disclaimer: This software is provided "as is". Use it at your own risk.     *
+ *******************************************************************************                               
+ * LICENSE                                                                     *
+ * --------------------------------------------------------------------------- *
+ * This file is part of ManyEars. ManyEars is free software: you can           *
+ * redistribute it and/or modify it under the terms of the GNU General Public  *
+ * License as published by the Free Software Foundation, either version 3 of   *
+ * the License, or (at your option) any later version. ManyEars is distributed *
+ * in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even  *
+ * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR         *
+ * PURPOSE. See the GNU General Public License for more details. You should    *
+ * have received a copy of the GNU General Public License along with           *
+ * ManyEars. If not, see http://www.gnu.org/licenses/.                         *
  *                                                                             *
  *******************************************************************************
  *                                                                             *
  * ManyEars has been created and developped at:                                *
  *                                                                             *
  * IntroLab, Universite de Sherbrooke, Sherbrooke, Quebec, Canada              *
+ * http://introlab.gel.usherbrooke.ca                                          *
  *                                                                             *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * The following articles relate to the ManyEars project:                      *
  *                                                                             *
- * S. Brière, J.-M. Valin, F. Michaud, Dominic Létourneau, Embedded Auditory   *
+ * S. Briere, J.-M. Valin, F. Michaud, Dominic Letourneau, Embedded Auditory   *
  *     System for Small Mobile Robots, Proc. International Conference on       *
  *     Robotics and Automation (ICRA), 2008.                                   *
  *                                                                             *

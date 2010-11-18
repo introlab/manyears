@@ -95,26 +95,6 @@ ENDIF (WIN32)
 
 IF (UNIX)
 	IF(APPLE)
-	
-            ##########################
-	    # Packaging stuff for OSX
-	    ##########################
-            SET(CPACK_RESOURCE_FILE_LICENSE "${PROJECT_SOURCE_DIR}/COPYING.TXT")
-            #SET(CPACK_GENERATOR Bundle)
-            SET(CPACK_GENERATOR DragNDrop)
-
-            #BUNDLE INFO
-            SET(MACOSX_BUNDLE_INFO_STRING "ManyEars")
-            SET(MACOSX_BUNDLE_ICON_FILE "ManyEars.icns")
-            SET(MACOSX_BUNDLE_GUI_IDENTIFIER "ManyEars")
-            SET(MACOSX_BUNDLE_LONG_VERSION_STRING "ManyEars-${CPACK_PACKAGE_VERSION}")
-            SET(MACOSX_BUNDLE_BUNDLE_NAME "ManyEars.app")
-            SET(MACOSX_BUNDLE_SHORT_VERSION_STRING "${CPACK_PACKAGE_VERSION}")
-            SET(MACOSX_BUNDLE_BUNDLE_VERSION "${CPACK_PACKAGE_VERSION}")
-            SET(MACOSX_BUNDLE_COPYRIGHT "COPYING.TXT")            
-            SET(MACOSX_BUNDLE_INFO_PLIST "Info.plist")
-
-
             #ManyEars Executable
             add_executable(ManyEars MACOSX_BUNDLE main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC} )
             set_target_properties(ManyEars PROPERTIES LINK_FLAGS "-framework OpenGL -framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
@@ -123,23 +103,17 @@ IF (UNIX)
             #Create a custom app package
             #INSTALL(TARGETS ManyEars DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents/Resources/bin)
             INSTALL(TARGETS ManyEars DESTINATION .)
-            INSTALL(FILES ${MACOSX_BUNDLE_COPYRIGHT} DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents)
-            INSTALL(FILES ${MACOSX_BUNDLE_ICON_FILE} DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents/Resources)
+            INSTALL(FILES ${PROJECT_SOURCE_DIR}/${MACOSX_BUNDLE_COPYRIGHT} DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents)
+            INSTALL(FILES ${PROJECT_SOURCE_DIR}/${MACOSX_BUNDLE_ICON_FILE} DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents/Resources)
 
 
-        ELSE(APPLE)
-            ##########################
-	    # Packaging stuff for Linux
-	    ##########################
-	
+        ELSE(APPLE)	
 	    #ManyEars Executable
             add_executable(ManyEars main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
 	    target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib)
 	    INSTALL(TARGETS ManyEars DESTINATION bin)
 	ENDIF(APPLE)
-
-
-    INCLUDE(CPack)
+   
 ENDIF(UNIX)
 
 
