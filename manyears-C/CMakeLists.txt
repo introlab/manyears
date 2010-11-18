@@ -28,7 +28,7 @@ SET(CMAKE_BUILD_TYPE Release)
 
 IF(WIN32)
 	MESSAGE( STATUS "Windows version: " ${CMAKE_SYSTEM})
-	SET(CMAKE_INSTALL_PREFIX "$ENV{SYSTEMDRIVE}/ManyEars-${CMAKE_BUILD_TYPE}")
+        SET(CMAKE_INSTALL_PREFIX "$ENV{SYSTEMDRIVE}/ManyEars-${CPACK_PACKAGE_VERSION}")
 	MESSAGE( STATUS "Install directory is : " ${CMAKE_INSTALL_PREFIX})
 ELSE(WIN32)
         SET(CMAKE_INSTALL_PREFIX "/usr/local/manyears")
@@ -87,6 +87,7 @@ set(CPACK_SOURCE_IGNORE_FILES
   "build"
   "bin"
   ${CPACK_SOURCE_IGNORE_FILES}
+  ".svn"
 )
 
 
@@ -113,6 +114,8 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/mingwm10.dll"
         "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
     )
+
+    INSTALL(FILES ${QT_DLL} DESTINATION bin)
 
     #############################
     # Packaging stuff for Windows
