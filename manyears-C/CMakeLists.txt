@@ -130,6 +130,8 @@ IF (WIN32)
     SET(CPACK_NSIS_MODIFY_PATH OFF)
     SET(CPACK_PACKAGE_EXECUTABLES "ManyEars" "ManyEars")
 
+    INSTALL(FILES ${PROJECT_SOURCE_DIR}/README.TXT DESTINATION .)
+
    
 ENDIF (WIN32)
 
@@ -176,6 +178,8 @@ IF (UNIX)
             SET(MACOSX_BUNDLE_COPYRIGHT "COPYING.TXT")            
             SET(MACOSX_BUNDLE_INFO_PLIST "Info.plist")
 
+	    INSTALL(FILES ${PROJECT_SOURCE_DIR}/README.TXT DESTINATION .)
+
         ELSE(APPLE)
             	    ##########################
 		    # Packaging stuff for Linux
@@ -213,6 +217,6 @@ ADD_SUBDIRECTORY(QtGUI)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
-INSTALL(FILES ${PROJECT_SOURCE_DIR}/README.TXT DESTINATION .)
+
 
 INCLUDE(CPack)
