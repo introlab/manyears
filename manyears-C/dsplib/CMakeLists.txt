@@ -75,4 +75,13 @@ target_link_libraries(ManyEarsLib )
 set_target_properties(ManyEarsLib PROPERTIES LINK_FLAGS "--enable-auto-import" OUTPUT_NAME manyears)
 
 INSTALL(TARGETS ManyEarsLib DESTINATION lib)
-INSTALL(FILES ${ManyEarsLib_HEADERS} DESTINATION include)
+
+
+#Install headers in the adequate directory…
+FOREACH(header_file ${ManyEarsLib_HEADERS})
+	GET_FILENAME_COMPONENT(HEADER_PATH ${header_file} PATH)
+	INSTALL(FILES ${header_file} DESTINATION include/${HEADER_PATH})
+ENDFOREACH(header_file)
+
+
+#INSTALL(FILES ${ManyEarsLib_HEADERS} DESTINATION include)
