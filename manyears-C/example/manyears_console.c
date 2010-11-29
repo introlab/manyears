@@ -197,7 +197,7 @@ int main (int argc, char* argv[])
         postfilteredSourcesInit(workspace.myPostfilteredSources, workspace.myParameters);
 
         // Initialize the output
-        outputInit(workspace.myOutputSeparated, workspace.myParameters, NULL, NULL, NULL, '*');
+        outputInit(workspace.myOutputSeparated, workspace.myParameters, NULL, NULL, sepPath, '*');
         outputInit(workspace.myOutputPostfiltered, workspace.myParameters, NULL, NULL, postPath, '*');
 
         //reset frame number

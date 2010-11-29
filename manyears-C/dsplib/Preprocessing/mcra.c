@@ -238,7 +238,7 @@ void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource)
 #ifndef USE_SIMD
 
         // Then copy all arrays
-        for (k = 0; k < myMCRA->MICST_FRAMESIZE; k++)
+        for (k = 0; k < myMCRADest->MICST_FRAMESIZE; k++)
         {
 
             myMCRADest->S[k] = myMCRASource->S[k];
