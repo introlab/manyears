@@ -85,3 +85,10 @@ ENDFOREACH(header_file)
 
 
 #INSTALL(FILES ${ManyEarsLib_HEADERS} DESTINATION include)
+
+add_executable(sse_test sseTest.c sseTest.h)
+set_target_properties(sse_test PROPERTIES LINK_FLAGS "--enable-auto-import")
+target_link_libraries(sse_test ManyEarsLib -lm)
+
+
+
