@@ -112,7 +112,7 @@ struct objPreprocessor
     // +-------------------------------------------------------------------+
 
     // Size of a frame
-    int PP_FRAMESIZE;
+    unsigned int PP_FRAMESIZE;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |

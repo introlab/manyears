@@ -108,13 +108,13 @@ struct objMatrix
     // +-------------------------------------------------------------------+
 
     // Number of rows in the matrix
-    int nRows;
+    unsigned int nRows;
 
     // Number of columns in the matrix
-    int nCols;
+    unsigned int nCols;
 
     // Number of frames (must be a multiple of 4)
-    int nFrames;
+    unsigned int nFrames;
 
     // Content of the matrix
     float*** valueReal;
@@ -126,29 +126,29 @@ struct objMatrix
  * Prototypes                                                                  *
  ******************************************************************************/
 
-struct objMatrix* matrixCreate(int nRows, int nCols, int nFrames);
+struct objMatrix* matrixCreate(unsigned int nRows, unsigned int nCols, unsigned int nFrames);
 
 void matrixDelete(struct objMatrix* matrix);
 
-void matrixInit(struct objMatrix* matrix, int nRows, int nCols, int nFrames);
+void matrixInit(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols, unsigned int nFrames);
 
 void matrixTerminate(struct objMatrix* matrix);
 
-float matrixGetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k);
+float matrixGetReal(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k);
 
-float matrixGetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k);
+float matrixGetImag(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k);
 
-void matrixSetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value);
+void matrixSetReal(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k, float value);
 
-void matrixSetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value);
+void matrixSetImag(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k, float value);
 
-void matrixInsertRow(struct objMatrix* matrix, int newRowIndex);
+void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex);
 
-void matrixInsertCol(struct objMatrix* matrix, int newColIndex);
+void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex);
 
-void matrixDeleteRow(struct objMatrix* matrix, int deleteRowIndex);
+void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex);
 
-void matrixDeleteCol(struct objMatrix* matrix, int deleteColIndex);
+void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex);
 
 void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult);
 
@@ -160,7 +160,7 @@ void matrixRemoveDiagonal(struct objMatrix* matrix);
 
 void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDest);
 
-void matrixResize(struct objMatrix* matrix, int nRows, int nCols, int nFrames);
+void matrixResize(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols, unsigned int nFrames);
 
 void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest);
 
@@ -178,6 +178,6 @@ void matrixMakeNonZero(struct objMatrix* matrix);
 
 void matrixPrint(struct objMatrix* matrix);
 
-void matrixPrintOneFrame(struct objMatrix* matrix, int k);
+void matrixPrintOneFrame(struct objMatrix* matrix, unsigned int k);
 
 #endif

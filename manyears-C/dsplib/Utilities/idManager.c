@@ -114,7 +114,7 @@ void idManagerInit(struct objIDManager* myIDManager)
     nObjects = (ID_MAX - ID_MIN) + 1;
 
     // Create the array to hold all the ID objects
-    myIDManager->listIDs = newTable1D(nObjects, sizeof(struct objID));
+    myIDManager->listIDs = (struct objID*) newTable1D(nObjects, sizeof(struct objID));
 
     // Instantiate all ID objects
     currentID = ID_MIN;

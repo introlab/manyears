@@ -105,7 +105,7 @@
 void postfilterInit(struct objPostfilter* myPostfilter, struct ParametersStruct* myParameters)
 {
 
-    int indexSource;
+    unsigned int indexSource;
     unsigned int k;
 
     float* tmpArray;
@@ -364,40 +364,40 @@ void postfilterInit(struct objPostfilter* myPostfilter, struct ParametersStruct*
         {
             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
             {
-                myPostfilter->YReal[indexSource][k] = 0.0;
-                myPostfilter->YImag[indexSource][k] = 0.0;
-                myPostfilter->YPower[indexSource][k] = 0.0;
-                myPostfilter->SReal[indexSource][k] = 0.0;
-                myPostfilter->SImag[indexSource][k] = 0.0;
-                myPostfilter->SPower[indexSource][k] = 0.0;
-                myPostfilter->lambdaStat[indexSource][k] = 0.0;
-                myPostfilter->Z[indexSource][k] = 0.0;
-                myPostfilter->lambdaLeak[indexSource][k] = 0.0;
-                myPostfilter->lambdaRev[indexSource][k] = 0.0;
-                myPostfilter->lambda[indexSource][k] = 0.0;
-                myPostfilter->gamma[indexSource][k] = 0.0;
-                myPostfilter->xi[indexSource][k] = 0.0;
-                myPostfilter->alphaP[indexSource][k] = 0.0;
-                myPostfilter->v[indexSource][k] = 0.0;
-                myPostfilter->GH1[indexSource][k] = 0.0;
-                myPostfilter->localZeta[indexSource][k] = 0.0;
-                myPostfilter->globalZeta[indexSource][k] = 0.0;
-                myPostfilter->frameZeta[indexSource][k] = 0.0;
-                myPostfilter->localP[indexSource][k] = 0.0;
-                myPostfilter->globalP[indexSource][k] = 0.0;
-                myPostfilter->frameP[indexSource][k] = 0.0;
-                myPostfilter->p[indexSource][k] = 0.0;
-                myPostfilter->q[indexSource][k] = 0.0;
-                myPostfilter->G[indexSource][k] = 0.0;
+                myPostfilter->YReal[indexSource][k] = 0.0f;
+                myPostfilter->YImag[indexSource][k] = 0.0f;
+                myPostfilter->YPower[indexSource][k] = 0.0f;
+                myPostfilter->SReal[indexSource][k] = 0.0f;
+                myPostfilter->SImag[indexSource][k] = 0.0f;
+                myPostfilter->SPower[indexSource][k] = 0.0f;
+                myPostfilter->lambdaStat[indexSource][k] = 0.0f;
+                myPostfilter->Z[indexSource][k] = 0.0f;
+                myPostfilter->lambdaLeak[indexSource][k] = 0.0f;
+                myPostfilter->lambdaRev[indexSource][k] = 0.0f;
+                myPostfilter->lambda[indexSource][k] = 0.0f;
+                myPostfilter->gamma[indexSource][k] = 0.0f;
+                myPostfilter->xi[indexSource][k] = 0.0f;
+                myPostfilter->alphaP[indexSource][k] = 0.0f;
+                myPostfilter->v[indexSource][k] = 0.0f;
+                myPostfilter->GH1[indexSource][k] = 0.0f;
+                myPostfilter->localZeta[indexSource][k] = 0.0f;
+                myPostfilter->globalZeta[indexSource][k] = 0.0f;
+                myPostfilter->frameZeta[indexSource][k] = 0.0f;
+                myPostfilter->localP[indexSource][k] = 0.0f;
+                myPostfilter->globalP[indexSource][k] = 0.0f;
+                myPostfilter->frameP[indexSource][k] = 0.0f;
+                myPostfilter->p[indexSource][k] = 0.0f;
+                myPostfilter->q[indexSource][k] = 0.0f;
+                myPostfilter->G[indexSource][k] = 0.0f;
 
             }
         }
 
         for (k = 0; k < myPostfilter->POSTFILTER_NBSOURCES; k++)
         {
-            myPostfilter->localResultCropped[k] = 0.0;
-            myPostfilter->globalResultCropped[k] = 0.0;
-            myPostfilter->frameResultCropped[k] = 0.0;
+            myPostfilter->localResultCropped[k] = 0.0f;
+            myPostfilter->globalResultCropped[k] = 0.0f;
+            myPostfilter->frameResultCropped[k] = 0.0f;
         }
 
 }
@@ -417,7 +417,7 @@ void postfilterInit(struct objPostfilter* myPostfilter, struct ParametersStruct*
 void postfilterTerminate(struct objPostfilter* myPostfilter)
 {
 
-    int indexSource;
+    unsigned int indexSource;
 
     // *************************************************************************
     // * STEP 1: Free memory                                                   *
@@ -630,12 +630,12 @@ void postfilterTerminate(struct objPostfilter* myPostfilter)
 void postfilterAddSource(struct objPostfilter* myPostfilter, struct objPreprocessor* myPreprocessor, ID_TYPE newID)
 {
 
-    signed int indexID;
+    unsigned int indexID;
 
     unsigned int k;
 
     // Add ID to list
-    indexID = idListAdd(&myPostfilter->sourcesIDNow, newID);
+    idListAdd(&myPostfilter->sourcesIDNow, newID);
 
     // Find a free spot
     for (indexID = 0; indexID < myPostfilter->POSTFILTER_NBSOURCES; indexID++)
@@ -653,31 +653,31 @@ void postfilterAddSource(struct objPostfilter* myPostfilter, struct objPreproces
             // Reset the arrays at this spot
             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
             {
-                myPostfilter->YReal[indexID][k] = 0.0;
-                myPostfilter->YImag[indexID][k] = 0.0;
-                myPostfilter->YPower[indexID][k] = 0.0;
-                myPostfilter->SReal[indexID][k] = 0.0;
-                myPostfilter->SImag[indexID][k] = 0.0;
-                myPostfilter->SPower[indexID][k] = 0.0;
-                myPostfilter->lambdaStat[indexID][k] = 0.0;
-                myPostfilter->Z[indexID][k] = 0.0;
-                myPostfilter->lambdaLeak[indexID][k] = 0.0;
-                myPostfilter->lambdaRev[indexID][k] = 0.0;
-                myPostfilter->lambda[indexID][k] = 0.0;
-                myPostfilter->gamma[indexID][k] = 0.0;
-                myPostfilter->xi[indexID][k] = 0.0;
-                myPostfilter->alphaP[indexID][k] = 0.0;
-                myPostfilter->v[indexID][k] = 0.0;
-                myPostfilter->GH1[indexID][k] = 0.0;
-                myPostfilter->localZeta[indexID][k] = 0.0;
-                myPostfilter->globalZeta[indexID][k] = 0.0;
-                myPostfilter->frameZeta[indexID][k] = 0.0;
-                myPostfilter->localP[indexID][k] = 0.0;
-                myPostfilter->globalP[indexID][k] = 0.0;
-                myPostfilter->frameP[indexID][k] = 0.0;
-                myPostfilter->p[indexID][k] = 0.0;
-                myPostfilter->q[indexID][k] = 0.0;
-                myPostfilter->G[indexID][k] = 0.0;
+                myPostfilter->YReal[indexID][k] = 0.0f;
+                myPostfilter->YImag[indexID][k] = 0.0f;
+                myPostfilter->YPower[indexID][k] = 0.0f;
+                myPostfilter->SReal[indexID][k] = 0.0f;
+                myPostfilter->SImag[indexID][k] = 0.0f;
+                myPostfilter->SPower[indexID][k] = 0.0f;
+                myPostfilter->lambdaStat[indexID][k] = 0.0f;
+                myPostfilter->Z[indexID][k] = 0.0f;
+                myPostfilter->lambdaLeak[indexID][k] = 0.0f;
+                myPostfilter->lambdaRev[indexID][k] = 0.0f;
+                myPostfilter->lambda[indexID][k] = 0.0f;
+                myPostfilter->gamma[indexID][k] = 0.0f;
+                myPostfilter->xi[indexID][k] = 0.0f;
+                myPostfilter->alphaP[indexID][k] = 0.0f;
+                myPostfilter->v[indexID][k] = 0.0f;
+                myPostfilter->GH1[indexID][k] = 0.0f;
+                myPostfilter->localZeta[indexID][k] = 0.0f;
+                myPostfilter->globalZeta[indexID][k] = 0.0f;
+                myPostfilter->frameZeta[indexID][k] = 0.0f;
+                myPostfilter->localP[indexID][k] = 0.0f;
+                myPostfilter->globalP[indexID][k] = 0.0f;
+                myPostfilter->frameP[indexID][k] = 0.0f;
+                myPostfilter->p[indexID][k] = 0.0f;
+                myPostfilter->q[indexID][k] = 0.0f;
+                myPostfilter->G[indexID][k] = 0.0f;
             }
 
             break;
@@ -703,10 +703,10 @@ void postfilterAddSource(struct objPostfilter* myPostfilter, struct objPreproces
 void postfilterDeleteSource(struct objPostfilter* myPostfilter, ID_TYPE deleteID)
 {
 
-    signed int indexID;
+    unsigned int indexID;
 
     // Delete ID from list
-    indexID = idListDelete(&myPostfilter->sourcesIDNow, deleteID);
+    idListDelete(&myPostfilter->sourcesIDNow, deleteID);
 
     // Free the associated spot
     for (indexID = 0; indexID < myPostfilter->POSTFILTER_NBSOURCES; indexID++)
@@ -924,7 +924,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                     // Update Z: Z_m(k,l) = alphaS * Z_m,(k,l-1) + (1 - alphaS) * |Y_m(k,l)|^2
                     myPostfilter->Z[indexSource][k] = myPostfilter->POSTFILTER_ALPHAS * myPostfilter->Z[indexSource][k] +
-                                                      (1 - myPostfilter->POSTFILTER_ALPHAS) * myPostfilter->YPower[indexSource][k];
+                                                      (1.0f - myPostfilter->POSTFILTER_ALPHAS) * myPostfilter->YPower[indexSource][k];
 
                 }
 
@@ -992,7 +992,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 // Set lambda_leak to 0 everywhere
                 for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                 {
-                    myPostfilter->lambdaLeak[indexSource][k] = 0.0;
+                    myPostfilter->lambdaLeak[indexSource][k] = 0.0f;
                 }
 
 #else
@@ -1114,7 +1114,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                 // Update: lambda_rev(k,l) = gamma * lambda_rev(k,l-1) + ((1-gamma)/delta) * |Si(k,l-1)|^2
                 myPostfilter->lambdaRev[indexSource][k] = myPostfilter->POSTFILTER_GAMMA * myPostfilter->lambdaRev[indexSource][k] +
-                                                          ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][k]);
+                                                          ((1.0f - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][k]);
 
             }
 
@@ -1255,7 +1255,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                     // Update: gamma(k) = |Y(k)|^2 / lambda(k)
                     myPostfilter->gamma[indexSource][k] = myPostfilter->YPower[indexSource][k]
-                                                          / (myPostfilter->lambda[indexSource][k] + 1E-10);
+													      / (myPostfilter->lambda[indexSource][k] + 1E-10f);
                 }
 
 #else
@@ -1292,14 +1292,14 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                 {
                     // alphaP(k,l) = (xi(k,l) / (xi(k,l) + 1))^2 + alphaPmin
-                    myPostfilter->alphaP[indexSource][k] = (myPostfilter->xi[indexSource][k] / (myPostfilter->xi[indexSource][k] + 1.0)) *
-                                                           (myPostfilter->xi[indexSource][k] / (myPostfilter->xi[indexSource][k] + 1.0)) +
+                    myPostfilter->alphaP[indexSource][k] = (myPostfilter->xi[indexSource][k] / (myPostfilter->xi[indexSource][k] + 1.0f)) *
+                                                           (myPostfilter->xi[indexSource][k] / (myPostfilter->xi[indexSource][k] + 1.0f)) +
                                                            myPostfilter->POSTFILTER_ALPHAPMIN;
 
                     // Make sure alphaP(k,l) does not exceed 1
-                    if (myPostfilter->alphaP[indexSource][k] > 1.0)
+                    if (myPostfilter->alphaP[indexSource][k] > 1.0f)
                     {
-                        myPostfilter->alphaP[indexSource][k] = 1.0;
+                        myPostfilter->alphaP[indexSource][k] = 1.0f;
                     }
                 }
 
@@ -1377,13 +1377,13 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                     // tmp = max{gamma(k,l)-1,0}
 
-                    if ((myPostfilter->gamma[indexSource][k] - 1) < 0.0)
+                    if ((myPostfilter->gamma[indexSource][k] - 1) < 0.0f)
                     {
-                        tmp = 0.0;
+                        tmp = 0.0f;
                     }
                     else
                     {
-                        tmp = myPostfilter->gamma[indexSource][k] - 1;
+                        tmp = myPostfilter->gamma[indexSource][k] - 1.0f;
                     }
 
 
@@ -1481,7 +1481,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                     // v(k,l) = gamma(k,l) * xi(k,l) / (xi(k,l) + 1)
                     myPostfilter->v[indexSource][k] = myPostfilter->gamma[indexSource][k] *
                                                       myPostfilter->xi[indexSource][k] /
-                                                      (myPostfilter->xi[indexSource][k] + 1.0);
+                                                      (myPostfilter->xi[indexSource][k] + 1.0f);
                 }
 
 #else
@@ -1532,7 +1532,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                     tmp = transcendentalEvaluate(&myPostfilter->transcendental, myPostfilter->v[indexSource][k]);
 
                     myPostfilter->GH1[indexSource][k] = (myPostfilter->xi[indexSource][k] /
-                                                        (myPostfilter->xi[indexSource][k] + 1.0)) *
+                                                        (myPostfilter->xi[indexSource][k] + 1.0f)) *
                                                         tmp;
 
                 }
@@ -1540,7 +1540,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 tmp = transcendentalEvaluate(&myPostfilter->transcendental, myPostfilter->v[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES]);
 
                 myPostfilter->GH1[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] /
-                                                                                       (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1.0)) *
+                                                                                       (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1.0f)) *
                                                                                        tmp;
 
             }
@@ -1635,7 +1635,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
                                 // zeta_local(k,l) = (1 - alpha_zeta) * zeta_local(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_local(j)*xi(k+j)]
-                                myPostfilter->localZeta[indexSource][k] = (1 - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->localZeta[indexSource][k] +
+                                myPostfilter->localZeta[indexSource][k] = (1.0f - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->localZeta[indexSource][k] +
                                                                           myPostfilter->POSTFILTER_ALPHAZETA * myPostfilter->localResultCropped[k];
                             }
 
@@ -1689,7 +1689,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
                                 // zeta_global(k,l) = (1 - alpha_zeta) * zeta_global(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_global(j)*xi(k+j)]
-                                myPostfilter->globalZeta[indexSource][k] = (1 - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->globalZeta[indexSource][k] +
+                                myPostfilter->globalZeta[indexSource][k] = (1.0f - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->globalZeta[indexSource][k] +
                                                                             myPostfilter->POSTFILTER_ALPHAZETA * myPostfilter->globalResultCropped[k];
                             }
 
@@ -1744,7 +1744,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
                                 // zeta_frame(k,l) = (1 - alpha_zeta) * zeta_frame(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_frame(j)*xi(k+j)]
-                                myPostfilter->frameZeta[indexSource][k] = (1 - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->frameZeta[indexSource][k] +
+                                myPostfilter->frameZeta[indexSource][k] = (1.0f - myPostfilter->POSTFILTER_ALPHAZETA) * myPostfilter->frameZeta[indexSource][k] +
                                                                           myPostfilter->POSTFILTER_ALPHAZETA * myPostfilter->frameResultCropped[k];
                             }
 
@@ -1979,8 +1979,8 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                             // q(k,l) = min(1 - P_local(k,l) * P_global(k,l) * P_frame(k,l), maxQ)
 
-                            myPostfilter->q[indexSource][k] = 1.0 -
-                                                              myPostfilter->localP[indexSource][k] *
+                            myPostfilter->q[indexSource][k] = 1.0f -
+															  myPostfilter->localP[indexSource][k] *
                                                               myPostfilter->globalP[indexSource][k] *
                                                               myPostfilter->frameP[indexSource][k];
 
@@ -2065,19 +2065,19 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                         for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMESPLUSONE; k++)
                         {
                             // q(k,l) / (1 - q(k,l))
-                            tmp = myPostfilter->q[indexSource][k] / (1 - myPostfilter->q[indexSource][k]);
+                            tmp = myPostfilter->q[indexSource][k] / (1.0f - myPostfilter->q[indexSource][k]);
 
                             // [q(k,l) / (1 - q(k,l))] * (1 + xi(k,l))
-                            myPostfilter->p[indexSource][k] = tmp * (1 + myPostfilter->xi[indexSource][k]);
+                            myPostfilter->p[indexSource][k] = tmp * (1.0f + myPostfilter->xi[indexSource][k]);
 
                             // [q(k,l) / (1 - q(k,l))] * (1 + xi(k,l)) * exp(-v(k))
-                            myPostfilter->p[indexSource][k] *= exp(-1.0 * myPostfilter->v[indexSource][k]);
+                            myPostfilter->p[indexSource][k] *= expf(-1.0 * myPostfilter->v[indexSource][k]);
 
                             // 1 + [q(k,l) / (1 - q(k,l))] * (1 + xi(k,l)) * exp(-v(k))
-                            myPostfilter->p[indexSource][k] += 1.0;
+                            myPostfilter->p[indexSource][k] += 1.0f;
 
                             // 1 / (1 + [q(k,l) / (1 - q(k,l))] * (1 + xi(k,l)) * exp(-v(k)))
-                            myPostfilter->p[indexSource][k] = 1 / myPostfilter->p[indexSource][k];
+                            myPostfilter->p[indexSource][k] = 1.0f / myPostfilter->p[indexSource][k];
                         }
 
                     // +-------------------------------------------------------+
@@ -2088,8 +2088,8 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                         {
 
                             // G(k,l) = [{G_H1(k,l)}^p(k,l)] * [{G_min}^(1-p(k,l))]
-                            myPostfilter->G[indexSource][k] = pow(myPostfilter->GH1[indexSource][k], myPostfilter->p[indexSource][k]) *
-                                                              pow(myPostfilter->POSTFILTER_GMIN, (1 - myPostfilter->p[indexSource][k]));
+                            myPostfilter->G[indexSource][k] = powf(myPostfilter->GH1[indexSource][k], myPostfilter->p[indexSource][k]) *
+                                                              powf(myPostfilter->POSTFILTER_GMIN, (1.0f - myPostfilter->p[indexSource][k]));
                         }
                         // Copy the other half frame
                         for (k = 1; k < myPostfilter->POSTFILTER_HALFNFRAMES; k++)

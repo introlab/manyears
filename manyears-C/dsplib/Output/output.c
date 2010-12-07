@@ -117,11 +117,11 @@
 void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameters, char* myPathTracking, char* myPathSeparation, char* myPathSeparationWave, char wildcardChar)
 {
 
-    int lenPathTracking;
-    int lenPathSeparation;
-    int lenPathSeparationWave;
+    unsigned int lenPathTracking;
+    unsigned int lenPathSeparation;
+    unsigned int lenPathSeparationWave;
 
-    int indexSource;
+    unsigned int indexSource;
 
     const char* temp = "temp";
 
@@ -130,7 +130,7 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     // *************************************************************************
 
     myOutput->OUT_NBSOURCES = myParameters->P_GEN_DYNSOURCES;
-    myOutput->OUT_HOPSIZE = GLOBAL_FRAMESIZE * GLOBAL_OVERLAP;
+    myOutput->OUT_HOPSIZE = (unsigned int) (GLOBAL_FRAMESIZE * GLOBAL_OVERLAP);
     myOutput->OUT_SAMPLERATE = GLOBAL_FS;
     myOutput->OUT_GAIN = myParameters->P_OUT_GAIN;
     myOutput->OUT_WAVEHEADERSIZE = myParameters->P_OUT_WAVEHEADERSIZE;
@@ -142,8 +142,8 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     if (myPathTracking != NULL)
     {
         lenPathTracking = strlen(myPathTracking);
-        myOutput->pathTracking = newTable1D(lenPathTracking+1, sizeof(char));
-        strcpy(myOutput->pathTracking, myPathTracking);
+        myOutput->pathTracking = (char*) newTable1D(lenPathTracking+1, sizeof(char));
+        strcpy_s(myOutput->pathTracking, lenPathTracking, myPathTracking);
     }
     else
     {
@@ -153,8 +153,8 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     if (myPathSeparation != NULL)
     {
         lenPathSeparation = strlen(myPathSeparation);
-        myOutput->pathSeparation = newTable1D(lenPathSeparation+1, sizeof(char));
-        strcpy(myOutput->pathSeparation, myPathSeparation);
+        myOutput->pathSeparation = (char*) newTable1D(lenPathSeparation+1, sizeof(char));
+        strcpy_s(myOutput->pathSeparation, lenPathSeparation, myPathSeparation);
         myOutput->deleteSeparated = 0;
     }
     else
@@ -164,9 +164,9 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
         {
 
             lenPathSeparation = strlen(myPathSeparationWave);
-            myOutput->pathSeparation = newTable1D(lenPathSeparation + strlen(temp) + 1, sizeof(char));
-            strcpy(myOutput->pathSeparation, myPathSeparationWave);
-            strcat(myOutput->pathSeparation, temp);
+            myOutput->pathSeparation = (char*) newTable1D(lenPathSeparation + strlen(temp) + 1, sizeof(char));
+            strcpy_s(myOutput->pathSeparation, lenPathSeparation, myPathSeparationWave);
+            strcat_s(myOutput->pathSeparation, lenPathSeparation + strlen(temp), temp);
             myOutput->deleteSeparated = 1;
 
         }
@@ -182,7 +182,7 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     {
         lenPathSeparationWave = strlen(myPathSeparationWave);
         myOutput->pathSeparationWave = newTable1D(lenPathSeparationWave+1, sizeof(char));
-        strcpy(myOutput->pathSeparationWave, myPathSeparationWave);
+        strcpy_s(myOutput->pathSeparationWave, lenPathSeparationWave, myPathSeparationWave);
     }
     else
     {
@@ -306,15 +306,13 @@ void outputTerminate(struct objOutput* myOutput)
 void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostprocessor)
 {
 
-    int indexSource;
-    int indexSource2;
-    int indexSample;
+    unsigned int indexSource;
+    unsigned int indexSource2;
+    unsigned int indexSample;
 
     signed short currentSample;
 
     char exists = 0;
-
-    char header;
 
     // *************************************************************************
     // * STEP 1: Close files that correspond to IDs that no longer exist       *
@@ -394,7 +392,7 @@ void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostpr
                         if (myOutput->pathTracking != NULL)
                         {
                             outputGeneratePath(myOutput, myOutput->pathTracking, myOutput->listFilenameTracking[indexSource2], myPostprocessor->sourcesID[indexSource]);
-                            myOutput->listPointersTracking[indexSource2] = fopen(myOutput->listFilenameTracking[indexSource2], "wb");
+                            fopen_s(&myOutput->listPointersTracking[indexSource2], myOutput->listFilenameTracking[indexSource2], "wb");
                         }
                         else
                         {
@@ -404,7 +402,7 @@ void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostpr
                         if (myOutput->pathSeparation != NULL)
                         {
                             outputGeneratePath(myOutput, myOutput->pathSeparation, myOutput->listFilenameSeparation[indexSource2], myPostprocessor->sourcesID[indexSource]);
-                            myOutput->listPointersSeparation[indexSource2] = fopen(myOutput->listFilenameSeparation[indexSource2], "wb");
+                            fopen_s(&myOutput->listPointersSeparation[indexSource2], myOutput->listFilenameSeparation[indexSource2], "wb");
                         }
                         else
                         {
@@ -483,8 +481,8 @@ void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostpr
 void outputGeneratePath(struct objOutput* myOutput, const char* model, char* result, ID_TYPE id)
 {
 
-    int indexChar;
-    int lenModel;
+    unsigned int indexChar;
+    unsigned int lenModel;
 
     char modelChar;
     char newChar;
@@ -540,7 +538,7 @@ void outputGenerateWave(struct objOutput* myOutput, ID_TYPE id)
 {
 
     FILE* ptrData;
-    int indexData;
+    unsigned int indexData;
     char tmpChar;
     signed short tmpSample;
 
@@ -562,7 +560,7 @@ void outputGenerateWave(struct objOutput* myOutput, ID_TYPE id)
     // *************************************************************************
 
     outputGeneratePath(myOutput, myOutput->pathSeparation, myOutput->filenameSeparation, id);
-    ptrData = fopen(myOutput->filenameSeparation, "rb");
+    fopen_s(&ptrData, myOutput->filenameSeparation, "rb");
 
     indexData = 0;
     while(!feof(ptrData))
@@ -614,8 +612,8 @@ void outputGenerateWave(struct objOutput* myOutput, ID_TYPE id)
     // *************************************************************************
 
     outputGeneratePath(myOutput, myOutput->pathSeparationWave, myOutput->filenameSeparationWave, id);
-    ptrWave = fopen(myOutput->filenameSeparationWave, "wb");
-    ptrData = fopen(myOutput->filenameSeparation, "rb");
+    fopen_s(&ptrWave, myOutput->filenameSeparationWave, "wb");
+    fopen_s(&ptrData, myOutput->filenameSeparation, "rb");
 
     // +-----------------------------------------------------------------------+
     // | Step A: Write the RIFF chunk descriptor                               |

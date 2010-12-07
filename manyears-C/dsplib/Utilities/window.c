@@ -95,7 +95,7 @@
 
 // In some environment, the constant PI is not define with the math.h library
 #ifndef M_PI
-        #define M_PI	3.1415926535897932384626433832795
+        #define M_PI	3.1415926535897932384626433832795f
 #endif
 
 /*******************************************************************************
@@ -117,64 +117,64 @@
  *                                                                             *
  ******************************************************************************/
 
-void generateHanningWindow(float *window, int len)
+void generateHanningWindow(float *window, unsigned int len)
 {
 
-    int k;
+    unsigned int k;
 
     float lenf;
 
-    lenf = ((float) len) + 1.0;
+    lenf = ((float) len) + 1.0f;
 
     for (k = 0; k < len; k++)
     {
-        window[k] = 0.5 * ( 1.0 - cos( (2 * M_PI * (k+1)) / lenf ) );
+        window[k] = 0.5f * ( 1.0f - cosf( (2.0f * M_PI * (k+1)) / lenf ) );
     }
 
 }
 
-void generatePowerComplementaryWindow(float *window, int len)
+void generatePowerComplementaryWindow(float *window, unsigned int len)
 {
 
-    int k;
+    unsigned int k;
     float tmp;
     char invert;
 
     for (k = 0; k < len; k++)
     {
 
-        tmp = 4.0 * ( (float) k ) / len;
+        tmp = 4.0f * ( (float) k ) / len;
         invert = 0;
 
-        if (tmp < 1)
+        if (tmp < 1.0f)
         {
 
         }
-        else if (tmp < 2)
+        else if (tmp < 2.0f)
         {
-          tmp = 2.0 - tmp;
+          tmp = 2.0f - tmp;
           invert = 1;
         }
-        else if (tmp < 3)
+        else if (tmp < 3.0f)
         {
-          tmp = tmp - 2;
+          tmp = tmp - 2.0f;
           invert = 1;
         }
         else
         {
-          tmp = 4.0 - tmp;
+          tmp = 4.0f - tmp;
         }
 
-        tmp *= 1.9979;
+        tmp *= 1.9979f;
 
-        window[k] = (0.5 - 0.5 * cos(tmp)) * (0.5 - 0.5 * cos(tmp));
+        window[k] = (0.5f - 0.5f * cosf(tmp)) * (0.5f - 0.5f * cosf(tmp));
 
         if (invert == 1)
         {
-          window[k] = 1.0 - window[k];
+          window[k] = 1.0f - window[k];
         }
 
-        window[k] = sqrt(window[k]);
+        window[k] = sqrtf(window[k]);
 
     }
 

@@ -179,7 +179,6 @@ void idListReset(struct objIdList* myIdList)
 signed int idListAdd(struct objIdList* myIdList, ID_TYPE ID)
 {
 
-    unsigned int indexElement;
     signed int rtnIndex;
 
     rtnIndex = -1;
@@ -224,7 +223,7 @@ signed int idListDelete(struct objIdList* myIdList, ID_TYPE ID)
     {
         if (myIdList->list[indexElement] == ID)
         {
-            rtnIndex = indexElement;
+            rtnIndex = (signed int) indexElement;
             myIdList->nElements--;
         }
 
@@ -263,7 +262,7 @@ signed int idListDelete(struct objIdList* myIdList, ID_TYPE ID)
 signed int idListGetIndex(struct objIdList* myIdList, ID_TYPE ID)
 {
 
-    signed int indexElement;
+    unsigned int indexElement;
     signed int rtnIndex;
 
     char found;
@@ -275,7 +274,7 @@ signed int idListGetIndex(struct objIdList* myIdList, ID_TYPE ID)
     {
         if (myIdList->list[indexElement] == ID)
         {
-            rtnIndex = indexElement;
+            rtnIndex = (signed int) indexElement;
             found = 1;
             break;
         }

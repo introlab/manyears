@@ -107,15 +107,15 @@
         // +-------------------------------------------------------------------+
 
         // Number of recursive levels to generate the points on the sphere
-        int SPHERE_NUMBERLEVELS;
+        unsigned int SPHERE_NUMBERLEVELS;
 
         // Number of triangles according to the number of levels
         // SPHERE_NUMBERTRIANGLES = 20 * 4^(SPHERE_NUBMERLEVELS)
-        int SPHERE_NUMBERTRIANGLES;
+        unsigned int SPHERE_NUMBERTRIANGLES;
 
         // Number of points according to the number of levels
         // SPHERE_NUMBERPOINTS = SPHERE_NUMBERTRIANGLES / 2 + 2
-        int SPHERE_NUMBERPOINTS;
+        unsigned int SPHERE_NUMBERPOINTS;
 
         // +-------------------------------------------------------------------+
         // | Variables                                                         |
@@ -130,7 +130,7 @@
  * Prototypes                                                                  *
  ******************************************************************************/
 
-    void sphereInit(struct objSphere *mySphere, int numberLevels);
+    void sphereInit(struct objSphere *mySphere, unsigned int numberLevels);
 
     void sphereClone(struct objSphere *sourceSphere, struct objSphere *destSphere);
 

@@ -112,18 +112,18 @@ struct objBeamformer
     // +-------------------------------------------------------------------+
 
     // Define the number of levels for the sphere
-    int BF_SPHERENBLEVELS;
+    unsigned int BF_SPHERENBLEVELS;
 
     // Define the maximum number of sources that can be found
-    int BF_MAXSOURCES;
+    unsigned int BF_MAXSOURCES;
 
     // Define the range where the neighbour delays are used to refine
     // the result
-    int BF_FILTERRANGE;
+    unsigned int BF_FILTERRANGE;
 
     // Define the number of delays next to the main delay to set to zero
     // to find the peaks after the first one
-    int BF_RESETRANGE;
+    unsigned int BF_RESETRANGE;
 
     // Threshold in order to get Pq from beamformer values
     float BF_ET;

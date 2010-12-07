@@ -111,10 +111,10 @@ struct objSeparatedSources
     // +-------------------------------------------------------------------+
 
         // Maximum number of separated sources
-        int GSS_NBSOURCES;
+        unsigned int GSS_NBSOURCES;
 
         // Size of a long frame
-        int GSS_LONGFRAMESIZE;
+        unsigned int GSS_LONGFRAMESIZE;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |

@@ -224,7 +224,7 @@ void mcraTerminate(struct objMcra *myMCRA)
 void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource)
 {
 
-    int k;
+    unsigned int k;
 
 #ifdef USE_SIMD
     // SIMD registers
@@ -337,10 +337,10 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
 
         myMCRA->Sf[k] = 0;
 
-        for (indexB = -1 * ((myMCRA->MCRA_BSIZE-1)/2); indexB <= ((myMCRA->MCRA_BSIZE-1)/2); indexB++)
+        for (indexB = -1 * ((myMCRA->MCRA_BSIZE-1)/2); indexB <= ((signed int) ((myMCRA->MCRA_BSIZE-1)/2)); indexB++)
         {
             // Check if the index is out of bound
-            if ( (((signed int) k + indexB) > 0) && (((signed int) k + indexB) < myMCRA->MICST_FRAMESIZE) )
+            if ( ((k + indexB) > 0) && ((k + indexB) < myMCRA->MICST_FRAMESIZE) )
             {
 
                 myMCRA->Sf[k] += myMCRA->b[indexB + ((myMCRA->MCRA_BSIZE-1)/2)] * xPower[k + indexB];
@@ -363,13 +363,13 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
 
     // Apply equation S = alphaS * S_previous + (1 - alphaS) * Sf
 
-    myMCRA->S[0] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[0] + (1 - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[0];
-    myMCRA->S[myMCRA->MICST_HALFFRAMESIZE] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[myMCRA->MICST_HALFFRAMESIZE] + (1 - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[myMCRA->MICST_HALFFRAMESIZE];
+    myMCRA->S[0] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[0] + (1.0f - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[0];
+    myMCRA->S[myMCRA->MICST_HALFFRAMESIZE] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[myMCRA->MICST_HALFFRAMESIZE] + (1.0f - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[myMCRA->MICST_HALFFRAMESIZE];
 
     for (k = 1; k < myMCRA->MICST_HALFFRAMESIZE; k++)
     {
 
-        myMCRA->S[k] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[k] + (1 - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[k];
+        myMCRA->S[k] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[k] + (1.0f - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[k];
         myMCRA->S[myMCRA->MICST_FRAMESIZE - k] = myMCRA->S[k];
 
     }
@@ -619,14 +619,14 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
             {
 
                 // lambdaD(k,l+1) = (1/l) * lambdaD(k,l) + (1 - 1/l) * |Y(k,l)|^2
-                myMCRA->lambdaD_next[k] = (1.0/myMCRA->l) * myMCRA->lambdaD[k] + (1 - (1.0/myMCRA->l)) * xPower[k];
+                myMCRA->lambdaD_next[k] = (float) ((1.0/myMCRA->l) * myMCRA->lambdaD[k] + (1.0f - (1.0f/myMCRA->l)) * xPower[k]);
 
             }
             else
             {
 
                 // lambdaD(k,l+1) = alphaD * lambdaD(k,l) + (1 - alphaD) * |Y(k,l)|^2
-                myMCRA->lambdaD_next[k] = myMCRA->MCRA_ALPHAD * myMCRA->lambdaD[k] + (1 - myMCRA->MCRA_ALPHAD) * xPower[k];
+                myMCRA->lambdaD_next[k] = myMCRA->MCRA_ALPHAD * myMCRA->lambdaD[k] + (1.0f - myMCRA->MCRA_ALPHAD) * xPower[k];
 
             }
         }

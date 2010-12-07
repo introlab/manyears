@@ -108,14 +108,11 @@
 void trackedSourcesInit(struct objTrackedSources *myTrackedSources, struct ParametersStruct *myParameters)
 {
 
-    // Index to loop for each source
-    unsigned char indexSource;
-
     /***************************************************************************
     * Step 1: Load parameters                                                  *
     ***************************************************************************/
 
-    myTrackedSources->MIXTURE_NBFILTERS = myParameters->P_GEN_DYNSOURCES;
+    myTrackedSources->MIXTURE_NBFILTERS = (unsigned int) myParameters->P_GEN_DYNSOURCES;
 
     /***************************************************************************
     * Step 2: Create arrays                                                    *

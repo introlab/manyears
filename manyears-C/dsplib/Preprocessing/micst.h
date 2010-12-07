@@ -111,10 +111,10 @@ struct objMicST
     // +-------------------------------------------------------------------+
 
     // Number of samples per frame (need to be a power of 2)
-    int MICST_FRAMESIZE;  
+    unsigned int MICST_FRAMESIZE;  
 
     // Half the number of samples per frame
-    int MICST_HALFFRAMESIZE;
+    unsigned int MICST_HALFFRAMESIZE;
 
     // Frame overlap (1 = 100%, 0.5 = 50%, 0.25 = 25%, ...)
     float MICST_OVERLAP;
@@ -123,7 +123,7 @@ struct objMicST
     float MICST_C;
 
     // Sampling rate (in samples / sec)
-    int MICST_FS;
+    unsigned int MICST_FS;
 
     // Adaptation rate (alphaD)
     float MICST_ALPHAD;

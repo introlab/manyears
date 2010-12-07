@@ -113,16 +113,16 @@ struct objPostprocessor
     // +-------------------------------------------------------------------+
 
     // Size of a frame
-    int PP_FRAMESIZE;
+    unsigned int PP_FRAMESIZE;
 
     // Hop size
-    int PP_HOPSIZE;
+    unsigned int PP_HOPSIZE;
 
     // Size of the circular buffer
-    int PP_BUFFERSIZE;
+    unsigned int PP_BUFFERSIZE;
 
     // Maximum number of separated sources
-    int PP_NSOURCES;
+    unsigned int PP_NSOURCES;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |
@@ -141,12 +141,12 @@ struct objPostprocessor
     float** sourcesPosition;
 
     // Number of active sources
-    int nActiveSources;
+    unsigned int nActiveSources;
 
     // Circular buffer to perform overlap-add operations
     float** circularBuffer;
-    int circularBufferIndexWrite;
-    int circularBufferIndexRead;
+    unsigned int circularBufferIndexWrite;
+    unsigned int circularBufferIndexRead;
 
     // Frames in frequency domain
     float** frameFrequencyReal;

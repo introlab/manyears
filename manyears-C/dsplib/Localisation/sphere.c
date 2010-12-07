@@ -112,7 +112,7 @@
   *                                                                            *
  ******************************************************************************/
 
-void sphereInit(struct objSphere *mySphere, int numberLevels)
+void sphereInit(struct objSphere *mySphere, unsigned int numberLevels)
 {
 
     // Define an array to store all triangles
@@ -216,7 +216,7 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
 
     // Number of triangles according to the number of levels
     // SPHERE_NUMBERTRIANGLES = 20 * 4^(SPHERE_NUMBERLEVELS)
-    mySphere->SPHERE_NUMBERTRIANGLES = 20 * pow(4, mySphere->SPHERE_NUMBERLEVELS);
+    mySphere->SPHERE_NUMBERTRIANGLES = (unsigned int) (20 * powf(4.0f, (float) mySphere->SPHERE_NUMBERLEVELS));
 
     // Number of points according to the number of levels
     // SPHERE_NUMBERPOINTS = SPHERE_NUMBERTRIANGLES / 2 + 2
@@ -236,8 +236,8 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
     // *************************************************************************
 
     // Define variable to store parameters to generate the triangles
-    sint = 0.4472136;
-    cost = 0.8944272;
+    sint = 0.4472136f;
+    cost = 0.8944272f;
 
     // *************************************************************************
     // * STEP 4: Generate the 12 points and 20 triangles for level 0           *
@@ -257,38 +257,38 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
         // points
 
         // Circle on top hemisphere
-        level0Points[1][0] = cost * sin(2 * M_PI * 0 / 5);
-        level0Points[1][1] = cost * cos(2 * M_PI * 0 / 5);
+        level0Points[1][0] = cost * sinf(2.0f * M_PI * 0.0f / 5.0f);
+        level0Points[1][1] = cost * cosf(2.0f * M_PI * 0.0f / 5.0f);
         level0Points[1][2] = sint;
-        level0Points[2][0] = cost * sin(2 * M_PI * 1 / 5);
-        level0Points[2][1] = cost * cos(2 * M_PI * 1 / 5);
+        level0Points[2][0] = cost * sinf(2.0f * M_PI * 1.0f / 5.0f);
+        level0Points[2][1] = cost * cosf(2.0f * M_PI * 1.0f / 5.0f);
         level0Points[2][2] = sint;
-        level0Points[3][0] = cost * sin(2 * M_PI * 2 / 5);
-        level0Points[3][1] = cost * cos(2 * M_PI * 2 / 5);
+        level0Points[3][0] = cost * sinf(2.0f * M_PI * 2.0f / 5.0f);
+        level0Points[3][1] = cost * cosf(2.0f * M_PI * 2.0f / 5.0f);
         level0Points[3][2] = sint;
-        level0Points[4][0] = cost * sin(2 * M_PI * 3 / 5);
-        level0Points[4][1] = cost * cos(2 * M_PI * 3 / 5);
+        level0Points[4][0] = cost * sinf(2.0f * M_PI * 3.0f / 5.0f);
+        level0Points[4][1] = cost * cosf(2.0f * M_PI * 3.0f / 5.0f);
         level0Points[4][2] = sint;
-        level0Points[5][0] = cost * sin(2 * M_PI * 4 / 5);
-        level0Points[5][1] = cost * cos(2 * M_PI * 4 / 5);
+        level0Points[5][0] = cost * sinf(2.0f * M_PI * 4.0f / 5.0f);
+        level0Points[5][1] = cost * cosf(2.0f * M_PI * 4.0f / 5.0f);
         level0Points[5][2] = sint;
 
         // Circle on bottom hemisphere
-        level0Points[6][0] = -cost * sin(2 * M_PI * 0 / 5);
-        level0Points[6][1] = -cost * cos(2 * M_PI * 0 / 5);
-        level0Points[6][2] = -sint;
-        level0Points[7][0] = -cost * sin(2 * M_PI * 1 / 5);
-        level0Points[7][1] = -cost * cos(2 * M_PI * 1 / 5);
-        level0Points[7][2] = -sint;
-        level0Points[8][0] = -cost * sin(2 * M_PI * 2 / 5);
-        level0Points[8][1] = -cost * cos(2 * M_PI * 2 / 5);
-        level0Points[8][2] = -sint;
-        level0Points[9][0] = -cost * sin(2 * M_PI * 3 / 5);
-        level0Points[9][1] = -cost * cos(2 * M_PI * 3 / 5);
-        level0Points[9][2] = -sint;
-        level0Points[10][0] = -cost * sin(2 * M_PI * 4 / 5);
-        level0Points[10][1] = -cost * cos(2 * M_PI * 4 / 5);
-        level0Points[10][2] = -sint;
+        level0Points[6][0] = -1.0f * cost * sinf(2.0f * M_PI * 0.0f / 5.0f);
+        level0Points[6][1] = -1.0f * cost * cosf(2.0f * M_PI * 0.0f / 5.0f);
+        level0Points[6][2] = -1.0f * sint;
+        level0Points[7][0] = -1.0f * cost * sinf(2.0f * M_PI * 1.0f / 5.0f);
+        level0Points[7][1] = -1.0f * cost * cosf(2.0f * M_PI * 1.0f / 5.0f);
+        level0Points[7][2] = -1.0f * sint;
+        level0Points[8][0] = -1.0f * cost * sinf(2.0f * M_PI * 2.0f / 5.0f);
+        level0Points[8][1] = -1.0f * cost * cosf(2.0f * M_PI * 2.0f / 5.0f);
+        level0Points[8][2] = -1.0f * sint;
+        level0Points[9][0] = -1.0f * cost * sinf(2.0f * M_PI * 3.0f / 5.0f);
+        level0Points[9][1] = -1.0f * cost * cosf(2.0f * M_PI * 3.0f / 5.0f);
+        level0Points[9][2] = -1.0f * sint;
+        level0Points[10][0] = -1.0f * cost * sinf(2.0f * M_PI * 4.0f / 5.0f);
+        level0Points[10][1] = -1.0f * cost * cosf(2.0f * M_PI * 4.0f / 5.0f);
+        level0Points[10][2] = -1.0f * sint;
 
     // Use these points to define the 20 triangles for level 0
 
@@ -522,7 +522,7 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
                 point12[0] = point1[0] + point2[0];
                 point12[1] = point1[1] + point2[1];
                 point12[2] = point1[2] + point2[2];
-                mag12 = sqrt(point12[0] * point12[0] + point12[1] * point12[1] + point12[2] * point12[2]);
+                mag12 = sqrtf(point12[0] * point12[0] + point12[1] * point12[1] + point12[2] * point12[2]);
                 point12[0] /= mag12;
                 point12[1] /= mag12;
                 point12[2] /= mag12;
@@ -531,7 +531,7 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
                 point23[0] = point2[0] + point3[0];
                 point23[1] = point2[1] + point3[1];
                 point23[2] = point2[2] + point3[2];
-                mag23 = sqrt(point23[0] * point23[0] + point23[1] * point23[1] + point23[2] * point23[2]);
+                mag23 = sqrtf(point23[0] * point23[0] + point23[1] * point23[1] + point23[2] * point23[2]);
                 point23[0] /= mag23;
                 point23[1] /= mag23;
                 point23[2] /= mag23;
@@ -540,7 +540,7 @@ void sphereInit(struct objSphere *mySphere, int numberLevels)
                 point13[0] = point1[0] + point3[0];
                 point13[1] = point1[1] + point3[1];
                 point13[2] = point1[2] + point3[2];
-                mag13 = sqrt(point13[0] * point13[0] + point13[1] * point13[1] + point13[2] * point13[2]);
+                mag13 = sqrtf(point13[0] * point13[0] + point13[1] * point13[1] + point13[2] * point13[2]);
                 point13[0] /= mag13;
                 point13[1] /= mag13;
                 point13[2] /= mag13;

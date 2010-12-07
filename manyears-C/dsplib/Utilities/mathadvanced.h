@@ -40,7 +40,7 @@ static INLINE_PREFIX float expest(float _arg)
 
     float sum;
 
-    sum = 1 + _arg / 128.0;
+    sum = (float) (1.0 + _arg / 128.0);
 
     if (sum < 0.0)
     {

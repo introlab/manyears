@@ -108,22 +108,22 @@ struct objFFT
     // +-------------------------------------------------------------------+
 
     // Number of points in the FFT (must be a power of 2)
-    int FFT_SIZE;
+    unsigned int FFT_SIZE;
 
     // Number of levels in the FFT (number of poinst = 2^(number of levels)
-    int FFT_NBLEVELS;
+    unsigned int FFT_NBLEVELS;
 
     // Half the number of points in the FFT
-    int FFT_HALFSIZE;
+    unsigned int FFT_HALFSIZE;
 
     // Inverse of the number of points in the FFT
     float FFT_SIZE_INV;
 
     // Number of elements in the array for SIMD group optimization
-    int FFT_SIMD_GROUP;
+    unsigned int FFT_SIMD_GROUP;
 
     // Number of elements in the array for SIMD individual optimization
-    int FFT_SIMD_INDIVIDUAL;
+    unsigned int FFT_SIMD_INDIVIDUAL;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |

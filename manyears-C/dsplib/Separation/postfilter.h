@@ -119,16 +119,16 @@ struct objPostfilter
         // +---------------------------------------------------------------+
 
         // Maximum number of separated sources
-        int POSTFILTER_NBSOURCES;
+        unsigned int POSTFILTER_NBSOURCES;
 
         // Number of samples per frame
-        int POSTFILTER_NFRAMES;
+        unsigned int POSTFILTER_NFRAMES;
 
         // Half the number of samples per frame
-        int POSTFILTER_HALFNFRAMES;
+        unsigned int POSTFILTER_HALFNFRAMES;
 
         // Half the number of samples per frame plus one
-        int POSTFILTER_HALFNFRAMESPLUSONE;
+        unsigned int POSTFILTER_HALFNFRAMESPLUSONE;
 
         // +---------------------------------------------------------------+
         // | Noise                                                         |
@@ -178,10 +178,10 @@ struct objPostfilter
         float POSTFILTER_GMIN;
 
         // Size of the local window
-        int POSTFILTER_LOCALWINDOWSIZE;
+        unsigned int POSTFILTER_LOCALWINDOWSIZE;
 
         // Size of the global window
-        int POSTFILTER_GLOBALWINDOWSIZE;
+        unsigned int POSTFILTER_GLOBALWINDOWSIZE;
 
         // Size of the frame window
         int POSTFILTER_FRAMEWINDOWSIZE;

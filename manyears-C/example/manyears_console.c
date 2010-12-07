@@ -9,7 +9,7 @@
 #include <string.h>
 
 //Manyears includes
-#include "../dsplib/overallContext.h"
+#include "overallContext.h"
 
 #define SAMPLES_PER_FRAME 512
 #define NB_MICROPHONES 8

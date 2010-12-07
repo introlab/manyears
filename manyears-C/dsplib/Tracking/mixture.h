@@ -139,7 +139,7 @@
             // +---------------------------------------------------------------+           
 
             // Maximum number of filter
-            int MIXTURE_NBFILTERS;
+            unsigned int MIXTURE_NBFILTERS;
 
             // +---------------------------------------------------------------+
             // | Probability                                                   |
@@ -172,19 +172,19 @@
             float MIXTURE_CONFIRMCOUNTTS;
 
             // Number of times the threshold must be reached
-            int MIXTURE_CONFIRMCOUNT;
+            unsigned int MIXTURE_CONFIRMCOUNT;
 
             // Maximum number of frames while the source has not been tracked
             // in order to delete this tracking for probation time
-            int MIXTURE_CUMULATIVETIMEPROB;
+            unsigned int MIXTURE_CUMULATIVETIMEPROB;
 
             // Maximum number of frames while the source has not been tracked
             // in order to delete this tracking for time 1
-            int MIXTURE_CUMULATIVETIME1;
+            unsigned int MIXTURE_CUMULATIVETIME1;
 
             // Maximum number of frames while the source has not been tracked
             // in order to delete this tracking for time 2
-            int MIXTURE_CUMULATIVETIME2;
+            unsigned int MIXTURE_CUMULATIVETIME2;
 
             // Minimum value to consider to say that source is not observed for
             // probation time
@@ -207,16 +207,16 @@
             // +---------------------------------------------------------------+
 
             // Maximum number of potential sources
-            int BF_MAXSOURCES;
+            unsigned int BF_MAXSOURCES;
 
             // Number of particles in filters
-            int FILTER_NBPARTICLES;
+            unsigned int FILTER_NBPARTICLES;
 
             // Standard deviation
             float FILTER_STDDEVIATION;
 
             // Mixture base for f
-            int MIXTURE_BASEF;
+            unsigned int MIXTURE_BASEF;
 
         // +-------------------------------------------------------------------+
         // | Variables                                                         |

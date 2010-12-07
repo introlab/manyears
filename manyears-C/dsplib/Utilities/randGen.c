@@ -178,8 +178,8 @@ void randInit(void)
 		{
 			
 			// Generate the point coordinates
-			x1 = 2.0 * randu() - 1.0;
-			x2 = 2.0 * randu() - 1.0;
+			x1 = 2.0f * randu() - 1.0f;
+			x2 = 2.0f * randu() - 1.0f;
 
 			// Get the radius squared
 			w = x1 * x1 + x2 * x2;
@@ -187,7 +187,7 @@ void randInit(void)
 		} while (w >= 1.0);
 
 		// Apply equations
-		w = sqrt( (-2.0 * log( w ) ) / w );
+		w = sqrtf( (-2.0f * logf( w ) ) / w );
         y1 = x1 * w;
         y2 = x2 * w;
 
@@ -222,7 +222,7 @@ float randu(void)
 	tmp = ((float) ((0x7FFF0000 & randAcc) >> 16));
 	
 	// Normalize
-	tmp /= 32768.0;
+	tmp /= 32768.0f;
 
 	return  tmp;
 }

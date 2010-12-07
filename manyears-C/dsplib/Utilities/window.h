@@ -96,8 +96,8 @@
  * Prototypes                                                                  *
  ******************************************************************************/
 
-void generateHanningWindow(float *window, int len);
+void generateHanningWindow(float *window, unsigned int len);
 
-void generatePowerComplementaryWindow(float *window, int len);
+void generatePowerComplementaryWindow(float *window, unsigned int len);
 
 #endif

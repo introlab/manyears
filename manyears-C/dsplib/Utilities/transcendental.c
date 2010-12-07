@@ -107,46 +107,46 @@ void transcendentalInit(struct objTranscendental* myTranscendental)
     float numberElements;
     unsigned int numberElementsRounded;
 
-    signed int index;
+    unsigned int index;
     float v;
     float intPart;
     float fracPart;
     float value;
 
-    const float table[21] = {0.75008,0.93640,1.11688,1.28852,1.45013,1.60184,1.74422,
-                             1.87812,2.00448,2.12417,2.23799,2.34656,2.45053,2.55031,
-                             2.64646,2.73921,2.82895,2.91602,3.00049,3.08265,3.16270};
+    const float table[21] = {0.75008f,0.93640f,1.11688f,1.28852f,1.45013f,1.60184f,1.74422f,
+                             1.87812f,2.00448f,2.12417f,2.23799f,2.34656f,2.45053f,2.55031f,
+                             2.64646f,2.73921f,2.82895f,2.91602f,3.00049f,3.08265f,3.16270f};
 
     // Save parameters
-    myTranscendental->interval = TRANSCENDENTAL_INTERVAL;
-    myTranscendental->minValue = TRANSCENDENTAL_MINVALUE;
-    myTranscendental->maxValue = TRANSCENDENTAL_MAXVALUE;
+    myTranscendental->interval = (float) TRANSCENDENTAL_INTERVAL;
+    myTranscendental->minValue = (float) TRANSCENDENTAL_MINVALUE;
+    myTranscendental->maxValue = (float) TRANSCENDENTAL_MAXVALUE;
 
     // Generate the array
     numberElements = (myTranscendental->maxValue - myTranscendental->minValue) / myTranscendental->interval;
-    numberElementsRounded = floor(numberElements);
+    numberElementsRounded = (unsigned int) floor(numberElements);
     myTranscendental->numberElements = numberElementsRounded;
     myTranscendental->results = (float*) newTable1D(myTranscendental->numberElements, sizeof(float));
 
     // Fill the array
-    v = 0.0;
+    v = 0.0f;
 
     for (index = 0; index < myTranscendental->numberElements; index++)
     {
 
-        if (v <= 9.5)
+        if (v <= 9.5f)
         {
-            intPart = floor(2*v);
-            fracPart = 2*v - intPart;
+            intPart = floorf(2.0f*v);
+            fracPart = 2.0f * v - intPart;
 
             value = ((1-fracPart) * table[(unsigned int) intPart] +
                     fracPart * table[((unsigned int) intPart) + 1]) /
-                    sqrt(v + 0.0001);
+                    sqrtf(v + 0.0001f);
 
         }
         else
         {
-            value = 1.0;
+            value = 1.0f;
         }
 
         myTranscendental->results[index] = value;
@@ -193,7 +193,7 @@ void transcendentalTerminate(struct objTranscendental* myTranscendental)
 float transcendentalEvaluate(struct objTranscendental* myTranscendental, float value)
 {
 
-    int index;
+    unsigned int index;
 
     index = ((unsigned int) floor((value / myTranscendental->interval))) + 1;
 

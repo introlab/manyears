@@ -1,4 +1,5 @@
 #include "sphereObj.h"
+#include <math.h>
 
 /***********************************************************
 * Constructor                                              *

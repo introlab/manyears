@@ -95,7 +95,7 @@
 
 // In some environment, the constant PI is not define with the math.h library
 #ifndef M_PI
-	#define M_PI	3.1415926535897932384626433832795
+	#define M_PI	3.1415926535897932384626433832795f
 #endif
 
 
@@ -291,7 +291,7 @@ void beamformerFindMaxima(struct objBeamformer *myBeamformer, struct objPreproce
         // | Step A: Find the maximum                                          |
         // +-------------------------------------------------------------------+
 
-        maxValue = -1E30;
+        maxValue = -1E30f;
         maxIndex = -1;
 
         for (indexPoint = 0; indexPoint < myBeamformer->myDelays->nPoints; indexPoint++)
@@ -301,7 +301,7 @@ void beamformerFindMaxima(struct objBeamformer *myBeamformer, struct objPreproce
             // | Step i: Compute the energy for the current point              |
             // +---------------------------------------------------------------+
 
-            sum = 0.0;
+            sum = 0.0f;
 
             for (indexPair = 0; indexPair < myBeamformer->myDelays->nPairs; indexPair++)
             {
@@ -381,30 +381,30 @@ void beamformerFindMaxima(struct objBeamformer *myBeamformer, struct objPreproce
 
             v = energy / myBeamformer->BF_ET;
 
-            if (v <= 1)
+            if (v <= 1.0f)
             {
-                probability = v * v / 2.0;
+                probability = v * v / 2.0f;
             }
             else
             {
-                probability = 1 - (1.0 / (v * v * 2.0));
+                probability = 1.0f - (1.0f / (v * v * 2.0f));
             }
             break;
 
         case 1:
-            probability = 0.3;
+            probability = 0.3f;
             break;
 
         case 2:
-            probability = 0.16;
+            probability = 0.16f;
             break;
 
         case 3:
-            probability = 0.03;
+            probability = 0.03f;
             break;
 
         default:
-            probability = 0.01;
+            probability = 0.01f;
             break;
 
         }

@@ -108,7 +108,7 @@
  *                                                                             *
  ******************************************************************************/
 
-void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones, struct objSphere* mySphere, float c, float Fs, float radius)
+void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones, struct objSphere* mySphere, float c, unsigned int Fs, float radius)
 {
 
     unsigned int indexPoint;
@@ -179,7 +179,7 @@ void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones
             distY = pointY - micY;
             distZ = pointZ - micZ;
 
-            distance = sqrt(distX * distX + distY * distY + distZ * distZ);
+            distance = sqrtf(distX * distX + distY * distY + distZ * distZ);
 
             distanceArray[indexMic1] = distance;
 
@@ -194,7 +194,7 @@ void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones
 
                 diffDist = distanceArray[indexMic1] - distanceArray[indexMic2];
 
-                myDelays->lookup[indexPoint][indexPair] = floor((myDelays->FS / myDelays->C) * diffDist + 0.5);
+                myDelays->lookup[indexPoint][indexPair] = (int) (floor((myDelays->FS / myDelays->C) * diffDist + 0.5));
 
             }
         }
@@ -246,7 +246,7 @@ void delaysTerminate(struct objDelays* myDelays)
 signed int delaysGetMin(struct objDelays* myDelays)
 {
 
-    float min;
+    int min;
 
     unsigned int indexPoint;
     unsigned int indexPair;
@@ -286,7 +286,7 @@ signed int delaysGetMin(struct objDelays* myDelays)
 signed int delaysGetMax(struct objDelays* myDelays)
 {
 
-    float max;
+    int max;
 
     unsigned int indexPoint;
     unsigned int indexPair;

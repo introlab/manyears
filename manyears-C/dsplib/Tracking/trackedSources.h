@@ -111,7 +111,7 @@ struct objTrackedSources
     // +-------------------------------------------------------------------+
 
         // Maximum number of filter
-        int MIXTURE_NBFILTERS;
+        unsigned int MIXTURE_NBFILTERS;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |

@@ -135,20 +135,20 @@ void micstInit(struct objMicST *myMicST, struct ParametersStruct *myParameters, 
     myMicST->position[1] = position[1];
     myMicST->position[2] = position[2];
 
-    myMicST->ksi = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->lambda = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->lambda_prev = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->sigma = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->weightedResultImag = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->weightedResultReal = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xfreqImag = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xfreqReal = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xpower = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xpower_prev = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xtime = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->xtime_windowed = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->zeta = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
-    myMicST->zeta_prev = newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->ksi = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->lambda = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->lambda_prev = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->sigma = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->weightedResultImag = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->weightedResultReal = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xfreqImag = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xfreqReal = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xpower = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xpower_prev = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xtime = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->xtime_windowed = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->zeta = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
+    myMicST->zeta_prev = (float*) newTable1D(myMicST->MICST_FRAMESIZE,sizeof(float));
 
     myMicST->noiseEstimator = (struct objMcra*) malloc(sizeof(struct objMcra));
 
@@ -250,8 +250,8 @@ void micstProcessFrame(struct objMicST *myMicST)
      * Step 0: Set DC to zero                                                  *
      **************************************************************************/
 
-    myMicST->xfreqReal[0] = 0;
-    myMicST->xfreqImag[0] = 0;
+    myMicST->xfreqReal[0] = 0.0f;
+    myMicST->xfreqImag[0] = 0.0f;
 
     /***************************************************************************
      * Step 1: Compute the power                                               *
@@ -321,13 +321,13 @@ void micstProcessFrame(struct objMicST *myMicST)
 
     // lambda_rev_n,i[k] = gamma * lambda_rev_n-1,i[k] + (1 - gamma) * delta * | zeta_n-1_i[k] * X_n-1_i[k] |^2
 
-    myMicST->lambda[0] = myMicST->MICST_GAMMA * myMicST->lambda_prev[0] + (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabs(myMicST->zeta_prev[0]) * fabs(myMicST->zeta_prev[0]) * myMicST->xpower_prev[0];
-    myMicST->lambda[myMicST->MICST_HALFFRAMESIZE] = myMicST->MICST_GAMMA * myMicST->lambda_prev[myMicST->MICST_HALFFRAMESIZE] + (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * myMicST->xpower_prev[myMicST->MICST_HALFFRAMESIZE];
+    myMicST->lambda[0] = myMicST->MICST_GAMMA * myMicST->lambda_prev[0] + (1.0f - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabsf(myMicST->zeta_prev[0]) * fabsf(myMicST->zeta_prev[0]) * myMicST->xpower_prev[0];
+    myMicST->lambda[myMicST->MICST_HALFFRAMESIZE] = myMicST->MICST_GAMMA * myMicST->lambda_prev[myMicST->MICST_HALFFRAMESIZE] + (1.0f - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabsf(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * fabsf(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * myMicST->xpower_prev[myMicST->MICST_HALFFRAMESIZE];
 
     for (k = 1; k < myMicST->MICST_HALFFRAMESIZE; k++)
     {
 
-        myMicST->lambda[k] = myMicST->MICST_GAMMA * myMicST->lambda_prev[k] + (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabs(myMicST->zeta_prev[k]) * fabs(myMicST->zeta_prev[k]) * myMicST->xpower_prev[k];
+        myMicST->lambda[k] = myMicST->MICST_GAMMA * myMicST->lambda_prev[k] + (1.0f - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA * fabsf(myMicST->zeta_prev[k]) * fabsf(myMicST->zeta_prev[k]) * myMicST->xpower_prev[k];
         myMicST->lambda[myMicST->MICST_FRAMESIZE - k] = myMicST->lambda[k];
 
     }
@@ -399,27 +399,27 @@ void micstProcessFrame(struct objMicST *myMicST)
     // ksi_n_i[k] = {(1 - alphaD) * [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2 + alphaD * post[k]} / (sigma_2_i[k] + lambda_rev_n,i[k] + 1E-20)
 
     post = myMicST->xpower[0] - myMicST->sigma[0] - myMicST->lambda[0];
-    if (post < 0.0)
+    if (post < 0.0f)
     {
-        post = 0.0;
+        post = 0.0f;
     }
-    myMicST->ksi[0] = ((1 - myMicST->MICST_ALPHAD) * fabs(myMicST->zeta_prev[0]) * fabs(myMicST->zeta_prev[0]) * myMicST->xpower_prev[0] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[0] + myMicST->lambda[0] + 1E-20);
+    myMicST->ksi[0] = ((1 - myMicST->MICST_ALPHAD) * fabsf(myMicST->zeta_prev[0]) * fabsf(myMicST->zeta_prev[0]) * myMicST->xpower_prev[0] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[0] + myMicST->lambda[0] + 1E-20f);
 
     post = myMicST->xpower[myMicST->MICST_HALFFRAMESIZE] - myMicST->sigma[myMicST->MICST_HALFFRAMESIZE] - myMicST->lambda[myMicST->MICST_HALFFRAMESIZE];
-    if (post < 0.0)
+    if (post < 0.0f)
     {
-        post = 0.0;
+        post = 0.0f;
     }
-    myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] = ((1 - myMicST->MICST_ALPHAD) * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * myMicST->xpower_prev[myMicST->MICST_HALFFRAMESIZE] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[myMicST->MICST_HALFFRAMESIZE] + myMicST->lambda[myMicST->MICST_HALFFRAMESIZE] + 1E-20);
+    myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] = ((1 - myMicST->MICST_ALPHAD) * fabsf(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * fabsf(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * myMicST->xpower_prev[myMicST->MICST_HALFFRAMESIZE] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[myMicST->MICST_HALFFRAMESIZE] + myMicST->lambda[myMicST->MICST_HALFFRAMESIZE] + 1E-20f);
 
     for (k = 1; k < myMicST->MICST_HALFFRAMESIZE; k++)
     {
         post = myMicST->xpower[k] - myMicST->sigma[k] - myMicST->lambda[k];
-        if (post < 0.0)
+        if (post < 0.0f)
         {
-            post = 0.0;
+            post = 0.0f;
         }
-        myMicST->ksi[k] = ((1 - myMicST->MICST_ALPHAD) * fabs(myMicST->zeta_prev[k]) * fabs(myMicST->zeta_prev[k]) * myMicST->xpower_prev[k] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[k] + myMicST->lambda[k] + 1E-20);
+        myMicST->ksi[k] = ((1 - myMicST->MICST_ALPHAD) * fabsf(myMicST->zeta_prev[k]) * fabsf(myMicST->zeta_prev[k]) * myMicST->xpower_prev[k] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[k] + myMicST->lambda[k] + 1E-20f);
 
         myMicST->ksi[myMicST->MICST_FRAMESIZE - k] = myMicST->ksi[k];
     }
@@ -532,13 +532,13 @@ void micstProcessFrame(struct objMicST *myMicST)
 
     // zeta_n_i[k] = ksi_n_i[k] / (ksi_n_i[k] + 1)
 
-    myMicST->zeta[0] = myMicST->ksi[0] / (myMicST->ksi[0] + 1);
-    myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] = myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] / (myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] + 1);
+    myMicST->zeta[0] = myMicST->ksi[0] / (myMicST->ksi[0] + 1.0f);
+    myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] = myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] / (myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] + 1.0f);
 
     for (k = 1; k < myMicST->MICST_HALFFRAMESIZE; k++)
     {
 
-        myMicST->zeta[k] = myMicST->ksi[k] / (myMicST->ksi[k] + 1);
+        myMicST->zeta[k] = myMicST->ksi[k] / (myMicST->ksi[k] + 1.0f);
         myMicST->zeta[myMicST->MICST_FRAMESIZE - k] = myMicST->zeta[k];
 
     }
@@ -589,26 +589,26 @@ void micstProcessFrame(struct objMicST *myMicST)
 
     // zeta_i[k] * X_i[k] / | X_i[k] |
 
-    tmpSqrt = sqrt(myMicST->xpower[0]);
+    tmpSqrt = sqrtf(myMicST->xpower[0]);
 
-    myMicST->weightedResultReal[0] = myMicST->zeta[0] * myMicST->xfreqReal[0] / (tmpSqrt + 1E-20);
-    myMicST->weightedResultImag[0] = myMicST->zeta[0] * myMicST->xfreqImag[0] / (tmpSqrt + 1E-20);
+    myMicST->weightedResultReal[0] = myMicST->zeta[0] * myMicST->xfreqReal[0] / (tmpSqrt + 1E-20f);
+    myMicST->weightedResultImag[0] = myMicST->zeta[0] * myMicST->xfreqImag[0] / (tmpSqrt + 1E-20f);
 
 
-    tmpSqrt = sqrt(myMicST->xpower[myMicST->MICST_HALFFRAMESIZE]);
+    tmpSqrt = sqrtf(myMicST->xpower[myMicST->MICST_HALFFRAMESIZE]);
 
-    myMicST->weightedResultReal[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqReal[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20);
-    myMicST->weightedResultImag[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqImag[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20);
+    myMicST->weightedResultReal[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqReal[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20f);
+    myMicST->weightedResultImag[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqImag[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20f);
 
     for (k = 1; k < myMicST->MICST_HALFFRAMESIZE; k++)
     {
-        tmpSqrt = sqrt(myMicST->xpower[k]);
+        tmpSqrt = sqrtf(myMicST->xpower[k]);
 
-        myMicST->weightedResultReal[k] = myMicST->zeta[k] * myMicST->xfreqReal[k] / (tmpSqrt + 1E-20);
-        myMicST->weightedResultImag[k] = myMicST->zeta[k] * myMicST->xfreqImag[k] / (tmpSqrt + 1E-20);
+        myMicST->weightedResultReal[k] = myMicST->zeta[k] * myMicST->xfreqReal[k] / (tmpSqrt + 1E-20f);
+        myMicST->weightedResultImag[k] = myMicST->zeta[k] * myMicST->xfreqImag[k] / (tmpSqrt + 1E-20f);
 
         myMicST->weightedResultReal[myMicST->MICST_FRAMESIZE - k] = myMicST->weightedResultReal[k];
-        myMicST->weightedResultImag[myMicST->MICST_FRAMESIZE - k] = -1.0 * myMicST->weightedResultImag[k];
+        myMicST->weightedResultImag[myMicST->MICST_FRAMESIZE - k] = -1.0f * myMicST->weightedResultImag[k];
 
     }
 

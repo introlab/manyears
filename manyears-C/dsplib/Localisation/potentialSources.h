@@ -92,6 +92,7 @@
 
 #include "hardware.h"
 #include "parameters.h"
+#include "Utilities/dynamicMemory.h"
 
 /*******************************************************************************
  * Structures                                                                  *
@@ -105,7 +106,7 @@ struct objPotentialSources
     // +-------------------------------------------------------------------+
 
         // Maximum number of potential sources
-        int BF_MAXSOURCES;
+        unsigned int BF_MAXSOURCES;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |
@@ -118,7 +119,7 @@ struct objPotentialSources
         float *sourcesProbability;
 
         // Number of potential sources
-        int numberSources;
+        unsigned int numberSources;
 
 };
 

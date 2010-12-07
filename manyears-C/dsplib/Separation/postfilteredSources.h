@@ -111,10 +111,10 @@ struct objPostfilteredSources
     // +-------------------------------------------------------------------+
 
         // Maximum number of postfiltered sources
-        int POSTFILTERED_NBSOURCES;
+        unsigned int POSTFILTERED_NBSOURCES;
 
         // Size of a long frame
-        int POSTFILTERED_LONGFRAMESIZE;
+        unsigned int POSTFILTERED_LONGFRAMESIZE;
 
     // +-------------------------------------------------------------------+
     // | Variables                                                         |

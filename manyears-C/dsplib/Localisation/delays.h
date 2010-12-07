@@ -138,7 +138,7 @@ struct objDelays
  * Prototypes                                                                  *
  ******************************************************************************/
 
-    void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones, struct objSphere* mySphere, float c, float Fs, float radius);
+    void delaysInit(struct objDelays* myDelays, struct objMicrophones* myMicrophones, struct objSphere* mySphere, float c, unsigned int Fs, float radius);
 
     void delaysTerminate(struct objDelays* myDelays);
 

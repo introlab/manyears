@@ -124,7 +124,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC1_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC1_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -132,16 +132,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC1_X = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC1_Y = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC1_Z = -0.16;
+                                        parametersStruct->P_GEO_MICS_MIC1_X = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC1_Y = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC1_Z = -0.16f;
 
                     // +-------------------------------------------------------+
                     // | ii. Microphone 2                                      |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC2_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC2_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -149,16 +149,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC2_X = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC2_Y = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC2_Z = +0.16;
+                                        parametersStruct->P_GEO_MICS_MIC2_X = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC2_Y = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC2_Z = +0.16f;
 
                     // +-------------------------------------------------------+
                     // | iii. Microphone 3                                     |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC3_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC3_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -166,16 +166,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC3_X = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC3_Y = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC3_Z = -0.16;
+                                        parametersStruct->P_GEO_MICS_MIC3_X = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC3_Y = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC3_Z = -0.16f;
 
                     // +-------------------------------------------------------+
                     // | iv. Microphone 4                                      |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC4_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC4_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -183,16 +183,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC4_X = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC4_Y = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC4_Z = +0.16;
+                                        parametersStruct->P_GEO_MICS_MIC4_X = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC4_Y = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC4_Z = +0.16f;
 
                     // +-------------------------------------------------------+
                     // | v. Microphone 5                                       |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC5_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC5_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -200,16 +200,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC5_X = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC5_Y = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC5_Z = -0.16;
+                                        parametersStruct->P_GEO_MICS_MIC5_X = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC5_Y = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC5_Z = -0.16f;
 
                     // +-------------------------------------------------------+
                     // | vi. Microphone 6                                      |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC6_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC6_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -217,16 +217,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC6_X = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC6_Y = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC6_Z = +0.16;
+                                        parametersStruct->P_GEO_MICS_MIC6_X = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC6_Y = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC6_Z = +0.16f;
 
                     // +-------------------------------------------------------+
                     // | vii. Microphone 7                                     |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC7_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC7_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -234,16 +234,16 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC7_X = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC7_Y = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC7_Z = -0.16;
+                                        parametersStruct->P_GEO_MICS_MIC7_X = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC7_Y = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC7_Z = -0.16f;
 
                     // +-------------------------------------------------------+
                     // | viii. Microphone 8                                    |
                     // +-------------------------------------------------------+
 
                             // Define the gain of each microphone to equalize
-                            parametersStruct->P_GEO_MICS_MIC8_GAIN = 1.0000;
+                            parametersStruct->P_GEO_MICS_MIC8_GAIN = 1.0000f;
 
                                 // +-------------------------------------------+
                                 // | a. Position                               |
@@ -251,9 +251,9 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                         // Define the position of each microphone on the cube (in meters)
                                         // The center of the cube is at the origin
-                                        parametersStruct->P_GEO_MICS_MIC8_X = +0.16;
-                                        parametersStruct->P_GEO_MICS_MIC8_Y = -0.16;
-                                        parametersStruct->P_GEO_MICS_MIC8_Z = +0.16;
+                                        parametersStruct->P_GEO_MICS_MIC8_X = +0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC8_Y = -0.16f;
+                                        parametersStruct->P_GEO_MICS_MIC8_Z = +0.16f;
 
     // +-----------------------------------------------------------------------+
     // | B. Beamformer                                                         |
@@ -276,7 +276,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
                     parametersStruct->P_BF_RESETRANGE = 5;
 
                     // Define the energy level
-                    parametersStruct->P_BF_ET = 600;
+                    parametersStruct->P_BF_ET = 600.0f;
 
     // +-----------------------------------------------------------------------+
     // | C. Particle filters                                                   |
@@ -287,7 +287,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
             // +---------------------------------------------------------------+
 
                     // Standard deviation of the new particles
-                    parametersStruct->P_FILTER_STDDEVIATION = 0.2;
+                    parametersStruct->P_FILTER_STDDEVIATION = 0.2f;
 
             // +---------------------------------------------------------------+
             // | II. Particle prediction                                       |
@@ -298,78 +298,78 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
                     // +-------------------------------------------------------+
 
                             // Stationary sources
-                            parametersStruct->P_FILTER_ALPHASTOP = 2.0;
-                            parametersStruct->P_FILTER_BETASTOP = 0.04;
+                            parametersStruct->P_FILTER_ALPHASTOP = 2.0f;
+                            parametersStruct->P_FILTER_BETASTOP = 0.04f;
 
                     // +-------------------------------------------------------+
                     // | ii. Constant velocity                                 |
                     // +-------------------------------------------------------+
 
                             // Constant velocity source
-                            parametersStruct->P_FILTER_ALPHACONST = 0.05;
-                            parametersStruct->P_FILTER_BETACONST = 0.5;
+                            parametersStruct->P_FILTER_ALPHACONST = 0.05f;
+                            parametersStruct->P_FILTER_BETACONST = 0.5f;
 
                     // +-------------------------------------------------------+
                     // | iii. Accelerated                                      |
                     // +-------------------------------------------------------+
 
                             // Accelerated source
-                            parametersStruct->P_FILTER_ALPHAEXC = 0.5;
-                            parametersStruct->P_FILTER_BETAEXC = 0.2;
+                            parametersStruct->P_FILTER_ALPHAEXC = 0.5f;
+                            parametersStruct->P_FILTER_BETAEXC = 0.2f;
 
             // +---------------------------------------------------------------+
             // | III. Particle internia                                        |
             // +---------------------------------------------------------------+
 
                     // Additional inertia factors
-                    parametersStruct->P_FILTER_INERTIAX = 1;
-                    parametersStruct->P_FILTER_INERTIAY = 1;
-                    parametersStruct->P_FILTER_INERTIAZ = 1;
+                    parametersStruct->P_FILTER_INERTIAX = 1.0f;
+                    parametersStruct->P_FILTER_INERTIAY = 1.0f;
+                    parametersStruct->P_FILTER_INERTIAZ = 1.0f;
 
             // +---------------------------------------------------------------+
             // | IV. Others                                                    |
             // +---------------------------------------------------------------+
 
                     // Time interval between updates
-                    parametersStruct->P_FILTER_DELTAT = 0.008;
+                    parametersStruct->P_FILTER_DELTAT = 0.008f;
 
 
                     // Percentage of particles to have its state updated
-                    parametersStruct->P_FILTER_STATEUPDT = 0.03;
+                    parametersStruct->P_FILTER_STATEUPDT = 0.03f;
 
 
                     // Percentage of new particles to be stopped
                     // (make sure total sums up to 1 (100%))
-                    parametersStruct->P_FILTER_NEWSTOP = 0.50;
+                    parametersStruct->P_FILTER_NEWSTOP = 0.50f;
 
 
                     // Percentage of new particles to have a constant velocity
                     // (make sure total sums up to 1 (100%))
-                    parametersStruct->P_FILTER_NEWCONST = 0.20;
+                    parametersStruct->P_FILTER_NEWCONST = 0.20f;
 
 
                     // Percentage of new particles to be excided
                     // (make sure total sums up to 1 (100%))
-                    parametersStruct->P_FILTER_NEWEXC = 0.30;
+                    parametersStruct->P_FILTER_NEWEXC = 0.30f;
 
 
                     // Probability that the source was active and is still active:
                     // P(Aj(t)|Aj(t-1))
-                    parametersStruct->P_FILTER_AJT_AJTM1 = 0.95;
+                    parametersStruct->P_FILTER_AJT_AJTM1 = 0.95f;
 
 
                     // Probability that the source was not active and becomes active:
                     // P(Aj(t)|¬Aj(t-1))
-                    parametersStruct->P_FILTER_AJT_NOTAJTM1 = 0.05;
+                    parametersStruct->P_FILTER_AJT_NOTAJTM1 = 0.05f;
 
 
                     // Probability that a source is not observed even if it exists:
                     // P0
-                    parametersStruct->P_FILTER_P0 = 0.5;
+                    parametersStruct->P_FILTER_P0 = 0.5f;
 
 
                     // This threshold must be reached in order to resample the filter
-                    parametersStruct->P_FILTER_RSTHRESHOLD = 0.7;
+                    parametersStruct->P_FILTER_RSTHRESHOLD = 0.7f;
 
 
                     // Number of past values to put into buffer
@@ -380,34 +380,34 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
     // +-----------------------------------------------------------------------+
 
             // Probability that a new source appears: Pnew
-            parametersStruct->P_MIXTURE_PNEW = 0.005;
+            parametersStruct->P_MIXTURE_PNEW = 0.005f;
 
             // Probability that a false detection occurs
-            parametersStruct->P_MIXTURE_PFALSE = 0.05;
+            parametersStruct->P_MIXTURE_PFALSE = 0.05f;
 
                 // +-----------------------------------------------------------+
                 // | I. New source                                             |
                 // +-----------------------------------------------------------+
 
                         // Threshold to reach in order to track a new source
-                        parametersStruct->P_MIXTURE_NEWTHRESHOLD = 0.3;
+                        parametersStruct->P_MIXTURE_NEWTHRESHOLD = 0.3f;
 
                         // +---------------------------------------------------+
                         // | i. Confirm source exists                          |
                         // +---------------------------------------------------+
 
                                 // Threshold to reach in order to confirm a source really exists
-                                parametersStruct->P_MIXTURE_CONFIRMEXISTS = 0.7;
+                                parametersStruct->P_MIXTURE_CONFIRMEXISTS = 0.7f;
 
                                 // Threshold to count a source as existing
-                                parametersStruct->P_MIXTURE_CONFIRMCOUNTTS = 0.5;
+                                parametersStruct->P_MIXTURE_CONFIRMCOUNTTS = 0.5f;
 
                                 // Number of times the threshold must be reached
                                 parametersStruct->P_MIXTURE_CONFIRMCOUNT = 50;
 
                         // Minimum horizontal angle difference that the new source needs to
                         // have with the already existing filters (rad)
-                        parametersStruct->P_MIXTURE_NEWANGLE = 1.0;
+                        parametersStruct->P_MIXTURE_NEWANGLE = 1.0f;
 
                 // +-----------------------------------------------------------+
                 // | II. Delete source                                         |
@@ -423,7 +423,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Minimum value to consider to say that source is not observed for
                                 // probation time
-                                parametersStruct->P_MIXTURE_TOBSPROB = 0.5;
+                                parametersStruct->P_MIXTURE_TOBSPROB = 0.5f;
 
                         // +---------------------------------------------------+
                         // | i. Level 1                                        |
@@ -435,7 +435,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Minimum value to consider to say that source is not observed for
                                 // time 1
-                                parametersStruct->P_MIXTURE_TOBS1 = 0.5;
+                                parametersStruct->P_MIXTURE_TOBS1 = 0.5f;
 
                         // +---------------------------------------------------+
                         // | i. Level 2                                        |
@@ -447,35 +447,35 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Minimum value to consider to say that source is not observed for
                                 // time 2
-                                parametersStruct->P_MIXTURE_TOBS2 = 0.7;
+                                parametersStruct->P_MIXTURE_TOBS2 = 0.7f;
 
             // Adaptation rate (alphaD)
-            parametersStruct->P_MICST_ALPHAD = 0.1;
+            parametersStruct->P_MICST_ALPHAD = 0.1f;
 
             // Reverberation decay (gamma)
-            parametersStruct->P_MICST_GAMMA = 0.1;
+            parametersStruct->P_MICST_GAMMA = 0.1f;
 
             // Level of reverberation (delta)
-            parametersStruct->P_MICST_DELTA = 1.0;
+            parametersStruct->P_MICST_DELTA = 1.0f;
 
             // +---------------------------------------------------------------+
             // | I. MCRA                                                       |
             // +---------------------------------------------------------------+
 
             // Coefficient to smooth the spectrum in time (alphaS)
-            parametersStruct->P_MCRA_ALPHAS = 0.95;
+            parametersStruct->P_MCRA_ALPHAS = 0.95f;
 
             // Probability smoothing parameter (alphaP)
-            parametersStruct->P_MCRA_ALPHAP = 0.2;
+            parametersStruct->P_MCRA_ALPHAP = 0.2f;
 
             // Constant smoothing parameter (alphaD)
-            parametersStruct->P_MCRA_ALPHAD = 0.95;
+            parametersStruct->P_MCRA_ALPHAD = 0.95f;
 
             // Maximum number of frames to refresh (L)
             parametersStruct->P_MCRA_L = 150;
 
             // Decision parameter (delta)
-            parametersStruct->P_MCRA_DELTA = 0.01;
+            parametersStruct->P_MCRA_DELTA = 0.01f;
 
     // +-----------------------------------------------------------------------+
     // | E. Geometric Source Separation (GSS)                                  |
@@ -483,41 +483,41 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
             // Distance of each separated source from the center
             // of the cube
-            parametersStruct->P_GSS_SOURCEDISTANCE = 3.0;
+            parametersStruct->P_GSS_SOURCEDISTANCE = 3.0f;
 
             // Adaptation rate
-            parametersStruct->P_GSS_MU = 0.001;
+            parametersStruct->P_GSS_MU = 0.001f;
 
             // Regularisation parameter
-            parametersStruct->P_GSS_LAMBDA = 0.5;
+            parametersStruct->P_GSS_LAMBDA = 0.5f;
 
     // +-----------------------------------------------------------------------+
     // | F. Postfilter                                                         |
     // +-----------------------------------------------------------------------+
 
             // AlphaS: smoothing
-            parametersStruct->P_POSTFILTER_ALPHAS = 0.3;
+            parametersStruct->P_POSTFILTER_ALPHAS = 0.3f;
 
             // Eta: reducing factor
-            parametersStruct->P_POSTFILTER_ETA = 0.3;
+            parametersStruct->P_POSTFILTER_ETA = 0.3f;
 
             // Gamma: Reverberation time
-            parametersStruct->P_POSTFILTER_GAMMA = 0.3;
+            parametersStruct->P_POSTFILTER_GAMMA = 0.3f;
 
             // Delta: Signal-to-reverberation ratio
-            parametersStruct->P_POSTFILTER_DELTA = 1;
+            parametersStruct->P_POSTFILTER_DELTA = 1.0f;
 
             // Teta
-            parametersStruct->P_POSTFILTER_TETA = 0.56;
+            parametersStruct->P_POSTFILTER_TETA = 0.56f;
 
             // Alpha_zeta
-            parametersStruct->P_POSTFILTER_ALPHAZETA = 0.3;
+            parametersStruct->P_POSTFILTER_ALPHAZETA = 0.3f;
 
             // Maximum a priori probability of speech absence
-            parametersStruct->P_POSTFILTER_MAXQ = 0.9;
+            parametersStruct->P_POSTFILTER_MAXQ = 0.9f;
 
             // Minimum gain allowed when speech is absent
-            parametersStruct->P_POSTFILTER_GMIN = 0.1;
+            parametersStruct->P_POSTFILTER_GMIN = 0.1f;
 
             // Size of the local window
             parametersStruct->P_POSTFILTER_LOCALWINDOWSIZE = 3;
@@ -526,7 +526,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
             parametersStruct->P_POSTFILTER_GLOBALWINDOWSIZE = 31;
 
             // Minimum value of alphaP
-            parametersStruct->P_POSTFILTER_ALPHAPMIN = 0.07;
+            parametersStruct->P_POSTFILTER_ALPHAPMIN = 0.07f;
 
 
     // +-----------------------------------------------------------------------+
@@ -538,7 +538,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
     // +-----------------------------------------------------------------------+
 
             // Gain
-            parametersStruct->P_OUT_GAIN = 50.0;
+            parametersStruct->P_OUT_GAIN = 50.0f;
 
             // Size of the wave header
             parametersStruct->P_OUT_WAVEHEADERSIZE = 100;

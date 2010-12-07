@@ -116,25 +116,25 @@ struct objGSS
     // +-------------------------------------------------------------------+
 
     // Distance of the source from the center of the cube (in meters)
-    int GSS_SOURCEDISTANCE;
+    float GSS_SOURCEDISTANCE;
 
     // Sampling rate
-    int GSS_FS;
+    unsigned int GSS_FS;
 
     // Speed of sound
     float GSS_C;
 
     // Maximum number of separated sources
-    int GSS_NBSOURCES;
+    unsigned int GSS_NBSOURCES;
 
     // Number of samples per frame
-    int GSS_NFRAMES;
+    unsigned int GSS_NFRAMES;
 
     // Half number of samples per frame
-    int GSS_HALFNFRAMES;
+    unsigned int GSS_HALFNFRAMES;
 
     // Half number of samples per frame plus one
-    int GSS_HALFNFRAMESPLUSONE;
+    unsigned int GSS_HALFNFRAMESPLUSONE;
 
     // Lambda
     float GSS_LAMBDA;
@@ -153,11 +153,11 @@ struct objGSS
         // Defines the smallest delay from a source to a microphone
         // (this amount is removed from all delays to avoid delaying
         // signals by too much)
-        int delayOffset;
+        unsigned int delayOffset;
 
         // Defines the range of delays
-        int delayMinimum;
-        int delayMaximum;
+        unsigned int delayMinimum;
+        unsigned int delayMaximum;
 
         // +---------------------------------------------------------------+
         // | Microphones                                                   |

@@ -191,17 +191,17 @@ void filterInit(struct objFilter *myFilter, struct ParametersStruct *myParameter
     // +-----------------------------------------------------------+
 
         // Number of past values to put into buffer
-        myFilter->FILTER_BUFFERSIZE = myParameters->P_FILTER_BUFFERSIZE;
+        myFilter->FILTER_BUFFERSIZE = (unsigned int) myParameters->P_FILTER_BUFFERSIZE;
 
     // +-----------------------------------------------------------+
     // | Other                                                     |
     // +-----------------------------------------------------------+
 
         // Maximum number of potential sources
-        myFilter->BF_MAXSOURCES = myParameters->P_BF_MAXSOURCES;
+        myFilter->BF_MAXSOURCES = (unsigned int) myParameters->P_BF_MAXSOURCES;
 
         // Inverse of the number of particles per filter
-        myFilter->FILTER_NBPARTICLESINV = 1.0 / myFilter->FILTER_NBPARTICLES;
+        myFilter->FILTER_NBPARTICLESINV = 1.0f / myFilter->FILTER_NBPARTICLES;
 
         // Resampling threshold times the number of particles per filter
         myFilter->FILTER_RSNMIN = myFilter->FILTER_RSTHRESHOLD * myFilter->FILTER_NBPARTICLES;
@@ -220,7 +220,7 @@ void filterInit(struct objFilter *myFilter, struct ParametersStruct *myParameter
 
             myFilter->position = (float**) newTable2D(myFilter->FILTER_NBPARTICLES, 3, sizeof(float));
             myFilter->velocity = (float**) newTable2D(myFilter->FILTER_NBPARTICLES, 3, sizeof(float));
-            myFilter->state = (char*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(char));
+            myFilter->state = (unsigned char*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(unsigned char));
             myFilter->weight = (float*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(float));
 
         // +-----------------------------------------------------------+
@@ -238,23 +238,23 @@ void filterInit(struct objFilter *myFilter, struct ParametersStruct *myParameter
         myFilter->CDF = (float*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(float));
         myFilter->oldPosition = (float**) newTable2D(myFilter->FILTER_NBPARTICLES, 3, sizeof(float));
         myFilter->oldVelocity = (float**) newTable2D(myFilter->FILTER_NBPARTICLES, 3, sizeof(float));
-        myFilter->oldState = (float*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(float));
+        myFilter->oldState = (unsigned char*) newTable1D(myFilter->FILTER_NBPARTICLES, sizeof(unsigned char));
 
     /***************************************************************************
     * Step 3: Compute the prediction parameters                                *
     ***************************************************************************/
 
         // For stopped particles
-        myFilter->aStop = exp(-1.0 * myFilter->FILTER_ALPHASTOP * myFilter->FILTER_DELTAT);
-        myFilter->bStop = myFilter->FILTER_BETASTOP * sqrt((1.0 - (myFilter->aStop * myFilter->aStop)));
+        myFilter->aStop = (float) (exp(-1.0 * myFilter->FILTER_ALPHASTOP * myFilter->FILTER_DELTAT));
+        myFilter->bStop = (float) (myFilter->FILTER_BETASTOP * sqrt((1.0 - (myFilter->aStop * myFilter->aStop))));
 
         // For constant velocity particles
-        myFilter->aConst = exp(-1.0 * myFilter->FILTER_ALPHACONST * myFilter->FILTER_DELTAT);
-        myFilter->bConst = myFilter->FILTER_BETACONST * sqrt((1.0 - (myFilter->aConst * myFilter->aConst)));
+        myFilter->aConst = (float) (exp(-1.0 * myFilter->FILTER_ALPHACONST * myFilter->FILTER_DELTAT));
+        myFilter->bConst = (float) (myFilter->FILTER_BETACONST * sqrt((1.0 - (myFilter->aConst * myFilter->aConst))));
 
         // For accelerated particles
-        myFilter->aExc = exp(-1.0 * myFilter->FILTER_ALPHAEXC * myFilter->FILTER_DELTAT);
-        myFilter->bExc = myFilter->FILTER_BETAEXC * sqrt((1.0 - (myFilter->aExc * myFilter->aExc)));
+        myFilter->aExc = (float) (exp(-1.0 * myFilter->FILTER_ALPHAEXC * myFilter->FILTER_DELTAT));
+        myFilter->bExc = (float) (myFilter->FILTER_BETAEXC * sqrt((1.0 - (myFilter->aExc * myFilter->aExc))));
 
 
 
@@ -353,7 +353,7 @@ void filterActivate(struct objFilter *myFilter, float positionX, float positionY
 
         // The probability that the source is active given the fact it has just been
         // created is set to 1
-        myFilter->P_Aj_t__Ov_tm1 = 1;
+        myFilter->P_Aj_t__Ov_tm1 = 1.0f;
 
         // The probability that the source exists given the fact it has just been
         // created may vary according to the energy of the beamformer
@@ -461,7 +461,7 @@ void filterUtilNormalize(struct objFilter *myFilter)
         // the point on the unit sphere
         //
         // Check if too small
-        magnitudeInv = 1.0 / sqrt(myFilter->position[indexParticle][0] * myFilter->position[indexParticle][0] + myFilter->position[indexParticle][1] * myFilter->position[indexParticle][1] + myFilter->position[indexParticle][2] * myFilter->position[indexParticle][2]);
+        magnitudeInv = 1.0f / sqrtf(myFilter->position[indexParticle][0] * myFilter->position[indexParticle][0] + myFilter->position[indexParticle][1] * myFilter->position[indexParticle][1] + myFilter->position[indexParticle][2] * myFilter->position[indexParticle][2]);
 
         // Normalize
         myFilter->position[indexParticle][0] *= magnitudeInv;
@@ -745,9 +745,9 @@ void filterEstimatePosition(struct objFilter *myFilter, float *positionX, float 
 
     }
 
-    if (sumWeights < 1E-10)
+    if (sumWeights < 1E-10f)
     {
-        sumWeights = 1E-10;
+        sumWeights = (float) (1E-10);
     }
 
     // Normalize with the sum of weights
@@ -757,13 +757,13 @@ void filterEstimatePosition(struct objFilter *myFilter, float *positionX, float 
 
     // Compute the inverse of the magnitude in order to normalize and bring
     // the point on the unit sphere
-    if ((*positionX * *positionX + *positionY * *positionY + *positionZ * *positionZ) < 1E-6)
+    if ((*positionX * *positionX + *positionY * *positionY + *positionZ * *positionZ) < 1E-6f)
     {
         magnitudeInv = 0;
     }
     else
     {
-        magnitudeInv = 1.0 / sqrt(*positionX * *positionX + *positionY * *positionY + *positionZ * *positionZ);
+        magnitudeInv = (float) (1.0 / sqrt(*positionX * *positionX + *positionY * *positionY + *positionZ * *positionZ));
     }
 
     // Normalize
@@ -844,10 +844,10 @@ void filterProb(struct objFilter *myFilter, float positionX, float positionY, fl
         distance = distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ;
 
         // Compute the exponent: d = -1*distance/sigma^2 = -[(x-x')^2 + (y-y')^2 + (z-z')^2]/sigma^2
-        d = -1.0 * distance / (myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+        d = -1.0f * distance / (myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
 
         // Compute the probability: P = 0.8 * exp(4*d) + 0.18 * exp(0.4*d) + 0.02 * exp(0.1*d)
-        p_Oq_xji = 0.8 * expest(4*d) + 0.18 * expest(0.4*d) + 0.02 * expest(0.1*d);
+        p_Oq_xji = 0.8f * expest(4.0f*d) + 0.18f * expest(0.4f*d) + 0.02f * expest(0.1f*d);
 
 
         // Save in the array of individual results
@@ -1171,7 +1171,7 @@ void filterUpdateAPriori(struct objFilter *myFilter, float *Pqj_tm1)
 {
 
     // Index to browse for each value of q
-    unsigned char indexQ;
+    unsigned int indexQ;
 
     // Pj(t-1)
     float P_j_tm1;
@@ -1242,7 +1242,7 @@ void filterUpdateAPriori(struct objFilter *myFilter, float *Pqj_tm1)
 
         // Apply the following equation: P(Aj(t-1)|O(t-1))
         // = 0.15 + 0.85 * Pj(t-1)
-        P_Aj_tm1__O_tm1 = 0.15 + 0.85 * P_j_tm1;
+        P_Aj_tm1__O_tm1 = 0.15f + 0.85f * P_j_tm1;
 
         // +-------------------------------------------------------------------+
         // | Step C: Compute the probability that the source was active        |
@@ -1252,17 +1252,17 @@ void filterUpdateAPriori(struct objFilter *myFilter, float *Pqj_tm1)
         // = 1 / [ 1 + [1 - P(Aj(t-1)|Ov(t-2))][1 - P(Aj(t-1)|O(t-1))] ] / [ P(Aj(t-1)|Ov(t-2)) * P(Aj(t-1)|O(t-1)) ]
         if ((P_Aj_tm1__Ov_tm2 * P_Aj_tm1__O_tm1) < 1E-6)
         {
-            P_Aj_tm1__Ov_tm1 = 0.0;
+            P_Aj_tm1__Ov_tm1 = 0.0f;
         }
         else
         {
-            if (( 1 + ((1 - P_Aj_tm1__Ov_tm2) * (1 - P_Aj_tm1__O_tm1))/(P_Aj_tm1__Ov_tm2 * P_Aj_tm1__O_tm1)) < 1E-6)
+            if (( 1.0f + ((1.0f - P_Aj_tm1__Ov_tm2) * (1.0f - P_Aj_tm1__O_tm1))/(P_Aj_tm1__Ov_tm2 * P_Aj_tm1__O_tm1)) < 1E-6f)
             {
-                P_Aj_tm1__Ov_tm1 = 1.0;
+                P_Aj_tm1__Ov_tm1 = 1.0f;
             }
             else
             {
-                P_Aj_tm1__Ov_tm1 = 1 / ( 1 + ((1 - P_Aj_tm1__Ov_tm2) * (1 - P_Aj_tm1__O_tm1))/(P_Aj_tm1__Ov_tm2 * P_Aj_tm1__O_tm1));
+                P_Aj_tm1__Ov_tm1 = 1.0f / ( 1.0f + ((1.0f - P_Aj_tm1__Ov_tm2) * (1.0f - P_Aj_tm1__O_tm1))/(P_Aj_tm1__Ov_tm2 * P_Aj_tm1__O_tm1));
             }
         }
 
@@ -1272,7 +1272,7 @@ void filterUpdateAPriori(struct objFilter *myFilter, float *Pqj_tm1)
 
         // Apply the following equation: P(Aj(t)|Ov(t-1))
         // = P(Aj(t)|Aj(t-1)) * P(Aj(t-1)|Ov(t-1)) + P(Aj(t)|¬Aj(t-1)) * [ 1 - P(Aj(t-1)|Ov(t-1)) ]
-        P_Aj_t__Ov_tm1 = myFilter->FILTER_AJT_AJTM1 * P_Aj_tm1__Ov_tm1 + myFilter->FILTER_AJT_NOTAJTM1 * (1 - P_Aj_tm1__Ov_tm1);
+        P_Aj_t__Ov_tm1 = myFilter->FILTER_AJT_AJTM1 * P_Aj_tm1__Ov_tm1 + myFilter->FILTER_AJT_NOTAJTM1 * (1.0f - P_Aj_tm1__Ov_tm1);
 
         // +-------------------------------------------------------------------+
         // | Step E: Compute the probability that the source is observable     |
@@ -1333,7 +1333,7 @@ void filterUpdateWeights(struct objFilter *myFilter, float *Pqj_t, struct objPot
 {
 
     // Index to loop for each value of q
-    unsigned char indexQ;
+    unsigned int indexQ;
 
     // Index to loop for each particle
     unsigned int indexParticle;
@@ -1462,7 +1462,7 @@ void filterUpdateWeights(struct objFilter *myFilter, float *Pqj_t, struct objPot
         // | Step A: Compute the sum of all p(xvj,i(t)|O(t)) times their weight|
         // +-------------------------------------------------------------------+
 
-        sum_wrt_i_p_xvji_t__O_t = 0;
+        sum_wrt_i_p_xvji_t__O_t = 0.0f;
 
         for (indexParticle = 0; indexParticle < myFilter->FILTER_NBPARTICLES; indexParticle++)
         {
@@ -1484,13 +1484,13 @@ void filterUpdateWeights(struct objFilter *myFilter, float *Pqj_t, struct objPot
             // = p(xvj,i(t)|O(t))*wj,i(t-1) / sum_i=0_N-1(p(xvj,i(t)|O(t))*wj,i(t-1))
             //
             // If the sum is too small, then set to zero
-            if (sum_wrt_i_p_xvji_t__O_t > 1E-6)
+            if (sum_wrt_i_p_xvji_t__O_t > 1E-6f)
             {
                 myFilter->weight[indexParticle] = (myFilter->p_xvji_t__O_t[indexParticle] * myFilter->weight[indexParticle]) / sum_wrt_i_p_xvji_t__O_t;
             }
             else
             {
-                myFilter->weight[indexParticle] = 0.0;
+                myFilter->weight[indexParticle] = 0.0f;
             }
 
         }
@@ -1614,7 +1614,7 @@ void filterResample(struct objFilter *myFilter)
         highBound = myFilter->FILTER_NBPARTICLES - 1;
 
         // Set the pointer in the middle of the range
-        pointer = floor((lowBound + highBound) / 2.0);
+        pointer = (unsigned int) (floorf((lowBound + highBound) / 2.0f));
 
         // Loop until an index is found
         while(1)
@@ -1645,7 +1645,7 @@ void filterResample(struct objFilter *myFilter)
                 highBound = pointer - 1;
 
                 // Set the pointer in the middle of the range
-                pointer = floor((lowBound + highBound) / 2.0);
+                pointer = (unsigned int) (floorf((lowBound + highBound) / 2.0f));
 
             }
 
@@ -1664,7 +1664,7 @@ void filterResample(struct objFilter *myFilter)
                 lowBound = pointer;
 
                 // Set the pointer in the middle of the range
-                pointer = floor((lowBound + highBound + 1) / 2.0);
+                pointer = (unsigned int) (floorf((lowBound + highBound + 1) / 2.0f));
 
 
             }
@@ -1746,13 +1746,13 @@ unsigned char filterResampleIfNeeded(struct objFilter *myFilter)
 
     }
 
-    if (sumWeightsSquared < 1E-10)
+    if (sumWeightsSquared < 1E-10f)
     {
-        Neff = 1.0 / (1E-10);
+        Neff = (float) (1.0f / (1E-10f));
     }
     else
     {
-        Neff = 1.0 / sumWeightsSquared;
+        Neff = (float) (1.0f / sumWeightsSquared);
     }
 
     /***************************************************************************

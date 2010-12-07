@@ -107,15 +107,15 @@
 void postprocessorInit(struct objPostprocessor *myPostprocessor, struct ParametersStruct *myParameters)
 {
 
-    int indexSource;
-    int indexBuffer;
+    unsigned int indexSource;
+    unsigned int indexBuffer;
 
     /***************************************************************************
     * Step 1: Load parameters                                                  *
     ***************************************************************************/
 
     myPostprocessor->PP_FRAMESIZE = GLOBAL_FRAMESIZE;
-    myPostprocessor->PP_HOPSIZE = GLOBAL_FRAMESIZE * GLOBAL_OVERLAP;
+    myPostprocessor->PP_HOPSIZE = (unsigned int) (GLOBAL_FRAMESIZE * GLOBAL_OVERLAP);
     myPostprocessor->PP_BUFFERSIZE = myPostprocessor->PP_FRAMESIZE + myPostprocessor->PP_HOPSIZE;
     myPostprocessor->PP_NSOURCES = myParameters->P_GEN_DYNSOURCES;
 
@@ -161,7 +161,7 @@ void postprocessorInit(struct objPostprocessor *myPostprocessor, struct Paramete
         // Set all values of the circular buffer to zeros
         for (indexBuffer = 0; indexBuffer < myPostprocessor->PP_BUFFERSIZE; indexBuffer++)
         {
-            myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0;
+            myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0f;
         }
 
     }
@@ -251,7 +251,7 @@ void postprocessorProcessFrameSeparated(struct objPostprocessor *myPostprocessor
     unsigned int indexBuffer;
 
     // Index to loop through frames
-    int k;
+    unsigned int k;
 
     /***************************************************************************
     * Step 1: Update list of sources and buffers                               *
@@ -293,7 +293,7 @@ void postprocessorProcessFrameSeparated(struct objPostprocessor *myPostprocessor
                 // Reset the buffer
                 for (indexBuffer = 0; indexBuffer < myPostprocessor->PP_BUFFERSIZE; indexBuffer++)
                 {
-                    myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0;
+                    myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0f;
                 }
 
             }
@@ -503,7 +503,7 @@ void postprocessorProcessFrameSeparated(struct objPostprocessor *myPostprocessor
             for (k = 0; k < myPostprocessor->PP_HOPSIZE; k++)
             {
 
-                myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0;
+                myPostprocessor->circularBuffer[indexSource][indexBuffer] = 0.0f;
 
                 indexBuffer++;
 
@@ -575,7 +575,7 @@ void postprocessorProcessFramePostfiltered(struct objPostprocessor *myPostproces
     unsigned int indexBuffer;
 
     // Index to loop through frames
-    int k;
+    unsigned int k;
 
     /***************************************************************************
     * Step 1: Update list of sources and buffers                               *
@@ -877,10 +877,10 @@ void postprocessorProcessFramePostfiltered(struct objPostprocessor *myPostproces
 void postprocessorExtractHop(struct objPostprocessor *myPostprocessor, ID_TYPE sourcesID, float* outputArray)
 {
 
-    int indexBuffer;
-    int k;
-    int indexID;
-    int indexSource;
+    unsigned int indexBuffer;
+    unsigned int k;
+    signed int indexID;
+    unsigned int indexSource;
 
     /***************************************************************************
     * Step 1: Get the id index                                                 *
@@ -892,7 +892,7 @@ void postprocessorExtractHop(struct objPostprocessor *myPostprocessor, ID_TYPE s
     {
         if (myPostprocessor->sourcesID[indexSource] == sourcesID)
         {
-            indexID = indexSource;
+            indexID = (signed int) indexSource;
             break;
         }
     }

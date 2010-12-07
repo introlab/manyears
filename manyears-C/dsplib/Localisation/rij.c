@@ -313,7 +313,7 @@ void rijProcess(struct objRij* myRij)
     }
 
     // Check if there is an IFFT left to process
-    if (floor(myRij->myMicrophones->nPairs / 2) != (myRij->myMicrophones->nPairs / 2))
+    if (floorf(myRij->myMicrophones->nPairs / 2) != (myRij->myMicrophones->nPairs / 2))
     {
 
         indexMic1 = microphonesGetMic(myRij->myMicrophones,(myRij->myMicrophones->nPairs - 1),0);

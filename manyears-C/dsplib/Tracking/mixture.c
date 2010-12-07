@@ -95,7 +95,7 @@
 
 // In some environment, the constant PI is not define with the math.h library
 #ifndef M_PI
-    #define M_PI    3.1415926535897932384626433832795
+    #define M_PI    3.1415926535897932384626433832795f
 #endif
 
 /*******************************************************************************
@@ -211,15 +211,15 @@ void mixtureInit(struct objMixture *myMixture, struct ParametersStruct *myParame
     // | Variables                                                             |
     // +-----------------------------------------------------------------------+
 
-    myMixture->listFilters = (struct objFilter *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(struct objFilter));
+    myMixture->listFilters = (struct objFilter*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(struct objFilter));
     myMixture->filterID = (ID_TYPE*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(ID_TYPE));
-    myMixture->confirmSourceExists = (float *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(float));
-    myMixture->sumProbSourceExists = (float *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(float));
-    myMixture->flagSourceExists = (unsigned char *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned char));
-    myMixture->countSourceExists = (unsigned int *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
-    myMixture->cumulativeTimeProb = (unsigned int *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
-    myMixture->cumulativeTime1 = (unsigned int *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
-    myMixture->cumulativeTime2 = (unsigned int *) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
+    myMixture->confirmSourceExists = (float*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(float));
+    myMixture->sumProbSourceExists = (float*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(float));
+    myMixture->flagSourceExists = (unsigned char*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned char));
+    myMixture->countSourceExists = (unsigned int*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
+    myMixture->cumulativeTimeProb = (unsigned int*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
+    myMixture->cumulativeTime1 = (unsigned int*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
+    myMixture->cumulativeTime2 = (unsigned int*) newTable1D(myMixture->MIXTURE_NBFILTERS, sizeof(unsigned int));
 
     // +-------------------------------------------------------------------+
     // | Temporary variables                                               |
@@ -299,7 +299,7 @@ void mixtureInit(struct objMixture *myMixture, struct ParametersStruct *myParame
 void mixtureTerminate(struct objMixture *myMixture)
 {
 
-    int indexFilter;
+    unsigned int indexFilter;
 
     // Free memory
 
@@ -365,9 +365,6 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 
     // Loop for each particle within the filter
     unsigned int indexParticle;
-
-    // v
-    float v;
 
     // sum_i_0_N-1(wf(q),i * p(Oq|xvj,i))
     float sum_wfqi_pOq_xvji;
@@ -462,7 +459,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
         // +---------------------------------------------------------------+
 
         // (1 - Pq) * Pfalse
-        myMixture->Pfq[0][indexQ] = (1 - myMixture->Pq[indexQ]) * myMixture->MIXTURE_PFALSE;
+        myMixture->Pfq[0][indexQ] = (1.0f - myMixture->Pq[indexQ]) * myMixture->MIXTURE_PFALSE;
 
         // +---------------------------------------------------------------+
         // | Step II: Probability this source is a new source              |
@@ -492,7 +489,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             else
             {
                 // Then set the probability to zero
-                myMixture->Pfq[2 + indexFilter][indexQ] = 0;
+                myMixture->Pfq[2 + indexFilter][indexQ] = 0.0f;
             }
 
         }
@@ -512,14 +509,14 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
         // +---------------------------------------------------------------+
 
         // 1/4pi
-        myMixture->POq_fq[0][indexQ] = 1/(4*M_PI);
+        myMixture->POq_fq[0][indexQ] = 1/(4.0f*M_PI);
 
         // +---------------------------------------------------------------+
         // | Step II: Probability this source is a new source              |
         // +---------------------------------------------------------------+
 
         // 1/4pi
-        myMixture->POq_fq[1][indexQ] = 1/(4*M_PI);
+        myMixture->POq_fq[1][indexQ] = 1/(4.0f*M_PI);
 
         // +---------------------------------------------------------------+
         // | Step III: Probability this source is assigned to given filter |
@@ -538,7 +535,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 
                 // Compute sum_i_0_N-1(wf(q),i * p(Oq|xvj,i))
 
-                sum_wfqi_pOq_xvji = 0;
+                sum_wfqi_pOq_xvji = 0.0f;
 
 #ifndef USE_SIMD
 
@@ -615,7 +612,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             {
 
                 // Then set the probability to zero
-                myMixture->POq_fq[2 + indexFilter][indexQ] = 0;
+                myMixture->POq_fq[2 + indexFilter][indexQ] = 0.0f;
 
             }
 
@@ -629,7 +626,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 
     // Calculate the number of possibilities for f:
     // base ^ Q
-    fPossibilities = pow(myMixture->MIXTURE_BASEF, myMixture->BF_MAXSOURCES);
+    fPossibilities = (unsigned int) pow(myMixture->MIXTURE_BASEF, myMixture->BF_MAXSOURCES);
 
     // Set the number of possibilities to initial state
     for (indexQ = 0; indexQ < myMixture->BF_MAXSOURCES; indexQ++)
@@ -641,13 +638,13 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
     for (indexQ = 0; indexQ < myMixture->BF_MAXSOURCES; indexQ++)
     {
 
-        myMixture->Pq_t_H0[indexQ] = 0;
-        myMixture->Pq_t_H2[indexQ] = 0;
+        myMixture->Pq_t_H0[indexQ] = 0.0f;
+        myMixture->Pq_t_H2[indexQ] = 0.0f;
 
         for (indexFilter = 0; indexFilter < myMixture->MIXTURE_NBFILTERS; indexFilter++)
         {
 
-            myMixture->Pqj_t[indexFilter][indexQ] = 0;
+            myMixture->Pqj_t[indexFilter][indexQ] = 0.0f;
 
         }
 
@@ -787,7 +784,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
         // | Step C: Compute P(f)                                              |
         // +-------------------------------------------------------------------+
 
-        Pf = 1;
+        Pf = 1.0f;
 
         for (indexQ = 0; indexQ < myMixture->BF_MAXSOURCES; indexQ++)
         {
@@ -798,7 +795,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
         // | Step D: Compute P(O|f)                                            |
         // +-------------------------------------------------------------------+
 
-        POf = 1;
+        POf = 1.0f;
 
         for (indexQ = 0; indexQ < myMixture->BF_MAXSOURCES; indexQ++)
         {
@@ -851,7 +848,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             // | Step I: Compute the sum of probability for the current source |
             // +---------------------------------------------------------------+
 
-            sum_Pqj_PqH0_PqH2 = 0;
+            sum_Pqj_PqH0_PqH2 = 0.0f;
 
             sum_Pqj_PqH0_PqH2 += myMixture->Pq_t_H0[indexQ];
             sum_Pqj_PqH0_PqH2 += myMixture->Pq_t_H2[indexQ];
@@ -870,7 +867,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             // If the sum is smaller than a threshold, then just set everything
             // to zero otherwise there will be an overflow
 
-            if (sum_Pqj_PqH0_PqH2 > 1E-20)
+            if (sum_Pqj_PqH0_PqH2 > 1E-20f)
             {
 
                 myMixture->Pq_t_H0[indexQ] /= sum_Pqj_PqH0_PqH2;
@@ -887,13 +884,13 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             else
             {
 
-                myMixture->Pq_t_H0[indexQ] = 0.0;
-                myMixture->Pq_t_H2[indexQ] = 0.0;
+                myMixture->Pq_t_H0[indexQ] = 0.0f;
+                myMixture->Pq_t_H2[indexQ] = 0.0f;
 
                 for (indexFilter = 0; indexFilter < myMixture->MIXTURE_NBFILTERS; indexFilter++)
                 {
 
-                        myMixture->Pqj_t[indexFilter][indexQ] = 0.0;
+                        myMixture->Pqj_t[indexFilter][indexQ] = 0.0f;
 
                 }
 
@@ -971,7 +968,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
             // | Step D: Compute Pj(t)                                         |
             // +---------------------------------------------------------------+
 
-            Pj_t = 0;
+            Pj_t = 0.0f;
 
             for (indexQ = 0; indexQ < myMixture->BF_MAXSOURCES; indexQ++)
             {
@@ -1057,19 +1054,14 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
                         potentialY = myPotentialSources->sourcesPosition[indexQ][1];
 
                         // Get the horizontal angle between the two
-                        angle = fabs(atan2(filterY,filterX) - atan2(potentialY,potentialX));
+                        angle = fabsf(atan2(filterY,filterX) - atan2(potentialY,potentialX));
 
                         if (angle > M_PI)
                         {
                             angle -= M_PI;
                         }
 
-                        if (angle < myMixture->MIXTURE_NEWANGLE)
-                        {
-//                            cancelNewSource = 1;
-                        }
-
-                    }
+					}
 
                 }
 
@@ -1204,7 +1196,6 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
     ***************************************************************************/
 
         // Reset the number of sources
-//        myTrackedSources->numberSources = 0;
         idListReset(&myTrackedSources->sourcesID);
 
         // Only estimate the position of the sources that really exists
@@ -1226,7 +1217,6 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 
                         // Then add it to the list of sources
                         indexID = idListAdd(&myTrackedSources->sourcesID, myMixture->filterID[indexSource]);
-//                        myTrackedSources->sourcesID[indexSource] = myMixture->filterID[indexSource];
 
                         // Remove this ID from the list of available/used IDs such that is
                         // is not used anymore to ensure the singularity of the source
@@ -1237,27 +1227,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 
                     }
 
-                    // If not put no source at this spot
-                    else
-                    {
-//                        myTrackedSources->sourcesID[indexSource] = MIXTURE_NOSOURCE;
-                    }
-
                 }
-
-                // If not put no source at this spot
-                else
-                {
-//                    myTrackedSources->sourcesID[indexSource] = MIXTURE_NOSOURCE;
-                }
-
-            }
-
-            // If not put no source at this spot
-            else
-            {
-
-//                myTrackedSources->sourcesID[indexSource] = MIXTURE_NOSOURCE;
 
             }
 

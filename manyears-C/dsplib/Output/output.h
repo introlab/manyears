@@ -118,13 +118,13 @@ struct objOutput
     // +-------------------------------------------------------------------+
 
     // Maximum number of sources
-    int OUT_NBSOURCES;
+    unsigned int OUT_NBSOURCES;
 
     // Hop size
-    int OUT_HOPSIZE;
+    unsigned int OUT_HOPSIZE;
 
     // Sample rate
-    int OUT_SAMPLERATE;
+    unsigned int OUT_SAMPLERATE;
 
     // Gain
     float OUT_GAIN;

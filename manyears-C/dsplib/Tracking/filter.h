@@ -129,7 +129,7 @@
             // +-----------------------------------------------------------+
 
                 // Number of particles per filter
-                int FILTER_NBPARTICLES;
+                unsigned int FILTER_NBPARTICLES;
 
                 // Standard deviation of the new particles
                 float FILTER_STDDEVIATION;
@@ -201,7 +201,7 @@
             // +-----------------------------------------------------------+
 
                 // Number of past values to put into buffer
-                int FILTER_BUFFERSIZE;
+                unsigned int FILTER_BUFFERSIZE;
 
             // +-----------------------------------------------------------+
             // | Others                                                    |
@@ -214,7 +214,7 @@
                 float FILTER_RSNMIN;
 
                 // Maximum number of potential sources
-                int BF_MAXSOURCES;
+                unsigned int BF_MAXSOURCES;
 
         // +---------------------------------------------------------------+
         // | Variables                                                     |
@@ -321,7 +321,7 @@
             // Old states of the particles
             //
             // Size: [FILTER_NBPARTICLES]
-            float* oldState;
+            unsigned char* oldState;
 
     };
 

@@ -104,7 +104,7 @@
  *                                                                             *
  ******************************************************************************/
 
-struct objMatrix* matrixCreate(int nRows, int nCols, int nFrames)
+struct objMatrix* matrixCreate(unsigned int nRows, unsigned int nCols, unsigned int nFrames)
 {
 
     struct objMatrix* newMatrix;
@@ -156,12 +156,12 @@ void matrixDelete(struct objMatrix* matrix)
  *                                                                             *
  ******************************************************************************/
 
-void matrixInit(struct objMatrix* matrix, int nRows, int nCols, int nFrames)
+void matrixInit(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols, unsigned int nFrames)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -271,9 +271,9 @@ void matrixTerminate(struct objMatrix* matrix)
 void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -343,7 +343,7 @@ void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
  *                                                                             *
  ******************************************************************************/
 
-float matrixGetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k)
+float matrixGetReal(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k)
 {
     return matrix->valueReal[indexRow][indexCol][k];
 }
@@ -364,7 +364,7 @@ float matrixGetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k)
  *                                                                             *
  ******************************************************************************/
 
-float matrixGetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k)
+float matrixGetImag(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k)
 {
     return matrix->valueImag[indexRow][indexCol][k];
 }
@@ -386,7 +386,7 @@ float matrixGetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k)
  *                                                                             *
  ******************************************************************************/
 
-void matrixSetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value)
+void matrixSetReal(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k, float value)
 {
     matrix->valueReal[indexRow][indexCol][k] = value;
 }
@@ -408,7 +408,7 @@ void matrixSetReal(struct objMatrix* matrix, int indexRow, int indexCol, int k, 
  *                                                                             *
  ******************************************************************************/
 
-void matrixSetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k, float value)
+void matrixSetImag(struct objMatrix* matrix, unsigned int indexRow, unsigned int indexCol, unsigned int k, float value)
 {
     matrix->valueImag[indexRow][indexCol][k] = value;
 }
@@ -426,18 +426,14 @@ void matrixSetImag(struct objMatrix* matrix, int indexRow, int indexCol, int k, 
  *                                                                             *
  ******************************************************************************/
 
-void matrixInsertRow(struct objMatrix* matrix, int newRowIndex)
+void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex)
 {
 
     struct objMatrix* oldMatrix;
 
-    struct objMatrix* tmpMatrix;
-
-    char* tmpNb;
-
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -544,14 +540,14 @@ void matrixInsertRow(struct objMatrix* matrix, int newRowIndex)
  *                                                                             *
  ******************************************************************************/
 
-void matrixInsertCol(struct objMatrix* matrix, int newColIndex)
+void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
 {
 
     struct objMatrix* oldMatrix;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -660,14 +656,14 @@ void matrixInsertCol(struct objMatrix* matrix, int newColIndex)
  *                                                                             *
  ******************************************************************************/
 
-void matrixDeleteRow(struct objMatrix* matrix, int deleteRowIndex)
+void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
 {
 
     struct objMatrix* oldMatrix;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -781,14 +777,14 @@ void matrixDeleteRow(struct objMatrix* matrix, int deleteRowIndex)
  *                                                                             *
  ******************************************************************************/
 
-void matrixDeleteCol(struct objMatrix* matrix, int deleteColIndex)
+void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
 {
 
     struct objMatrix* oldMatrix;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -903,7 +899,7 @@ void matrixDeleteCol(struct objMatrix* matrix, int deleteColIndex)
  *                                                                             *
  ******************************************************************************/
 
-void matrixResize(struct objMatrix* matrix, int nRows, int nCols, int nFrames)
+void matrixResize(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols, unsigned int nFrames)
 {
 
     // Terminate
@@ -938,15 +934,15 @@ void matrixResize(struct objMatrix* matrix, int nRows, int nCols, int nFrames)
 void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult)
 {
 
-    int indexRow;
-    int indexCol;
-    int indexLine;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int indexLine;
+    unsigned int k;
 
-    int newNRows;
-    int newNCols;
-    int newNLines;
-    int newNFrames;
+    unsigned int newNRows;
+    unsigned int newNCols;
+    unsigned int newNLines;
+    unsigned int newNFrames;
 
     float elementAReal;
     float elementAImag;
@@ -1131,13 +1127,13 @@ void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, stru
 void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMatrix* matrixResult)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
-    int newNRows;
-    int newNCols;
-    int newNFrames;
+    unsigned int newNRows;
+    unsigned int newNCols;
+    unsigned int newNFrames;
 
 #ifdef USE_SIMD
 
@@ -1238,10 +1234,10 @@ void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMa
 void matrixRemoveIdentity(struct objMatrix* matrix)
 {
 
-    int indexRowCol;
-    int k;
+    unsigned int indexRowCol;
+    unsigned int k;
 
-    int nRowsCols;
+    unsigned int nRowsCols;
 
 #ifdef USE_SIMD
 
@@ -1273,7 +1269,7 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 
             for (k = 0; k < matrix->nFrames; k++)
             {
-                matrix->valueReal[indexRowCol][indexRowCol][k] -= 1.0;
+                matrix->valueReal[indexRowCol][indexRowCol][k] -= 1.0f;
             }
 
 #else
@@ -1320,10 +1316,10 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 void matrixRemoveDiagonal(struct objMatrix* matrix)
 {
 
-    int indexRowCol;
-    int k;
+    unsigned int indexRowCol;
+    unsigned int k;
 
-    int nRowsCols;
+    unsigned int nRowsCols;
 
 #ifdef USE_SIMD
 
@@ -1355,8 +1351,8 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 
             for (k = 0; k < matrix->nFrames; k++)
             {
-                matrix->valueReal[indexRowCol][indexRowCol][k] = 0.0;
-                matrix->valueImag[indexRowCol][indexRowCol][k] = 0.0;
+                matrix->valueReal[indexRowCol][indexRowCol][k] = 0.0f;
+                matrix->valueImag[indexRowCol][indexRowCol][k] = 0.0f;
             }
 
 #else
@@ -1395,13 +1391,13 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
 {
 
-    int newNRows;
-    int newNCols;
-    int newNFrames;
+    unsigned int newNRows;
+    unsigned int newNCols;
+    unsigned int newNFrames;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
 #ifdef USE_SIMD
 
@@ -1441,7 +1437,7 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
             for (k = 0; k < matrixSource->nFrames; k++)
             {
                 matrixSetReal(matrixDest,indexCol,indexRow,k,matrixGetReal(matrixSource,indexRow,indexCol,k));
-                matrixSetImag(matrixDest,indexCol,indexRow,k,-1.0 * matrixGetImag(matrixSource,indexRow,indexCol,k));
+                matrixSetImag(matrixDest,indexCol,indexRow,k,-1.0f * matrixGetImag(matrixSource,indexRow,indexCol,k));
             }
 
 #else
@@ -1477,13 +1473,13 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
 void matrixMultMatrixPerElement(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
     float elementAReal;
     float elementAImag;
@@ -1594,13 +1590,13 @@ void matrixMultMatrixPerElement(struct objMatrix* matrixA, struct objMatrix* mat
 void matrixDividePerElement(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
     float elementAReal;
     float elementAImag;
@@ -1725,17 +1721,16 @@ void matrixDividePerElement(struct objMatrix* matrixA, struct objMatrix* matrixB
 void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* matrixResult)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
     float element;
     float result;
-    float den;
 
 #ifdef USE_SIMD
 
@@ -1764,7 +1759,7 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 
 #endif
 
-     if ((matrixResult->nRows != nRows) || (matrixResult->nCols != nCols) || (matrixResult->nFrames != nFrames))
+    if ((matrixResult->nRows != nRows) || (matrixResult->nCols != nCols) || (matrixResult->nFrames != nFrames))
     {
         matrixResize(matrixResult,nRows,nCols,nFrames);
     }
@@ -1782,7 +1777,7 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 
                 element = matrixGetReal(matrixSource,indexRow,indexCol,k);
 
-                result = 1.0/(element);
+                result = (float) (1.0/(element));
 
                 matrixSetReal(matrixResult,indexRow,indexCol,k,result);
 
@@ -1825,13 +1820,13 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* matrixFrames, struct objMatrix* matrixResult)
 {
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
     float elementReal;
     float elementImag;
@@ -1922,13 +1917,13 @@ void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* 
 void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struct objMatrix* matrixResult)
 {
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
     float elementAReal;
     float elementAImag;
@@ -2028,15 +2023,15 @@ void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struc
 void matrixMakeNonZero(struct objMatrix* matrix)
 {
 
-    int nRows;
-    int nCols;
-    int nFrames;
+    unsigned int nRows;
+    unsigned int nCols;
+    unsigned int nFrames;
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
-    float minValue = 1E-10;
+    float minValue = (float) (1E-10);
 
     nRows = matrix->nRows;
     nCols = matrix->nCols;
@@ -2074,9 +2069,9 @@ void matrixMakeNonZero(struct objMatrix* matrix)
 void matrixPrint(struct objMatrix* matrix)
 {
 
-    int indexRow;
-    int indexCol;
-    int k;
+    unsigned int indexRow;
+    unsigned int indexCol;
+    unsigned int k;
 
     if ((matrix->nRows == 0) || (matrix->nCols == 0) || (matrix->nFrames == 0))
     {
@@ -2109,11 +2104,11 @@ void matrixPrint(struct objMatrix* matrix)
     }
 }
 
-void matrixPrintOneFrame(struct objMatrix* matrix, int k)
+void matrixPrintOneFrame(struct objMatrix* matrix, unsigned int k)
 {
 
-    int indexRow;
-    int indexCol;
+    unsigned int indexRow;
+    unsigned int indexCol;
 
     if ((matrix->nRows == 0) || (matrix->nCols == 0) || (matrix->nFrames == 0))
     {

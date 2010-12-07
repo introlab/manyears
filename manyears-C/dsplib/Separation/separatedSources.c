@@ -112,8 +112,8 @@ void separatedSourcesInit(struct objSeparatedSources *mySeparatedSources, struct
     * Step 1: Load parameters                                                  *
     ***************************************************************************/
 
-    mySeparatedSources->GSS_NBSOURCES = myParameters->P_GEN_DYNSOURCES;
-    mySeparatedSources->GSS_LONGFRAMESIZE = GLOBAL_LONGFRAMESIZE;
+    mySeparatedSources->GSS_NBSOURCES = (unsigned int) myParameters->P_GEN_DYNSOURCES;
+    mySeparatedSources->GSS_LONGFRAMESIZE = (unsigned int) GLOBAL_LONGFRAMESIZE;
 
     /***************************************************************************
     * Step 2: Create arrays                                                    *

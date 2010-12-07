@@ -93,8 +93,6 @@
  * Compatibility issues                                                        *
  ******************************************************************************/
 
-
-
 /*******************************************************************************
  * gssInit                                                                     *
  * --------------------------------------------------------------------------- *
@@ -111,9 +109,9 @@
 void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct objMicrophones* myMicrophones)
 {
 
-    int indexMicrophone;
+    unsigned int indexMicrophone;
 
-    int indexPoint;
+    unsigned int indexPoint;
 
     float x, y, z;
 
@@ -128,8 +126,8 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
 
     struct objSphere* mySphere;
 
-    int k;
-    int indexDelay;
+    unsigned int k;
+    unsigned int indexDelay;
 
     unsigned int nSources;
 
@@ -137,17 +135,17 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
     // * STEP 1: Load parameters                                               *
     // *************************************************************************
 
-    myGSS->GSS_SOURCEDISTANCE = myParameters->P_GSS_SOURCEDISTANCE;
-    myGSS->GSS_FS = GLOBAL_FS;
-    myGSS->GSS_C = GLOBAL_C;
-    myGSS->GSS_NFRAMES = GLOBAL_FRAMESIZE;
+    myGSS->GSS_SOURCEDISTANCE = (float) myParameters->P_GSS_SOURCEDISTANCE;
+    myGSS->GSS_FS = (unsigned int) GLOBAL_FS;
+    myGSS->GSS_C = (float) GLOBAL_C;
+    myGSS->GSS_NFRAMES = (unsigned int) GLOBAL_FRAMESIZE;
     myGSS->GSS_HALFNFRAMES = myGSS->GSS_NFRAMES / 2;
     myGSS->GSS_HALFNFRAMESPLUSONE = myGSS->GSS_HALFNFRAMES + 1;
 
     myGSS->GSS_LAMBDA = myParameters->P_GSS_LAMBDA;
     myGSS->GSS_MU = myParameters->P_GSS_MU;
 
-    myGSS->GSS_NBSOURCES = myParameters->P_GEN_DYNSOURCES;
+    myGSS->GSS_NBSOURCES = (unsigned int) myParameters->P_GEN_DYNSOURCES;
 
     // *************************************************************************
     // * STEP 2: Initialize microphones variables                              *
@@ -244,7 +242,7 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
     // +-----------------------------------------------------------------------+
 
     delayMin = INFINITY;
-    delayMax = 0.0;
+    delayMax = 0.0f;
 
     for (indexPoint = 0; indexPoint < mySphere->SPHERE_NUMBERPOINTS; indexPoint++)
     {
@@ -260,7 +258,7 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
             distanceY = microphonesGetPositionY(myGSS->myMicrophones, indexMicrophone) - y;
             distanceZ = microphonesGetPositionZ(myGSS->myMicrophones, indexMicrophone) - z;
 
-            distance = sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
+            distance = sqrtf(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
 
             delay = (myGSS->GSS_FS / myGSS->GSS_C) * distance;
 
@@ -278,11 +276,11 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
     }
 
     // Save the delay
-    myGSS->delayOffset = (int) (floor(delayMin));
+    myGSS->delayOffset = (unsigned int) (floor(delayMin));
 
     // Save the range
-    myGSS->delayMinimum = 0;
-    myGSS->delayMaximum = (int) (floor(delayMax + 1.0));
+    myGSS->delayMinimum = (unsigned int) 0;
+    myGSS->delayMaximum = (unsigned int) (floor(delayMax + 1.0));
 
     // Clear sphere
     sphereTerminate(mySphere);
@@ -302,8 +300,8 @@ void gssInit(struct objGSS* myGSS, struct ParametersStruct* myParameters, struct
 
             // Compute aij(k)   = exp(-j*2*pi*k*delay/N)
             //                  = cos(2*pi*k*delay/N) - j * sin(2*pi*k*delay/N)
-            myGSS->cosTable[indexDelay][k] = cos(2 * M_PI * k * indexDelay / myGSS->GSS_NFRAMES);
-            myGSS->sinTable[indexDelay][k] = -1.0 * sin(2 * M_PI * k * indexDelay / myGSS->GSS_NFRAMES);
+            myGSS->cosTable[indexDelay][k] = cosf(2.0f * M_PI * k * indexDelay / myGSS->GSS_NFRAMES);
+            myGSS->sinTable[indexDelay][k] = -1.0f * sinf(2.0f * M_PI * k * indexDelay / myGSS->GSS_NFRAMES);
 
         }
     }
@@ -331,8 +329,6 @@ void gssTerminate(struct objGSS* myGSS)
 
     microphonesTerminate(myGSS->myMicrophones);
     free((void*) myGSS->myMicrophones);
-
-    //deleteTable2D((void**) myGSS->microphonePosition);
 
     // *************************************************************************
     // * STEP 2: Terminate sources variables                                   *
@@ -422,10 +418,10 @@ void gssTerminate(struct objGSS* myGSS)
 void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float positionY, float positionZ)
 {
 
-    int indexID;
+    signed int indexID;
 
-    int newNSources;
-    int oldNSources;
+    unsigned int newNSources;
+    unsigned int oldNSources;
 
     float x,y,z;
     float r;
@@ -434,8 +430,8 @@ void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float po
     float distanceX,distanceY,distanceZ;
     float distance;
 
-    int delay;
-    int delayNorm;
+    unsigned int delay;
+    unsigned int delayNorm;
 
     float aijReal;
     float aijImag;
@@ -443,8 +439,8 @@ void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float po
     float wjiReal;
     float wjiImag;
 
-    int indexMicrophone;
-    int k;
+    unsigned int indexMicrophone;
+    unsigned int k;
 
     // *************************************************************************
     // * STEP 1: Get new number of sources                                     *
@@ -539,11 +535,11 @@ void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float po
     yNotNorm = myGSS->sourcesPosition[indexID][1];
     zNotNorm = myGSS->sourcesPosition[indexID][2];
 
-    r = sqrt(xNotNorm * xNotNorm + yNotNorm * yNotNorm + zNotNorm * zNotNorm);
+    r = sqrtf(xNotNorm * xNotNorm + yNotNorm * yNotNorm + zNotNorm * zNotNorm);
 
-    xNorm = xNotNorm / (r + 1E-10);
-    yNorm = yNotNorm / (r + 1E-10);
-    zNorm = zNotNorm / (r + 1E-10);
+    xNorm = xNotNorm / (r + 1E-10f);
+    yNorm = yNotNorm / (r + 1E-10f);
+    zNorm = zNotNorm / (r + 1E-10f);
 
     // Set at the defined distance
 
@@ -559,10 +555,10 @@ void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float po
         distanceY = microphonesGetPositionY(myGSS->myMicrophones,indexMicrophone) - y;
         distanceZ = microphonesGetPositionZ(myGSS->myMicrophones,indexMicrophone) - z;
 
-        distance = sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
+        distance = sqrtf(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
 
         // Compute the delay for sound to reach the microphone from the source
-        delay = (int) floor(((myGSS->GSS_FS / myGSS->GSS_C) * distance) + 0.5);
+        delay = (unsigned int) floor(((myGSS->GSS_FS / myGSS->GSS_C) * distance) + 0.5);
 
         // Remove the offset to avoid delaying the samples by too much if not needed
         delayNorm = delay - myGSS->delayOffset;
@@ -572,12 +568,12 @@ void gssAddSource(struct objGSS* myGSS, ID_TYPE newID, float positionX, float po
 
             // Compute aij(k)   = exp(-j * 2 * pi * k * delay / nFrames)
             //                  = cos(2 * pi * k * delay / nFrames) - j * sin(2 * pi * k * delay / nFrames)
-            aijReal = cos(2.0 * M_PI * k * delayNorm / myGSS->GSS_NFRAMES);
-            aijImag = -1.0 * sin(2.0 * M_PI * k * delayNorm / myGSS->GSS_NFRAMES);
+            aijReal = cosf(2.0f * M_PI * k * delayNorm / myGSS->GSS_NFRAMES);
+            aijImag = -1.0f * sinf(2.0f * M_PI * k * delayNorm / myGSS->GSS_NFRAMES);
 
             // Compute wji(k) = aij*(k) / nMics
             wjiReal = aijReal / myGSS->myMicrophones->nMics;
-            wjiImag = -1.0 * aijImag / myGSS->myMicrophones->nMics;
+            wjiImag = -1.0f * aijImag / myGSS->myMicrophones->nMics;
 
             // Save in the matrix Wn(k)
             matrixSetReal(myGSS->Wn,oldNSources,indexMicrophone,k,wjiReal);
@@ -606,8 +602,8 @@ void gssDeleteSource(struct objGSS* myGSS, ID_TYPE deleteID)
 
     signed int indexID;
 
-    signed int indexElement;
-    signed int newNSources;
+    unsigned int indexElement;
+    unsigned int newNSources;
 
     // *************************************************************************
     // * STEP 1: Delete the ID                                                 *
@@ -620,7 +616,7 @@ void gssDeleteSource(struct objGSS* myGSS, ID_TYPE deleteID)
     // * STEP 2: Update positions                                              *
     // *************************************************************************
 
-    for (indexElement = indexID; indexElement < (newNSources - 1); indexElement++)
+    for (indexElement = (unsigned int) indexID; indexElement < (newNSources - 1); indexElement++)
     {
         myGSS->sourcesPosition[indexElement][0] = myGSS->sourcesPosition[indexElement + 1][0];
         myGSS->sourcesPosition[indexElement][1] = myGSS->sourcesPosition[indexElement + 1][1];
@@ -815,10 +811,10 @@ void gssRefreshSources(struct objGSS* myGSS, struct objTrackedSources* myTracked
 void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, struct objTrackedSources* myTrackedSources, struct objSeparatedSources* mySeparatedSources)
 {
 
-    int indexSource;
-    int indexID;
-    int indexMicrophone;
-    int k;
+    unsigned int indexSource;
+    signed int indexID;
+    unsigned int indexMicrophone;
+    unsigned int k;
 
     float x,y,z;
     float r;
@@ -827,8 +823,8 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
     float distanceX,distanceY,distanceZ;
     float distance;
 
-    int delay;
-    int delayNorm;
+    unsigned int delay;
+    unsigned int delayNorm;
 
     float aijReal;
     float aijImag;
@@ -836,10 +832,6 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
     float scalar;
 
     unsigned int nSources;
-
-    // ---
-    float tmp;
-    // ---
 
 #ifdef USE_SIMD
 
@@ -941,11 +933,11 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
             yNotNorm = myGSS->sourcesPosition[indexSource][1];
             zNotNorm = myGSS->sourcesPosition[indexSource][2];
 
-            r = sqrt(xNotNorm * xNotNorm + yNotNorm * yNotNorm + zNotNorm * zNotNorm);
+            r = sqrtf(xNotNorm * xNotNorm + yNotNorm * yNotNorm + zNotNorm * zNotNorm);
 
-            xNorm = xNotNorm / (r + 1E-10);
-            yNorm = yNotNorm / (r + 1E-10);
-            zNorm = zNotNorm / (r + 1E-10);
+            xNorm = xNotNorm / (r + 1E-10f);
+            yNorm = yNotNorm / (r + 1E-10f);
+            zNorm = zNotNorm / (r + 1E-10f);
 
             // Set at the defined distance
 
@@ -961,10 +953,10 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
                 distanceY = microphonesGetPositionY(myGSS->myMicrophones,indexMicrophone) - y;
                 distanceZ = microphonesGetPositionZ(myGSS->myMicrophones,indexMicrophone) - z;
 
-                distance = sqrt(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
+                distance = sqrtf(distanceX * distanceX + distanceY * distanceY + distanceZ * distanceZ);
 
                 // Compute the delay for sound to reach the microphone from the source
-                delay = (int) floor(((myGSS->GSS_FS / myGSS->GSS_C) * distance) + 0.5);
+                delay = (unsigned int) floor(((myGSS->GSS_FS / myGSS->GSS_C) * distance) + 0.5);
 
                 // Remove the offset to avoid delaying the samples by too much if not needed
                 delayNorm = delay - myGSS->delayOffset;
@@ -985,7 +977,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 
                     // Save in the matrix AH(k)
                     matrixSetReal(myGSS->AH,indexSource,indexMicrophone,k,aijReal);
-                    matrixSetImag(myGSS->AH,indexSource,indexMicrophone,k,-1.0 * aijImag);
+                    matrixSetImag(myGSS->AH,indexSource,indexMicrophone,k,-1.0f * aijImag);
 
                 }
 
@@ -1056,7 +1048,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
             // +-------------------------------------------------------------------+
 
             // -4 * nSources * mu
-            scalar = -4.0 * nSources * myGSS->GSS_MU;
+            scalar = -4.0f * nSources * myGSS->GSS_MU;
 
             // -4 * nSources * mu * E(k)
             matrixMultScalar(myGSS->Ryy_E,scalar,myGSS->dJ1tmp1);
@@ -1087,7 +1079,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
         matrixMultMatrix(myGSS->dJ2tmp1,myGSS->AH,myGSS->dJ2tmp2);
 
         // -2 * (1/nSources) * mu
-        scalar = -2.0 * (1.0/nSources) * myGSS->GSS_MU;
+        scalar = -2.0f * (1.0f/((float) nSources)) * myGSS->GSS_MU;
 
         // 2 * (1/nSources) * mu * (W(k) * A(k) - I) * AH(k)
         matrixMultScalar(myGSS->dJ2tmp2,scalar,myGSS->dJ2);
@@ -1097,7 +1089,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
         // +-----------------------------------------------------------------------+
 
         // (1 - lambda * mu)
-        scalar = 1.0 - myGSS->GSS_LAMBDA * myGSS->GSS_MU;
+        scalar = 1.0f - myGSS->GSS_LAMBDA * myGSS->GSS_MU;
 
         // (1 - lambda * mu) * Wn(k)
         matrixMultScalar(myGSS->Wn,scalar,myGSS->dJR);
@@ -1133,7 +1125,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
             matrixSetReal(myGSS->yFull,indexSource, 0, k, matrixGetReal(myGSS->y, indexSource, 0, k));
             matrixSetImag(myGSS->yFull,indexSource, 0, k, matrixGetImag(myGSS->y, indexSource, 0, k));
             matrixSetReal(myGSS->yFull,indexSource, 0, (myGSS->GSS_NFRAMES - k), matrixGetReal(myGSS->y, indexSource, 0, k));
-            matrixSetImag(myGSS->yFull,indexSource, 0, (myGSS->GSS_NFRAMES - k), -1.0 * matrixGetImag(myGSS->y, indexSource, 0, k));
+            matrixSetImag(myGSS->yFull,indexSource, 0, (myGSS->GSS_NFRAMES - k), -1.0f * matrixGetImag(myGSS->y, indexSource, 0, k));
         }
 
         matrixSetReal(myGSS->yFull, indexSource, 0, 0, matrixGetReal(myGSS->y, indexSource, 0, 0));

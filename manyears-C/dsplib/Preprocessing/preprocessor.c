@@ -107,7 +107,7 @@
 void preprocessorInit(struct objPreprocessor *myPreprocessor, struct ParametersStruct *myParameters, struct objMicrophones* myMicrophones)
 {
 
-    int indexMic;
+    unsigned int indexMic;
 
     /***************************************************************************
     * Step 1: Load parameters                                                  *
@@ -187,7 +187,7 @@ void preprocessorInit(struct objPreprocessor *myPreprocessor, struct ParametersS
 void preprocessorTerminate(struct objPreprocessor *myPreprocessor)
 {
 
-    int indexMic;
+    unsigned int indexMic;
 
     /***************************************************************************
     * Step 1: Free memory                                                      *
@@ -412,7 +412,7 @@ void preprocessorProcessFrame(struct objPreprocessor *myPreprocessor)
     for (micIndex = 0; micIndex < myPreprocessor->myMicrophones->nMics; micIndex++)
     {
 
-        for (k = 0; k < myPreprocessor->PP_FRAMESIZE; k++)
+        for (k = 0; k < ((unsigned int) myPreprocessor->PP_FRAMESIZE); k++)
         {
 
             myPreprocessor->micArray[micIndex]->xtime_windowed[k] = myPreprocessor->micArray[micIndex]->xtime[k] * myPreprocessor->window[k];
@@ -449,5 +449,3 @@ void preprocessorProcessFrame(struct objPreprocessor *myPreprocessor)
     }
 
 }
-
-// =============================================================================

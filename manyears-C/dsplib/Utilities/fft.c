@@ -95,7 +95,7 @@
 
 // In some environment, the constant PI is not define with the math.h library
 #ifndef M_PI
-	#define M_PI	3.1415926535897932384626433832795
+	#define M_PI	3.1415926535897932384626433832795f
 #endif
 
 /*******************************************************************************
@@ -114,16 +114,13 @@ void fftInit(struct objFFT* myFFT, struct ParametersStruct* myParameters, unsign
 {
 
     // Temporary variable
-    int tmpFrameSize;
+    unsigned int tmpFrameSize;
 
     // Temporary variable
-    int tmpNumberLevels;
+    unsigned int tmpNumberLevels;
 
     // Define the index to generate Wn(r)
     unsigned int r;
-
-    // Define a temporary variable to get the number of levels of computation
-    unsigned int fftSize;
 
     // Define the index to generate the reverse bit order array
     unsigned int indexRevBitOrder;
@@ -184,7 +181,7 @@ void fftInit(struct objFFT* myFFT, struct ParametersStruct* myParameters, unsign
 
     myFFT->FFT_NBLEVELS = tmpNumberLevels;
     myFFT->FFT_HALFSIZE = myFFT->FFT_SIZE / 2;
-    myFFT->FFT_SIZE_INV = 1.0 / ((float) myFFT->FFT_SIZE);
+    myFFT->FFT_SIZE_INV = (1.0f / myFFT->FFT_SIZE);
     myFFT->FFT_SIMD_GROUP = ((myFFT->FFT_SIZE/2) * (myFFT->FFT_NBLEVELS-2) / 4);
     myFFT->FFT_SIMD_INDIVIDUAL = ((myFFT->FFT_SIZE/2) * 2);
 
@@ -226,8 +223,8 @@ void fftInit(struct objFFT* myFFT, struct ParametersStruct* myParameters, unsign
         for (r = 0; r < myFFT->FFT_HALFSIZE; r++)
         {
 
-            myFFT->WnReal[r] = cos(2 * M_PI * r / myFFT->FFT_SIZE);
-            myFFT->WnImag[r] = -1 * sin(2 * M_PI * r / myFFT->FFT_SIZE);
+            myFFT->WnReal[r] = cosf(2.0f * M_PI * r / myFFT->FFT_SIZE);
+            myFFT->WnImag[r] = -1.0f * sinf(2.0f * M_PI * r / myFFT->FFT_SIZE);
 
         }
 
@@ -319,7 +316,7 @@ void fftInit(struct objFFT* myFFT, struct ParametersStruct* myParameters, unsign
                         indexTwiddle++;
 
                         // Check if a is a multiple of 4
-                        if ((((float) a) / 4) == floor(((float) a)/4))
+                        if ((a / 4.0f) == floorf(a/4.0f))
                         {
 
                             myFFT->simdARealGroups[simdAIndexGroup] = &myFFT->workingArrayReal[a];
@@ -473,8 +470,6 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
     // Define accumulator to compute the index of parameter r
     unsigned int accumulatorR;
 
-    // Define the number of levels for the FFT (log2(N))
-    unsigned int numberLevels;
     // Define the nubmer of groups in the current level
     unsigned int numberGroups;
     // Define the number of points per group
@@ -939,7 +934,7 @@ void ifftCompute(struct objFFT* myFFT, float *sourceArrayReal, float *sourceArra
     // Apply prefiltering
     for (k = 0; k < myFFT->FFT_SIZE; k++)
     {
-        destArrayImag[k] = -1 * sourceArrayImag[k];
+        destArrayImag[k] = -1.0f * sourceArrayImag[k];
     }
 
     // Compute FFT
@@ -949,7 +944,7 @@ void ifftCompute(struct objFFT* myFFT, float *sourceArrayReal, float *sourceArra
     for (k = 0; k < myFFT->FFT_SIZE; k++)
     {
         destArrayReal[k] = myFFT->FFT_SIZE_INV * destArrayReal[k];
-        destArrayImag[k] = -1 * myFFT->FFT_SIZE_INV * destArrayImag[k];
+        destArrayImag[k] = -1.0f * myFFT->FFT_SIZE_INV * destArrayImag[k];
     }
 
 #else

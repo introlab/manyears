@@ -109,7 +109,7 @@ struct objMcra
     // +-------------------------------------------------------------------+
 
     // MCRA: Size of the window to smooth spectrum in frequency
-    int MCRA_BSIZE;
+    unsigned int MCRA_BSIZE;
 
     // MCRA: Window to smooth spectrum in frequency
     float* MCRA_WINDOW;
@@ -124,22 +124,22 @@ struct objMcra
     float MCRA_ALPHAD;
 
     // MCRA: Maximum number of frames to refresh (L)
-    int MCRA_L;
+    unsigned int MCRA_L;
 
     // MCRA: Decision parameter (delta)
     float MCRA_DELTA;
 
     // Number of samples per frame (need to be a power of 2)
-    int MICST_FRAMESIZE;
+    unsigned int MICST_FRAMESIZE;
 
     // Half the number of samples per frame
-    int MICST_HALFFRAMESIZE;
+    unsigned int MICST_HALFFRAMESIZE;
 
     // Long frame size
-    int MICST_LONGFRAMESIZE;
+    unsigned int MICST_LONGFRAMESIZE;
 
     // Half the number of samples per long frame size
-    int MICST_HALFLONGFRAMESIZE;
+    unsigned int MICST_HALFLONGFRAMESIZE;
 
 
     // +-------------------------------------------------------------------+
