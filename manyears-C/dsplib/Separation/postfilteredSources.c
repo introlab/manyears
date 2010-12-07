@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Separation/postfilteredSources.h"
+#include "Separation/postfilteredSources.h"
 
 /*******************************************************************************
  * postfilteredSourcesInit                                                     *

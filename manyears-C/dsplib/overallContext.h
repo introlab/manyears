@@ -103,6 +103,8 @@
 
 // =============================================================================
 
+#include "hardware.h"
+#include "parameters.h"
 #include "Geometry/microphones.h"
 #include "Preprocessing/preprocessor.h"
 #include "Localisation/beamformer.h"
@@ -115,7 +117,7 @@
 #include "Separation/postfilteredSources.h"
 #include "Postprocessing/postprocessor.h"
 #include "Output/output.h"
-#include "parameters.h"
+
 
 /*******************************************************************************
  * Structures                                                                  *

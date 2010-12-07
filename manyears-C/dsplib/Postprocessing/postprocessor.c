@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Postprocessing/postprocessor.h"
+#include "Postprocessing/postprocessor.h"
 
 /*******************************************************************************
  * postprocessorInit                                                           *

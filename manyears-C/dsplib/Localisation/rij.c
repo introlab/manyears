@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Localisation/rij.h"
+#include "Localisation/rij.h"
 
 /*******************************************************************************
  * rijInit                                                                     *
@@ -471,7 +471,7 @@ void rijRemoveSource(struct objRij* myRij, struct objDelays* myDelays, unsigned 
  *                                                                             *
  ******************************************************************************/
 
-inline float rijGetEnergyFromMics(struct objRij* myRij, unsigned int iMic, unsigned int jMic, signed int delay)
+INLINE_PREFIX float rijGetEnergyFromMics(struct objRij* myRij, unsigned int iMic, unsigned int jMic, signed int delay)
 {
 
     unsigned int indexPair;
@@ -497,7 +497,7 @@ inline float rijGetEnergyFromMics(struct objRij* myRij, unsigned int iMic, unsig
  *                                                                             *
  ******************************************************************************/
 
-inline float rijGetEnergyFromPair(struct objRij* myRij, unsigned int indexPair, signed int delay)
+INLINE_PREFIX float rijGetEnergyFromPair(struct objRij* myRij, unsigned int indexPair, signed int delay)
 {
 
     return myRij->crossCorrFiltered[indexPair][delay - myRij->delayMin];

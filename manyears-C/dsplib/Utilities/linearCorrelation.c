@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Utilities/linearCorrelation.h"
+#include "Utilities/linearCorrelation.h"
 
 /*******************************************************************************
  * linearCorrelationInit                                                       *

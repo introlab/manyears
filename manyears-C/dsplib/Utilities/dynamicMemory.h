@@ -90,6 +90,7 @@
 #define DYNAMICMEMORY_H
 
 #include <stdlib.h>
+#include "hardware.h"
 
 /*******************************************************************************
  * Prototypes                                                                  *

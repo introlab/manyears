@@ -90,8 +90,10 @@
 #ifndef IDLIST_H
 #define IDLIST_H
 
-#include "../parameters.h"
-#include "../Utilities/idManager.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Utilities/idManager.h"
+
 
 #define         ID_NOTFOUND             -1
 

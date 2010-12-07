@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Separation/separatedSources.h"
+#include "Separation/separatedSources.h"
 
 /*******************************************************************************
  * separatedSourcesInit                                                        *

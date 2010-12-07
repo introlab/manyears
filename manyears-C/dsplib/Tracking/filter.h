@@ -93,12 +93,12 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../hardware.h"
-#include "../parameters.h"
-#include "../Localisation/potentialSources.h"
-#include "../Utilities/dynamicMemory.h"
-#include "../Utilities/mathadvanced.h"
-#include "../Utilities/randGen.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Localisation/potentialSources.h"
+#include "Utilities/dynamicMemory.h"
+#include "Utilities/mathadvanced.h"
+#include "Utilities/randGen.h"
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *

@@ -92,8 +92,10 @@
 
 #include <math.h>
 
-#include "../Geometry/microphones.h"
-#include "../Localisation/sphere.h"
+#include "hardware.h"
+#include "Geometry/microphones.h"
+#include "Localisation/sphere.h"
+
 
 /*******************************************************************************
  * Structures                                                                  *
@@ -144,8 +146,8 @@ struct objDelays
 
     signed int delaysGetMax(struct objDelays* myDelays);
 
-    inline signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexPair);
+    INLINE_PREFIX signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexPair);
 
-    inline signed int delaysGetFromMics(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexMic1, unsigned int indexMic2);
+    INLINE_PREFIX signed int delaysGetFromMics(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexMic1, unsigned int indexMic2);
 
 #endif

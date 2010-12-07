@@ -92,9 +92,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "hardware.h"
+#include "Utilities/dynamicMemory.h"
 
-#include "../Utilities/dynamicMemory.h"
-#include "../hardware.h"
 
 /*******************************************************************************
  * Structure                                                                   *

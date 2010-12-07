@@ -90,7 +90,8 @@
 #ifndef POTENTIALSOURCES_H
 #define POTENTIALSOURCES_H
 
-#include "../parameters.h"
+#include "hardware.h"
+#include "parameters.h"
 
 /*******************************************************************************
  * Structures                                                                  *

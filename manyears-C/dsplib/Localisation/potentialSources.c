@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Localisation/potentialSources.h"
+#include "Localisation/potentialSources.h"
 
 /*******************************************************************************
  * potentialSourcesInit                                                        *

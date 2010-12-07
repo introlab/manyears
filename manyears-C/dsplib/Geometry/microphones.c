@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Geometry/microphones.h"
+#include "Geometry/microphones.h"
 
 /*******************************************************************************
  * microphonesInit                                                             *
@@ -346,7 +346,7 @@ void microphonesClone(struct objMicrophones* myMicrophonesSource, struct objMicr
  *                                                                             *
  ******************************************************************************/
 
-inline signed int microphonesGetPair(struct objMicrophones* myMicrophones, unsigned int indexMic1, unsigned int indexMic2)
+INLINE_PREFIX signed int microphonesGetPair(struct objMicrophones* myMicrophones, unsigned int indexMic1, unsigned int indexMic2)
 {
     return myMicrophones->mappingMatrix[indexMic1][indexMic2];
 }
@@ -382,7 +382,7 @@ inline signed int microphonesGetPair(struct objMicrophones* myMicrophones, unsig
  *                                                                             *
  ******************************************************************************/
 
-inline signed int microphonesGetMic(struct objMicrophones* myMicrophones, unsigned int indexPair, unsigned int pairElement)
+INLINE_PREFIX signed int microphonesGetMic(struct objMicrophones* myMicrophones, unsigned int indexPair, unsigned int pairElement)
 {
     return myMicrophones->inverseMappingMatrix[indexPair][pairElement];
 }
@@ -401,7 +401,7 @@ inline signed int microphonesGetMic(struct objMicrophones* myMicrophones, unsign
  *              indexMic                                                       *
  ******************************************************************************/
 
-inline float* microphonesGetPosition(struct objMicrophones* myMicrophones, unsigned int indexMic)
+INLINE_PREFIX float* microphonesGetPosition(struct objMicrophones* myMicrophones, unsigned int indexMic)
 {
     return myMicrophones->micsPosition[indexMic];
 }
@@ -419,7 +419,7 @@ inline float* microphonesGetPosition(struct objMicrophones* myMicrophones, unsig
  *              indexMic                                                       *
  ******************************************************************************/
 
-inline float microphonesGetPositionX(struct objMicrophones* myMicrophones, unsigned int indexMic)
+INLINE_PREFIX float microphonesGetPositionX(struct objMicrophones* myMicrophones, unsigned int indexMic)
 {
     return myMicrophones->micsPosition[indexMic][0];
 }
@@ -437,7 +437,7 @@ inline float microphonesGetPositionX(struct objMicrophones* myMicrophones, unsig
  *              indexMic                                                       *
  ******************************************************************************/
 
-inline float microphonesGetPositionY(struct objMicrophones* myMicrophones, unsigned int indexMic)
+INLINE_PREFIX float microphonesGetPositionY(struct objMicrophones* myMicrophones, unsigned int indexMic)
 {
     return myMicrophones->micsPosition[indexMic][1];
 }
@@ -455,7 +455,7 @@ inline float microphonesGetPositionY(struct objMicrophones* myMicrophones, unsig
  *              indexMic                                                       *
  ******************************************************************************/
 
-inline float microphonesGetPositionZ(struct objMicrophones* myMicrophones, unsigned int indexMic)
+INLINE_PREFIX float microphonesGetPositionZ(struct objMicrophones* myMicrophones, unsigned int indexMic)
 {
     return myMicrophones->micsPosition[indexMic][2];
 }
@@ -473,7 +473,7 @@ inline float microphonesGetPositionZ(struct objMicrophones* myMicrophones, unsig
  *              is indexMic                                                    *
  ******************************************************************************/
 
-inline float microphonesGetGain(struct objMicrophones* myMicrophones, unsigned int indexMic)
+INLINE_PREFIX float microphonesGetGain(struct objMicrophones* myMicrophones, unsigned int indexMic)
 {
     return myMicrophones->micsGain[indexMic];
 }

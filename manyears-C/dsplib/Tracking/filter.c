@@ -91,7 +91,7 @@
 #include <xmmintrin.h>
 #endif
 
-#include "../Tracking/filter.h"
+#include "Tracking/filter.h"
 
 /*******************************************************************************
  * filterInit                                                                  *

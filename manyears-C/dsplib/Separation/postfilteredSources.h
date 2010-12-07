@@ -90,10 +90,11 @@
 #ifndef POSTFILTEREDSOURCES_H
 #define POSTFILTEREDSOURCES_H
 
-#include "../parameters.h"
-#include "../Utilities/dynamicMemory.h"
-#include "../Utilities/idList.h"
-#include "../Utilities/idManager.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Utilities/dynamicMemory.h"
+#include "Utilities/idList.h"
+#include "Utilities/idManager.h"
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *

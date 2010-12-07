@@ -90,14 +90,16 @@
 #ifndef POSTPROCESSOR_H
 #define POSTPROCESSOR_H
 
-#include "../Tracking/trackedSources.h"
-#include "../Separation/postfilteredSources.h"
-#include "../Separation/separatedSources.h"
-#include "../Utilities/dynamicMemory.h"
-#include "../Utilities/fft.h"
-#include "../Utilities/idManager.h"
-#include "../Utilities/window.h"
-#include "../parameters.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Tracking/trackedSources.h"
+#include "Separation/postfilteredSources.h"
+#include "Separation/separatedSources.h"
+#include "Utilities/dynamicMemory.h"
+#include "Utilities/fft.h"
+#include "Utilities/idManager.h"
+#include "Utilities/window.h"
+
 
 /*******************************************************************************
  * Structures                                                                  *

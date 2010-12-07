@@ -92,7 +92,9 @@
 
 #include <math.h>
 
-#include "../Utilities/dynamicMemory.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Utilities/dynamicMemory.h"
 
 /*******************************************************************************
  * Constants                                                                   *

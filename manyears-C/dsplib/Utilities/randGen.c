@@ -89,7 +89,7 @@
 
 #include <math.h>
 
-#include "../Utilities/randGen.h"
+#include "Utilities/randGen.h"
 
 /*******************************************************************************
  * Compatibility issues                                                        *

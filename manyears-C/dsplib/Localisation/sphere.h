@@ -92,7 +92,8 @@
 
 #include <math.h>
 
-#include "../Utilities/dynamicMemory.h"
+#include "hardware.h"
+#include "Utilities/dynamicMemory.h"
 
 /*******************************************************************************
  * Structures                                                                  *
@@ -135,8 +136,8 @@
 
     void sphereTerminate(struct objSphere *mySphere);
 
-    inline float sphereGetX(struct objSphere* mySphere, unsigned int indexPoint);
-    inline float sphereGetY(struct objSphere* mySphere, unsigned int indexPoint);
-    inline float sphereGetZ(struct objSphere* mySphere, unsigned int indexPoint);
+    INLINE_PREFIX float sphereGetX(struct objSphere* mySphere, unsigned int indexPoint);
+    INLINE_PREFIX float sphereGetY(struct objSphere* mySphere, unsigned int indexPoint);
+    INLINE_PREFIX float sphereGetZ(struct objSphere* mySphere, unsigned int indexPoint);
 
 #endif

@@ -93,10 +93,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "../Utilities/dynamicMemory.h"
-#include "../Utilities/idList.h"
-#include "../Postprocessing/postprocessor.h"
-#include "../parameters.h"
+#include "parameters.h"
+#include "Utilities/dynamicMemory.h"
+#include "Utilities/idList.h"
+#include "Postprocessing/postprocessor.h"
+
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *

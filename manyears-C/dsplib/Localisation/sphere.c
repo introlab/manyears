@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Localisation/sphere.h"
+#include "Localisation/sphere.h"
 
 /*******************************************************************************
  * Compatibility issues                                                        *
@@ -731,17 +731,17 @@ void sphereTerminate(struct objSphere *mySphere)
 
 }
 
-inline float sphereGetX(struct objSphere* mySphere, unsigned int indexPoint)
+INLINE_PREFIX float sphereGetX(struct objSphere* mySphere, unsigned int indexPoint)
 {
     return (mySphere->spherePoints[indexPoint][0]);
 }
 
-inline float sphereGetY(struct objSphere* mySphere, unsigned int indexPoint)
+INLINE_PREFIX float sphereGetY(struct objSphere* mySphere, unsigned int indexPoint)
 {
     return (mySphere->spherePoints[indexPoint][1]);
 }
 
-inline float sphereGetZ(struct objSphere* mySphere, unsigned int indexPoint)
+INLINE_PREFIX float sphereGetZ(struct objSphere* mySphere, unsigned int indexPoint)
 {
     return (mySphere->spherePoints[indexPoint][2]);
 }

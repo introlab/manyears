@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "../Localisation/delays.h"
+#include "Localisation/delays.h"
 
 /*******************************************************************************
  * delaysInit                                                                  *
@@ -326,7 +326,7 @@ signed int delaysGetMax(struct objDelays* myDelays)
  *                                                                             *
  ******************************************************************************/
 
-inline signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexPair)
+INLINE_PREFIX signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexPair)
 {
     return (myDelays->lookup[indexPoint][indexPair]);
 }
@@ -348,7 +348,7 @@ inline signed int delaysGetFromPair(struct objDelays* myDelays, unsigned int ind
  *                                                                             *
  ******************************************************************************/
 
-inline signed int delaysGetFromMics(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexMic1, unsigned int indexMic2)
+INLINE_PREFIX signed int delaysGetFromMics(struct objDelays* myDelays, unsigned int indexPoint, unsigned int indexMic1, unsigned int indexMic2)
 {
     return (myDelays->lookup[indexPoint][microphonesGetPair(myDelays->myMicrophones, indexMic1, indexMic2)]);
 }

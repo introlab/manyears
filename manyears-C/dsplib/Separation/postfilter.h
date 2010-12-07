@@ -90,16 +90,18 @@
 #ifndef POSTFILTER_H
 #define POSTFILTER_H
 
-#include "../Preprocessing/mcra.h"
-#include "../Preprocessing/preprocessor.h"
-#include "../Separation/gss.h"
-#include "../Separation/postfilteredSources.h"
-#include "../Utilities/idList.h"
-#include "../Utilities/linearCorrelation.h"
-#include "../Utilities/transcendental.h"
-#include "../Utilities/window.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Preprocessing/mcra.h"
+#include "Preprocessing/preprocessor.h"
+#include "Separation/gss.h"
+#include "Separation/postfilteredSources.h"
+#include "Utilities/idList.h"
+#include "Utilities/linearCorrelation.h"
+#include "Utilities/transcendental.h"
+#include "Utilities/window.h"
 
-#include "../parameters.h"
+
 
 /*******************************************************************************
  * Structure                                                                   *

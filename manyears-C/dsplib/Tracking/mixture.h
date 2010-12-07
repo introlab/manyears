@@ -93,13 +93,13 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../hardware.h"
-#include "../parameters.h"
+#include "hardware.h"
+#include "parameters.h"
 
-#include "../Localisation/beamformer.h"
-#include "../Tracking/filter.h"
-#include "../Tracking/trackedSources.h"
-#include "../Utilities/idManager.h"
+#include "Localisation/beamformer.h"
+#include "Tracking/filter.h"
+#include "Tracking/trackedSources.h"
+#include "Utilities/idManager.h"
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *

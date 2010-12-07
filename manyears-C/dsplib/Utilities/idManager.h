@@ -90,8 +90,10 @@
 #ifndef IDMANAGER_H
 #define IDMANAGER_H
 
-#include "../Utilities/dynamicMemory.h"
 #include <stdio.h>
+#include "hardware.h"
+#include "Utilities/dynamicMemory.h"
+
 
 /*******************************************************************************
  * Constants                                                                   *

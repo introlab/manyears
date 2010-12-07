@@ -14,15 +14,17 @@
 #ifndef MATHADVANCED_H
 #define MATHADVANCED_H
 
+#include "hardware.h"
+
 /*******************************************************************************
- * Inline functions                                                            *
+ * INLINE_PREFIX functions                                                            *
  ******************************************************************************/
 
 // +---------------------------------------------------------------------------+
 // | Exponential                                                               |
 // +---------------------------------------------------------------------------+
 
-static inline float expest(float _arg)
+static INLINE_PREFIX float expest(float _arg)
 {
 
     // Compute the exponential with the limit definition:

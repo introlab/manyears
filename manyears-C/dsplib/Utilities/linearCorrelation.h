@@ -90,8 +90,9 @@
 #ifndef CORRELATION_H
 #define CORRELATION_H
 
-#include "../Utilities/dynamicMemory.h"
-#include "../hardware.h"
+#include "hardware.h"
+#include "Utilities/dynamicMemory.h"
+
 
 /*******************************************************************************
  * Constants                                                                   *

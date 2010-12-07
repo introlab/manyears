@@ -90,8 +90,10 @@
 #ifndef MICROPHONES_H
 #define MICROPHONES_H
 
-#include "../parameters.h"
-#include "../Utilities/dynamicMemory.h"
+#include "hardware.h"
+#include "parameters.h"
+#include "Utilities/dynamicMemory.h"
+
 
 /*******************************************************************************
  * Structures                                                                  *
@@ -135,14 +137,14 @@ struct objMicrophones
 
     void microphonesClone(struct objMicrophones* myMicrophonesSource, struct objMicrophones* myMicrophonesDest);
 
-    inline signed int microphonesGetPair(struct objMicrophones* myMicrophones, unsigned int indexMic1, unsigned int indexMic2);
+    INLINE_PREFIX signed int microphonesGetPair(struct objMicrophones* myMicrophones, unsigned int indexMic1, unsigned int indexMic2);
 
-    inline signed int microphonesGetMic(struct objMicrophones* myMicrophones, unsigned int indexPair, unsigned int pairElement);
+    INLINE_PREFIX signed int microphonesGetMic(struct objMicrophones* myMicrophones, unsigned int indexPair, unsigned int pairElement);
 
-    inline float* microphonesGetPosition(struct objMicrophones* myMicrophones, unsigned int indexMic);
-    inline float microphonesGetPositionX(struct objMicrophones* myMicrophones, unsigned int indexMic);
-    inline float microphonesGetPositionY(struct objMicrophones* myMicrophones, unsigned int indexMic);
-    inline float microphonesGetPositionZ(struct objMicrophones* myMicrophones, unsigned int indexMic);
-    inline float microphonesGetGain(struct objMicrophones* myMicrophones, unsigned int indexMic);
+    INLINE_PREFIX float* microphonesGetPosition(struct objMicrophones* myMicrophones, unsigned int indexMic);
+    INLINE_PREFIX float microphonesGetPositionX(struct objMicrophones* myMicrophones, unsigned int indexMic);
+    INLINE_PREFIX float microphonesGetPositionY(struct objMicrophones* myMicrophones, unsigned int indexMic);
+    INLINE_PREFIX float microphonesGetPositionZ(struct objMicrophones* myMicrophones, unsigned int indexMic);
+    INLINE_PREFIX float microphonesGetGain(struct objMicrophones* myMicrophones, unsigned int indexMic);
 
 #endif
