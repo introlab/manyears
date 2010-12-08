@@ -1,4 +1,5 @@
 #include "sourceBuffer.h"
+#include <math.h>
 
 // XxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxX
 // x                                                       x
@@ -1760,5 +1761,5 @@ GraphClearEvent::~GraphClearEvent()
 
 GraphClearEvent& GraphClearEvent::operator=(const GraphClearEvent& _graphClearEvent)
 {
-
+	return *this;
 }

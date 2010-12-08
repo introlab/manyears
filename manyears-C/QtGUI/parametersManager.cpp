@@ -53,6 +53,7 @@ ParametersManager& ParametersManager::operator=(const ParametersManager& _parame
         this->eventReceiversView.push_back(_parametersManager.eventReceiversView.at(indexList));
     }
 
+	return *this;
 }
 
 /***********************************************************

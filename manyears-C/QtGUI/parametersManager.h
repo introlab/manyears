@@ -10,6 +10,17 @@
 #include "property.h"
 #include "configurationVector.h"
 
+#ifndef __GNUCXX__
+inline float round(float x)
+{
+   if (x >= 0.0)
+      return floor(x + 0.5f);
+     else
+      return ceil(x - 0.5f);
+}
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
 #endif

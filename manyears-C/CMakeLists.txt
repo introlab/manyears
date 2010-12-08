@@ -2,19 +2,6 @@ PROJECT (INTROLAB-ManyEars)
 
 cmake_minimum_required(VERSION 2.6)
 
-#SSE COMPILATION
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-msse3 -ftree-vectorize")
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-msse3 -ftree-vectorize")
-#set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-msse3")
-#set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-msse3")
-
-
-
-#OSX Architecture, will build for 32 bits systems
-set(CMAKE_OSX_ARCHITECTURES "i386")
-
-
-
 ########################
 # Configurations
 ########################
@@ -23,12 +10,38 @@ SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_VERSION_PATCH "0")
 SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 
+
+#OSX Architecture, will build for 32 bits systems
+set(CMAKE_OSX_ARCHITECTURES "i386")
+
 #SET THE BUILD TYPE HERE, Release, Debug
-SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Release)
+
+#Here we are assuming SSE3 support
+IF (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
+	MESSAGE( STATUS "Setting flags for GNU GCC")
+	ADD_DEFINITIONS(-DUSE_SIMD)
+	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-msse3 -mfpmath=sse")
+	set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-msse3 -mfpmath=sse")
+	SET(MANYEARS_LINK_FLAGS "--enable-auto-import")
+ENDIF(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
+
+IF (MSVC)
+	MESSAGE( STATUS "Setting flags for Visual Studio")
+    ADD_DEFINITIONS(-DUSE_SIMD -D__SSE__ -D__SSE2__)
+	SET(MANYEARS_LINK_FLAGS " ")
+	set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "/arch:SSE2") 
+ENDIF(MSVC)
+
+
 
 IF(WIN32)
 	MESSAGE( STATUS "Windows version: " ${CMAKE_SYSTEM})
-        SET(CMAKE_INSTALL_PREFIX "$ENV{SYSTEMDRIVE}/ManyEars-win32-mingw-${CPACK_PACKAGE_VERSION}")
+	    IF(MSVC)
+			SET(CMAKE_INSTALL_PREFIX "$ENV{SYSTEMDRIVE}/ManyEars-win32-VS-${CPACK_PACKAGE_VERSION}")
+		ELSE(MSVC)
+			SET(CMAKE_INSTALL_PREFIX "$ENV{SYSTEMDRIVE}/ManyEars-win32-mingw-${CPACK_PACKAGE_VERSION}")
+		ENDIF(MSVC)
 	MESSAGE( STATUS "Install directory is : " ${CMAKE_INSTALL_PREFIX})
 ELSE(WIN32)
         SET(CMAKE_INSTALL_PREFIX "/usr/local/manyears")
@@ -97,7 +110,6 @@ IF (WIN32)
 
     SET (QT_DLL
 	    "${QT_BINARY_DIR}/Qt3Support4.dll"
-	    "${QT_BINARY_DIR}/QtAssistantClient4.dll"
 	    "${QT_BINARY_DIR}/QtCore4.dll"
 	    "${QT_BINARY_DIR}/QtDesigner4.dll"
 	    "${QT_BINARY_DIR}/QtDesignerComponents4.dll"
@@ -111,10 +123,15 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/QtTest4.dll"
 	    "${QT_BINARY_DIR}/QtWebKit4.dll"
 	    "${QT_BINARY_DIR}/QtXml4.dll"
-	    "${QT_BINARY_DIR}/mingwm10.dll"
-        "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
     )
 
+	IF(MINGW)
+		SET (QT_DLL ${QT_DLL}
+		"${QT_BINARY_DIR}/mingwm10.dll"
+        "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
+		)
+	ENDIF(MINGW)
+	
     INSTALL(FILES ${QT_DLL} DESTINATION bin)
 
     #############################

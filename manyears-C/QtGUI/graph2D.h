@@ -18,6 +18,8 @@
 #include "sourceBuffer.h"
 #include "parametersManager.h"
 
+
+
 class Graph2D: public QWidget
 {
 

@@ -456,7 +456,7 @@ QColor Graph3D::getColorEnergy(float _energy)
 
     float maxRange = 5;
     float minRange = 0;
-    float maxRange2 = exp(1);
+    float maxRange2 = exp(1.0f);
     float minRange2 = 1;
 
     float value1 = (_energy - minRange) / (maxRange - minRange);

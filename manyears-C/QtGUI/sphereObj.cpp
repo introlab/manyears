@@ -1,5 +1,6 @@
 #include "sphereObj.h"
 #include <math.h>
+#include "hardware.h"
 
 /***********************************************************
 * Constructor                                              *

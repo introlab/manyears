@@ -1,8 +1,5 @@
 MESSAGE( STATUS "Buiding ManyEarsLib Library...")
 
-#ADD DEFINITIONS HERE
-#ADD_DEFINITIONS(-DUSE_SIMD)
-
 SET(ManyEarsLib_SRCS
     Geometry/microphones.c
     Preprocessing/mcra.c
@@ -72,12 +69,12 @@ INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/dsplib )
 
 add_library(ManyEarsLib STATIC ${ManyEarsLib_SRCS} ${ManyEarsLib_HEADERS} )
 target_link_libraries(ManyEarsLib )
-set_target_properties(ManyEarsLib PROPERTIES LINK_FLAGS "" OUTPUT_NAME manyears)
+set_target_properties(ManyEarsLib PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS} OUTPUT_NAME manyears)
 
 INSTALL(TARGETS ManyEarsLib DESTINATION lib)
 
 
-#Install headers in the adequate directory…
+#Install headers in the adequate directory
 FOREACH(header_file ${ManyEarsLib_HEADERS})
 	GET_FILENAME_COMPONENT(HEADER_PATH ${header_file} PATH)
 	INSTALL(FILES ${header_file} DESTINATION include/${HEADER_PATH})
@@ -87,7 +84,7 @@ ENDFOREACH(header_file)
 #INSTALL(FILES ${ManyEarsLib_HEADERS} DESTINATION include)
 
 #add_executable(sse_test sseTest.c sseTest.h)
-#set_target_properties(sse_test PROPERTIES LINK_FLAGS "--enable-auto-import")
+#set_target_properties(sse_test PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
 #target_link_libraries(sse_test ManyEarsLib -lm)
 
 

@@ -88,8 +88,13 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
 IF (WIN32)
     #ManyEars Executable
     add_executable(ManyEars WIN32 main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
-    set_target_properties(ManyEars PROPERTIES LINK_FLAGS "--enable-auto-import")
-    target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib -lole32 -lopengl32)
+
+	IF (MINGW)
+		set_target_properties(ManyEars PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
+		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib -lole32 -lopengl32)
+	ELSE (MINGW)
+		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib /lopengl32.lib)
+	ENDIF(MINGW)
     INSTALL(TARGETS ManyEars DESTINATION bin)
 ENDIF (WIN32)
 

@@ -136,9 +136,9 @@ void InputOutputManager::streamCallBack(signed short* inputBuffer)
     newBufferToFill = this->getUnusedBuffer();
 
     // Fill the buffer
-    for (int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
+    for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
     {
-        for (int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+        for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
         {
             newBufferToFill[indexChannel][indexSample] = ((float) *(bufferToCopy++)) / 32768.0;
         }
@@ -150,9 +150,9 @@ void InputOutputManager::streamCallBack(signed short* inputBuffer)
     // Write in file if required
     if (this->toFile == true)
     {
-        for (int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
+        for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
         {
-            for (int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+            for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
             {
                 fwrite(bufferToCopy++, sizeof(short), 1, this->outputFile);
             }
@@ -1832,5 +1832,6 @@ EndOfStreamEvent::~EndOfStreamEvent()
 
 EndOfStreamEvent& EndOfStreamEvent::operator=(const EndOfStreamEvent& _endOfStreamEvent)
 {
-
+	(*this) = _endOfStreamEvent;
+	return *this;
 }

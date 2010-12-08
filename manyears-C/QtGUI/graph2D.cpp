@@ -1,4 +1,6 @@
 #include "graph2D.h"
+#include <math.h>
+#include "hardware.h"
 
 /***********************************************************
 * Constructor                                              *

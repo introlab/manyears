@@ -1163,6 +1163,9 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 
 #else
 
+		/*
+		//TODO : IS THIS USEFUL FRANCOIS?
+
         tmp = 0;
 
         for (k = 0; k < myGSS->GSS_NFRAMES; k++)
@@ -1175,6 +1178,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
         {
             tmp = 0;
         }
+		*/
 
         for (k = 0; k < myGSS->GSS_NFRAMES; k+=4)
         {
