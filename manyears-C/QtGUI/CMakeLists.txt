@@ -12,6 +12,7 @@ SET(QT_USE_QTSCRIPT TRUE)
 SET(QT_USE_QTOPENGL TRUE)
 
 find_package(Qt4 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 
 include(${QT_USE_FILE})
@@ -79,6 +80,7 @@ QT4_WRAP_CPP(ManyEars_MOC_SRCS ${ManyEars_HEADERS})
 
 #Include directories
 INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
+					${OPENGL_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/
                     ${PROJECT_SOURCE_DIR}/dsplib
                     ${PROJECT_SOURCE_DIR}/RTAudio
@@ -93,7 +95,7 @@ IF (WIN32)
 		set_target_properties(ManyEars PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
 		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib -lole32 -lopengl32)
 	ELSE (MINGW)
-		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib /lopengl32.lib)
+		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib ${OPENGL_LIBRARIES})
 	ENDIF(MINGW)
     INSTALL(TARGETS ManyEars DESTINATION bin)
 ENDIF (WIN32)
