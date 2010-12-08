@@ -10,7 +10,10 @@
 #include "property.h"
 #include "configurationVector.h"
 
-#ifndef __GNUCXX__
+#ifndef __GNUCC__
+
+#include <math.h>
+
 inline float round(float x)
 {
    if (x >= 0.0)
