@@ -93,7 +93,7 @@ IF (WIN32)
 
 	IF (MINGW)
 		set_target_properties(ManyEars PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
-		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib -lole32 -lopengl32)
+		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib ${OPENGL_LIBRARIES})
 	ELSE (MINGW)
 		target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib ${OPENGL_LIBRARIES})
 	ENDIF(MINGW)
