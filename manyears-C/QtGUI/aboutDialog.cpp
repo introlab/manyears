@@ -131,6 +131,8 @@ AboutDialog::AboutDialog()
                       yText + titleHeight + titleSpace + versionHeight + versionSpace + authorsHeight + authorsSpace + websiteHeight + websiteSpace + copyrightHeight + copyrightSpace + readmeHeight + readmeSpace + buttonHeight + yText);
     this->setWindowFlags(Qt::WindowStaysOnTopHint | Qt::Dialog);
 
+
+
     // Event
     QObject::connect(this->website, SIGNAL(linkActivated(QString)), this, SLOT(launchURL(QString)));
     QObject::connect(this->buttons, SIGNAL(clicked()), this, SLOT(closeDialog()));
