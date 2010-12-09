@@ -20,7 +20,7 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
 
 add_executable(manyears_console manyears_console.c)
 set_target_properties(manyears_console PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
-target_link_libraries(manyears_console ManyEarsLib -lm)
+target_link_libraries(manyears_console ManyEarsLib)
 
 
 #INSTALL DEMONSTRATION FILES
