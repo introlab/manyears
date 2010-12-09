@@ -120,6 +120,7 @@ int main (int argc, char* argv[])
     const char* separator = "-";
     char* sepPath;
     char* postPath;
+	FILE* filePtr = NULL;
 
     // Create the workspace
     workspace = createEmptyOverallContext();
@@ -145,7 +146,7 @@ int main (int argc, char* argv[])
         printf("Processing : %s \n",argv[file_index]);
 
         //Open file in binary mode
-        FILE* filePtr = fopen(argv[file_index], "rb");
+        filePtr = fopen(argv[file_index], "rb");
 
         if (filePtr == NULL)
         {
