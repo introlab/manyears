@@ -56,9 +56,10 @@ SET(ManyEarsLib_HEADERS
     Utilities/fft.h
     Utilities/idList.h
     Utilities/idManager.h
+    Utilities/mathadvanced.h
     Utilities/matrix.h
     Utilities/randGen.h  
-    Utilities/transcendental.c
+    Utilities/transcendental.h
     Utilities/window.h
     parameters.h
     overallContext.h
