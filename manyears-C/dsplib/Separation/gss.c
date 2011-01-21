@@ -610,7 +610,7 @@ void gssDeleteSource(struct objGSS* myGSS, ID_TYPE deleteID)
     // *************************************************************************
 
     indexID = idListDelete(&myGSS->sourcesIDNow, deleteID);
-    newNSources = idListGetNElements(&myGSS->sourcesIDNow);
+    newNSources = idListGetMaxNElements(&myGSS->sourcesIDNow);
 
     // *************************************************************************
     // * STEP 2: Update positions                                              *
