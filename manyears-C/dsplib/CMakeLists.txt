@@ -66,7 +66,9 @@ SET(ManyEarsLib_HEADERS
     hardware.h
 )
 
-INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/dsplib )
+#INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/dsplib )
+INCLUDE_DIRECTORIES(.)
+
 
 add_library(ManyEarsLib STATIC ${ManyEarsLib_SRCS} ${ManyEarsLib_HEADERS} )
 target_link_libraries(ManyEarsLib )
