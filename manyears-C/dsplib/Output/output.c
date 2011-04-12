@@ -148,6 +148,7 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     else
     {
         myOutput->pathTracking = NULL;
+        lenPathTracking = 0;
     }
 
     if (myPathSeparation != NULL)
@@ -174,6 +175,7 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
         {
             myOutput->pathSeparation = NULL;
             myOutput->deleteSeparated = 1;
+            lenPathSeparation = 0;
         }
 
     }
@@ -187,6 +189,7 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
     else
     {
         myOutput->pathSeparationWave = NULL;
+        lenPathSeparationWave = 0;
     }
 
     // *************************************************************************
@@ -481,7 +484,7 @@ void outputProcess(struct objOutput* myOutput, struct objPostprocessor* myPostpr
 void outputGeneratePath(struct objOutput* myOutput, const char* model, char* result, ID_TYPE id)
 {
 
-    unsigned int indexChar;
+    signed int indexChar;
     unsigned int lenModel;
 
     char modelChar;

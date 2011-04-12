@@ -373,8 +373,14 @@ struct ParametersStruct{
     // Delta: Signal-to-reverberation ratio
     float P_POSTFILTER_DELTA;
 
-    // Teta
-    float P_POSTFILTER_TETA;
+    // Teta: Local
+    float P_POSTFILTER_TETA_LOCAL;
+
+    // Teta: Global
+    float P_POSTFILTER_TETA_GLOBAL;
+
+    // Teta: Frame
+    float P_POSTFILTER_TETA_FRAME;
 
     // Alpha_zeta
     float P_POSTFILTER_ALPHAZETA;

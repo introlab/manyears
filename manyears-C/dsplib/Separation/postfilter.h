@@ -90,18 +90,18 @@
 #ifndef POSTFILTER_H
 #define POSTFILTER_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Preprocessing/mcra.h"
-#include "Preprocessing/preprocessor.h"
-#include "Separation/gss.h"
-#include "Separation/postfilteredSources.h"
-#include "Utilities/idList.h"
-#include "Utilities/linearCorrelation.h"
-#include "Utilities/transcendental.h"
-#include "Utilities/window.h"
+#include <stdio.h>
 
-
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Preprocessing/mcra.h"
+#include "../Preprocessing/preprocessor.h"
+#include "../Separation/gss.h"
+#include "../Separation/postfilteredSources.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/linearCorrelation.h"
+#include "../Utilities/transcendental.h"
+#include "../Utilities/window.h"
 
 /*******************************************************************************
  * Structure                                                                   *
@@ -165,8 +165,14 @@ struct objPostfilter
         // | Speech presence gain                                          |
         // +---------------------------------------------------------------+
 
-        // Teta
-        float POSTFILTER_TETA;
+        // Teta: Local
+        float POSTFILTER_TETA_LOCAL;
+
+        // Teta: Global
+        float POSTFILTER_TETA_GLOBAL;
+
+        // Teta: Frame
+        float POSTFILTER_TETA_FRAME;
 
         // Alpha_zeta
         float POSTFILTER_ALPHAZETA;
@@ -347,5 +353,7 @@ void postfilterAddSource(struct objPostfilter* myPostfilter, struct objPreproces
 void postfilterDeleteSource(struct objPostfilter* myPostfilter, ID_TYPE deleteID);
 
 void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSources* mySeparatedSources, struct objPreprocessor* myPreprocessor, struct objPostfilteredSources* myPostfilteredSources);
+
+void postfilterAppendStream(struct objPostfilter* myPostfilter, FILE** filePtr);
 
 #endif

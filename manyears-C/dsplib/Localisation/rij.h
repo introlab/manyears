@@ -90,11 +90,11 @@
 #ifndef RIJ_H
 #define RIJ_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Geometry/microphones.h"
-#include "Localisation/delays.h"
-#include "Utilities/fft.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Localisation/delays.h"
+#include "../Utilities/fft.h"
 
 /*******************************************************************************
  * Structures                                                                  *

@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "Separation/separatedSources.h"
+#include "separatedSources.h"
 
 /*******************************************************************************
  * separatedSourcesInit                                                        *
@@ -226,6 +226,28 @@ float separatedSourcesGetFrameReal(struct objSeparatedSources *mySeparatedSource
 float separatedSourcesGetFrameImag(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex, unsigned int k)
 {
     return (mySeparatedSources->sourcesFramesImag[sourceIndex][k]);
+}
+
+float separatedSourcesGetFrameRealId(struct objSeparatedSources *mySeparatedSources, ID_TYPE id, unsigned int k)
+{
+
+    unsigned int sourceIndex;
+
+    sourceIndex = idListGetIndex(&mySeparatedSources->sourcesID, id);
+
+    return (mySeparatedSources->sourcesFramesReal[sourceIndex][k]);
+
+}
+
+float separatedSourcesGetFrameImagId(struct objSeparatedSources *mySeparatedSources, ID_TYPE id, unsigned int k)
+{
+
+    unsigned int sourceIndex;
+
+    sourceIndex = idListGetIndex(&mySeparatedSources->sourcesID, id);
+
+    return (mySeparatedSources->sourcesFramesImag[sourceIndex][k]);
+
 }
 
 /*******************************************************************************

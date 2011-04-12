@@ -355,12 +355,12 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                     // Probability that the source was active and is still active:
                     // P(Aj(t)|Aj(t-1))
-                    parametersStruct->P_FILTER_AJT_AJTM1 = 0.95f;
+                    parametersStruct->P_FILTER_AJT_AJTM1 = 0.7; //0.95f;
 
 
                     // Probability that the source was not active and becomes active:
                     // P(Aj(t)|¬Aj(t-1))
-                    parametersStruct->P_FILTER_AJT_NOTAJTM1 = 0.05f;
+                    parametersStruct->P_FILTER_AJT_NOTAJTM1 = 0.3; //0.05f;
 
 
                     // Probability that a source is not observed even if it exists:
@@ -390,7 +390,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
                 // +-----------------------------------------------------------+
 
                         // Threshold to reach in order to track a new source
-                        parametersStruct->P_MIXTURE_NEWTHRESHOLD = 0.3f;
+                        parametersStruct->P_MIXTURE_NEWTHRESHOLD = 0.5f; //0.7f;
 
                         // +---------------------------------------------------+
                         // | i. Confirm source exists                          |
@@ -414,7 +414,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
                 // +-----------------------------------------------------------+
 
                         // +---------------------------------------------------+
-                        // | i. Probabtion                                     |
+                        // | i. Probation                                      |
                         // +---------------------------------------------------+
 
                                 // Maximum number of frames while the source has not been tracked
@@ -423,7 +423,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Minimum value to consider to say that source is not observed for
                                 // probation time
-                                parametersStruct->P_MIXTURE_TOBSPROB = 0.5f;
+                                parametersStruct->P_MIXTURE_TOBSPROB = 0.95f; //0.5f;
 
                         // +---------------------------------------------------+
                         // | i. Level 1                                        |
@@ -431,7 +431,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Maximum number of frames while the source has not been tracked
                                 // in order to delete this tracking for time 1
-                                parametersStruct->P_MIXTURE_CUMULATIVETIME1 = 100;
+                                parametersStruct->P_MIXTURE_CUMULATIVETIME1 = 25;//100;
 
                                 // Minimum value to consider to say that source is not observed for
                                 // time 1
@@ -443,17 +443,17 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
 
                                 // Maximum number of frames while the source has not been tracked
                                 // in order to delete this tracking for time 2
-                                parametersStruct->P_MIXTURE_CUMULATIVETIME2 = 200;
+                                parametersStruct->P_MIXTURE_CUMULATIVETIME2 = 50;//200;
 
                                 // Minimum value to consider to say that source is not observed for
                                 // time 2
-                                parametersStruct->P_MIXTURE_TOBS2 = 0.7f;
+                                parametersStruct->P_MIXTURE_TOBS2 = 0.95f; //0.7f;
 
             // Adaptation rate (alphaD)
             parametersStruct->P_MICST_ALPHAD = 0.1f;
 
             // Reverberation decay (gamma)
-            parametersStruct->P_MICST_GAMMA = 0.1f;
+            parametersStruct->P_MICST_GAMMA = 0.3f; //0.1f;
 
             // Level of reverberation (delta)
             parametersStruct->P_MICST_DELTA = 1.0f;
@@ -507,8 +507,14 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
             // Delta: Signal-to-reverberation ratio
             parametersStruct->P_POSTFILTER_DELTA = 1.0f;
 
-            // Teta
-            parametersStruct->P_POSTFILTER_TETA = 0.56f;
+            // Teta: Local
+            parametersStruct->P_POSTFILTER_TETA_LOCAL = 0.01f;
+
+            // Teta: Global
+            parametersStruct->P_POSTFILTER_TETA_GLOBAL = 0.1f;
+
+            // Teta: Frame
+            parametersStruct->P_POSTFILTER_TETA_FRAME = 0.5f;
 
             // Alpha_zeta
             parametersStruct->P_POSTFILTER_ALPHAZETA = 0.3f;

@@ -90,11 +90,11 @@
 #ifndef POSTFILTEREDSOURCES_H
 #define POSTFILTEREDSOURCES_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Utilities/dynamicMemory.h"
-#include "Utilities/idList.h"
-#include "Utilities/idManager.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/idManager.h"
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *
@@ -144,6 +144,10 @@ ID_TYPE postfilteredSourcesGetID(struct objPostfilteredSources *myPostfilteredSo
 float postfilteredSourcesGetFrameReal(struct objPostfilteredSources *myPostfilteredSources, unsigned int sourceIndex, unsigned int k);
 
 float postfilteredSourcesGetFrameImag(struct objPostfilteredSources *myPostfilteredSources, unsigned int sourceIndex, unsigned int k);
+
+float postfilteredSourcesGetFrameRealId(struct objPostfilteredSources *myPostfilteredSources, ID_TYPE id, unsigned int k);
+
+float postfilteredSourcesGetFrameImagId(struct objPostfilteredSources *myPostfilteredSources, ID_TYPE id, unsigned int k);
 
 void postfilteredSourcesTerminate(struct objPostfilteredSources *myPostfilteredSources);
 

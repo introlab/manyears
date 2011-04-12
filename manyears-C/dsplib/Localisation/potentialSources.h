@@ -90,9 +90,9 @@
 #ifndef POTENTIALSOURCES_H
 #define POTENTIALSOURCES_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Utilities/dynamicMemory.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
 
 /*******************************************************************************
  * Structures                                                                  *

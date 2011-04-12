@@ -87,7 +87,7 @@
  *                                                                             *
  ******************************************************************************/
 
-#include "Separation/postfilteredSources.h"
+#include "postfilteredSources.h"
 
 /*******************************************************************************
  * postfilteredSourcesInit                                                     *
@@ -147,7 +147,7 @@ unsigned int postfilteredSourcesGetMaxNumberSources(struct objPostfilteredSource
 }
 
 /*******************************************************************************
- * postfilteredSourcesGetNumberSeparatedSources                                *
+ * postfilteredSourcesGetNumberPostfilteredSources                             *
  * --------------------------------------------------------------------------- *
  *                                                                             *
  * Inputs:      myPostfilteredSources                                          *
@@ -160,7 +160,7 @@ unsigned int postfilteredSourcesGetMaxNumberSources(struct objPostfilteredSource
  *                                                                             *
  ******************************************************************************/
 
-unsigned int postfilteredSourcesGetNumberSeparatedSources(struct objPostfilteredSources *myPostfilteredSources)
+unsigned int postfilteredSourcesGetNumberPostfilteredSources(struct objPostfilteredSources *myPostfilteredSources)
 {
     return (idListGetNElements(&myPostfilteredSources->sourcesID));
 }
@@ -228,6 +228,28 @@ float postfilteredSourcesGetFrameReal(struct objPostfilteredSources *myPostfilte
 float postfilteredSourcesGetFrameImag(struct objPostfilteredSources *myPostfilteredSources, unsigned int sourceIndex, unsigned int k)
 {
     return (myPostfilteredSources->sourcesFramesImag[sourceIndex][k]);
+}
+
+float postfilteredSourcesGetFrameRealId(struct objPostfilteredSources *myPostfilteredSources, ID_TYPE id, unsigned int k)
+{
+
+    unsigned int sourceIndex;
+
+    sourceIndex = idListGetIndex(&myPostfilteredSources->sourcesID, id);
+
+    return (myPostfilteredSources->sourcesFramesReal[sourceIndex][k]);
+
+}
+
+float postfilteredSourcesGetFrameImagId(struct objPostfilteredSources *myPostfilteredSources, ID_TYPE id, unsigned int k)
+{
+
+    unsigned int sourceIndex;
+
+    sourceIndex = idListGetIndex(&myPostfilteredSources->sourcesID, id);
+
+    return (myPostfilteredSources->sourcesFramesImag[sourceIndex][k]);
+
 }
 
 /*******************************************************************************

@@ -90,9 +90,9 @@
 #ifndef MICROPHONES_H
 #define MICROPHONES_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Utilities/dynamicMemory.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
 
 
 /*******************************************************************************

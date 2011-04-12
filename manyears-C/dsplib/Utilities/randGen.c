@@ -86,10 +86,12 @@
  *     (ICASSP), pp. 221-224, 2004.                                            *
  *                                                                             *
  ******************************************************************************/
-
+#include <stdio.h>
 #include <math.h>
 
-#include "Utilities/randGen.h"
+#include "randGen.h"
+
+unsigned int counter = 0;
 
 /*******************************************************************************
  * Compatibility issues                                                        *
@@ -177,19 +179,19 @@ void randInit(void)
 		do
 		{
 			
-			// Generate the point coordinates
-			x1 = 2.0f * randu() - 1.0f;
-			x2 = 2.0f * randu() - 1.0f;
+                    // Generate the point coordinates
+                    x1 = 2.0f * randu() - 1.0f;
+                    x2 = 2.0f * randu() - 1.0f;
 
-			// Get the radius squared
-			w = x1 * x1 + x2 * x2;
+                    // Get the radius squared
+                    w = x1 * x1 + x2 * x2;
 
 		} while (w >= 1.0);
 
 		// Apply equations
 		w = sqrtf( (-2.0f * logf( w ) ) / w );
-        y1 = x1 * w;
-        y2 = x2 * w;
+                y1 = x1 * w;
+                y2 = x2 * w;
 
 		// Store new random variables
 		normalDistribution[index] = y1;
@@ -224,6 +226,8 @@ float randu(void)
 	// Normalize
 	tmp /= 32768.0f;
 
+        counter++;
+
 	return  tmp;
 }
 
@@ -246,6 +250,8 @@ float randn(void)
 
 	// Select a random index
 	index = (unsigned int) (floor(randu() * RAND_NORMALSIZE));
+
+//        printf("%i\n",counter);
 
 	return (normalDistribution[index]);
 

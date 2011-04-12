@@ -92,16 +92,16 @@
 
 #include <math.h>
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Geometry/microphones.h"
-#include "Preprocessing/preprocessor.h"
-#include "Tracking/trackedSources.h"
-#include "Separation/separatedSources.h"
-#include "Utilities/dynamicMemory.h"
-#include "Utilities/idList.h"
-#include "Utilities/matrix.h"
-#include "Localisation/sphere.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Preprocessing/preprocessor.h"
+#include "../Tracking/trackedSources.h"
+#include "../Separation/separatedSources.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/matrix.h"
+#include "../Localisation/sphere.h"
 
 
 /*******************************************************************************

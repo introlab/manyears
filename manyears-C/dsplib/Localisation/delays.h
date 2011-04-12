@@ -92,9 +92,9 @@
 
 #include <math.h>
 
-#include "hardware.h"
-#include "Geometry/microphones.h"
-#include "Localisation/sphere.h"
+#include "../hardware.h"
+#include "../Geometry/microphones.h"
+#include "../Localisation/sphere.h"
 
 
 /*******************************************************************************

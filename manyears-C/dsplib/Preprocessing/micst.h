@@ -93,11 +93,11 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Preprocessing/mcra.h"
-#include "Utilities/dynamicMemory.h"
-#include "Utilities/fft.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Preprocessing/mcra.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/fft.h"
 
 /*******************************************************************************
  * Structures                                                                  *

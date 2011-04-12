@@ -94,12 +94,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Geometry/microphones.h"
-#include "Preprocessing/micst.h"
-#include "Utilities/fft.h"
-#include "Utilities/window.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Preprocessing/micst.h"
+#include "../Utilities/fft.h"
+#include "../Utilities/window.h"
 
 /*******************************************************************************
  * Structures                                                                  *

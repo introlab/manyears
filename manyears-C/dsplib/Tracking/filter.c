@@ -91,7 +91,13 @@
 #include <xmmintrin.h>
 #endif
 
+#include <stdio.h>
+
 #include "Tracking/filter.h"
+
+// ---
+unsigned int resamplingCounter = 0;
+// ---
 
 /*******************************************************************************
  * filterInit                                                                  *
@@ -256,8 +262,6 @@ void filterInit(struct objFilter *myFilter, struct ParametersStruct *myParameter
         myFilter->aExc = (float) (exp(-1.0 * myFilter->FILTER_ALPHAEXC * myFilter->FILTER_DELTAT));
         myFilter->bExc = (float) (myFilter->FILTER_BETAEXC * sqrt((1.0 - (myFilter->aExc * myFilter->aExc))));
 
-
-
 }
 
 /*******************************************************************************
@@ -286,6 +290,10 @@ void filterActivate(struct objFilter *myFilter, float positionX, float positionY
 
     // Index to loop for each frame in the buffer
     unsigned int indexBuffer;
+
+    // ---
+    //printf("Position - x: %f y: %f z: %f\n", positionX, positionY, positionZ);
+    // ---
 
     /***************************************************************************
     * Step 1: Initialize particles                                             *
@@ -1759,8 +1767,27 @@ unsigned char filterResampleIfNeeded(struct objFilter *myFilter)
     * Step 2: Check if there is a need to resample; if so, do it               *
     ***************************************************************************/
 
+//    printf("x: %f y:%f z:%f\n", myFilter->position[0][0],myFilter->position[0][1],myFilter->position[0][2]);
+//    printf("%f-",myFilter->weight[0]);
+//    printf("%f-",myFilter->weight[1]);
+//    printf("%f-",myFilter->weight[2]);
+//    printf("%f-",myFilter->weight[3]);
+//    printf("%f-",myFilter->weight[4]);
+//    printf("%f-",myFilter->weight[5]);
+//    printf("%f-",myFilter->weight[6]);
+//    printf("%f-",myFilter->weight[7]);
+//    printf("%f-",myFilter->weight[8]);
+//    printf("%f-",myFilter->weight[9]);
+//
+//    printf("\n\n");
+
     if (Neff < myFilter->FILTER_RSNMIN)
     {
+
+        // ---
+//        resamplingCounter++;
+//        printf("%i\n",resamplingCounter);
+        // ---
 
         filterResample(myFilter);
 

@@ -90,11 +90,11 @@
 #ifndef SEPARATEDSOURCES_H
 #define SEPARATEDSOURCES_H
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Utilities/dynamicMemory.h"
-#include "Utilities/idList.h"
-#include "Utilities/idManager.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Utilities/dynamicMemory.h"
+#include "../Utilities/idList.h"
+#include "../Utilities/idManager.h"
 
 /*******************************************************************************
  * Types (Do not edit)                                                         *
@@ -144,6 +144,10 @@ ID_TYPE separatedSourcesGetID(struct objSeparatedSources *mySeparatedSources, un
 float separatedSourcesGetFrameReal(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex, unsigned int k);
 
 float separatedSourcesGetFrameImag(struct objSeparatedSources *mySeparatedSources, unsigned int sourceIndex, unsigned int k);
+
+float separatedSourcesGetFrameRealId(struct objSeparatedSources *mySeparatedSources, ID_TYPE id, unsigned int k);
+
+float separatedSourcesGetFrameImagId(struct objSeparatedSources *mySeparatedSources, ID_TYPE id, unsigned int k);
 
 void separatedSourcesTerminate(struct objSeparatedSources *mySeparatedSources);
 

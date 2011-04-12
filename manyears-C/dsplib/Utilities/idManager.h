@@ -91,8 +91,8 @@
 #define IDMANAGER_H
 
 #include <stdio.h>
-#include "hardware.h"
-#include "Utilities/dynamicMemory.h"
+#include "../hardware.h"
+#include "../Utilities/dynamicMemory.h"
 
 
 /*******************************************************************************

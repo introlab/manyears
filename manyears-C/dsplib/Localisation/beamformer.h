@@ -92,14 +92,14 @@
 
 #include <math.h>
 
-#include "hardware.h"
-#include "parameters.h"
-#include "Geometry/microphones.h"
-#include "Localisation/delays.h"
-#include "Localisation/potentialSources.h"
-#include "Localisation/rij.h"
-#include "Localisation/sphere.h"
-#include "Preprocessing/preprocessor.h"
+#include "../hardware.h"
+#include "../parameters.h"
+#include "../Geometry/microphones.h"
+#include "../Localisation/delays.h"
+#include "../Localisation/potentialSources.h"
+#include "../Localisation/rij.h"
+#include "../Localisation/sphere.h"
+#include "../Preprocessing/preprocessor.h"
 
 /*******************************************************************************
  * Structures                                                                  *

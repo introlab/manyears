@@ -14,7 +14,7 @@
 #ifndef MATHADVANCED_H
 #define MATHADVANCED_H
 
-#include "hardware.h"
+#include "../hardware.h"
 
 /*******************************************************************************
  * INLINE_PREFIX functions                                                            *

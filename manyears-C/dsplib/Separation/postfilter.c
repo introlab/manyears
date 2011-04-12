@@ -122,7 +122,9 @@ void postfilterInit(struct objPostfilter* myPostfilter, struct ParametersStruct*
     myPostfilter->POSTFILTER_NFRAMES = GLOBAL_FRAMESIZE;
     myPostfilter->POSTFILTER_HALFNFRAMES = myPostfilter->POSTFILTER_NFRAMES / 2;
     myPostfilter->POSTFILTER_HALFNFRAMESPLUSONE = myPostfilter->POSTFILTER_HALFNFRAMES + 1;
-    myPostfilter->POSTFILTER_TETA = myParameters->P_POSTFILTER_TETA;
+    myPostfilter->POSTFILTER_TETA_LOCAL = myParameters->P_POSTFILTER_TETA_LOCAL;
+    myPostfilter->POSTFILTER_TETA_GLOBAL = myParameters->P_POSTFILTER_TETA_GLOBAL;
+    myPostfilter->POSTFILTER_TETA_FRAME = myParameters->P_POSTFILTER_TETA_FRAME;
     myPostfilter->POSTFILTER_ALPHAZETA = myParameters->P_POSTFILTER_ALPHAZETA;
     myPostfilter->POSTFILTER_MAXQ = myParameters->P_POSTFILTER_MAXQ;
     myPostfilter->POSTFILTER_GMIN = myParameters->P_POSTFILTER_GMIN;
@@ -1113,8 +1115,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
             {
 
                 // Update: lambda_rev(k,l) = gamma * lambda_rev(k,l-1) + ((1-gamma)/delta) * |Si(k,l-1)|^2
+//                myPostfilter->lambdaRev[indexSource][k] = myPostfilter->POSTFILTER_GAMMA * myPostfilter->lambdaRev[indexSource][k] +
+//                                                          ((1.0f - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][k]);
                 myPostfilter->lambdaRev[indexSource][k] = myPostfilter->POSTFILTER_GAMMA * myPostfilter->lambdaRev[indexSource][k] +
-                                                          ((1.0f - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][k]);
+                                                          ((1.0f - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->YPower[indexSource][k]);
 
             }
 
@@ -1138,7 +1142,8 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 // Update: lambda_rev(k,l) = gamma * lambda_rev(k,l-1) + ((1-gamma)/delta) * |Si(k,l-1)|^2
 
                 regC.m128 = _mm_load_ps(&myPostfilter->lambdaRev[indexSource][k]);
-                regD.m128 = _mm_load_ps(&myPostfilter->SPower[indexSource][k]);
+                //regD.m128 = _mm_load_ps(&myPostfilter->SPower[indexSource][k]);
+                regD.m128 = _mm_load_ps(&myPostfilter->YPower[indexSource][k]);
                 regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
                 regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
                 regG.m128 = _mm_add_ps(regE.m128,regF.m128);
@@ -1147,8 +1152,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
             }
 
             // Update: lambda_rev(k,l) = gamma * lambda_rev(k,l-1) + ((1-gamma)/delta) * |Si(k,l-1)|^2
+//            myPostfilter->lambdaRev[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = myPostfilter->POSTFILTER_GAMMA * myPostfilter->lambdaRev[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] +
+//                                                                                         ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES]);
             myPostfilter->lambdaRev[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = myPostfilter->POSTFILTER_GAMMA * myPostfilter->lambdaRev[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] +
-                                                                                         ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->SPower[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES]);
+                                                                                         ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA) * (myPostfilter->YPower[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES]);
 
 #endif
 
@@ -1804,7 +1811,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 // P_local(k,l) = 1 / (1 + ( teta / zeta_local(k,l) ) ^ 2)
                                 //              = (zeta_local(k,l))^2 / ( (zeta_local(k,l))^2 + teta^2 )
                                 tmp = myPostfilter->localZeta[indexSource][k] * myPostfilter->localZeta[indexSource][k];
-                                myPostfilter->localP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                                myPostfilter->localP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL);
                             }
 
 #else
@@ -1816,10 +1823,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             regA.m128_f32[3] = 1.0;
 
                             // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
+                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
+                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
+                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
+                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
@@ -1845,7 +1852,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             // P_local(k,l) = 1 / (1 + ( teta / zeta_local(k,l) ) ^ 2)
                             //              = (zeta_local(k,l))^2 / ( (zeta_local(k,l))^2 + teta^2 )
                             tmp = myPostfilter->localZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->localZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->localP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                            myPostfilter->localP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL);
 
 #endif
 
@@ -1860,7 +1867,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 // P_global(k,l) = 1 / (1 + ( teta / zeta_global(k,l) ) ^ 2)
                                 //               = (zeta_global(k,l))^2 / ( (zeta_global(k,l))^2 + teta^2 )
                                 tmp = myPostfilter->globalZeta[indexSource][k] * myPostfilter->globalZeta[indexSource][k];
-                                myPostfilter->globalP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                                myPostfilter->globalP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL);
                             }
 
 #else
@@ -1873,10 +1880,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             regA.m128_f32[3] = 1.0;
 
                             // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
+                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
+                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
+                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
+                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
@@ -1902,7 +1909,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             // P_global(k,l) = 1 / (1 + ( teta / zeta_global(k,l) ) ^ 2)
                             //               = (zeta_global(k,l))^2 / ( (zeta_global(k,l))^2 + teta^2 )
                             tmp = myPostfilter->globalZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->globalZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->globalP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                            myPostfilter->globalP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL);
 
 #endif
 
@@ -1918,7 +1925,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 // P_frame(k,l) = 1 / (1 + ( teta / zeta_frame(k,l) ) ^ 2)
                                 //              = (zeta_frame(k,l))^2 / ( (zeta_frame(k,l))^2 + teta^2 )
                                 tmp = myPostfilter->frameZeta[indexSource][k] * myPostfilter->frameZeta[indexSource][k];
-                                myPostfilter->frameP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                                myPostfilter->frameP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME);
                             }
 
 #else
@@ -1931,10 +1938,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             regA.m128_f32[3] = 1.0;
 
                             // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA;
+                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
+                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
+                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
+                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
@@ -1960,7 +1967,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             // P_frame(k,l) = 1 / (1 + ( teta / zeta_frame(k,l) ) ^ 2)
                             //              = (zeta_frame(k,l))^2 / ( (zeta_frame(k,l))^2 + teta^2 )
                             tmp = myPostfilter->frameZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->frameZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->frameP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA * myPostfilter->POSTFILTER_TETA);
+                            myPostfilter->frameP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME);
 
 #endif
 
@@ -2134,5 +2141,357 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
             }
 
         }
+
+}
+
+void postfilterAppendStream(struct objPostfilter* myPostfilter, FILE** filePtr)
+{
+
+    unsigned int indexSource;
+    unsigned int indexSample;
+
+    // +-------------------------------------------------------------------+
+    // | Parameters                                                        |
+    // +-------------------------------------------------------------------+
+
+        // +---------------------------------------------------------------+
+        // | General                                                       |
+        // +---------------------------------------------------------------+
+
+        // Maximum number of separated sources
+        fwrite(&myPostfilter->POSTFILTER_NBSOURCES, 1, sizeof(unsigned int), *filePtr);
+
+        // Number of samples per frame
+        fwrite(&myPostfilter->POSTFILTER_NFRAMES, 1, sizeof(unsigned int), *filePtr);
+
+        // Half the number of samples per frame
+        fwrite(&myPostfilter->POSTFILTER_HALFNFRAMES, 1, sizeof(unsigned int), *filePtr);
+
+        // Half the number of samples per frame plus one
+        fwrite(&myPostfilter->POSTFILTER_HALFNFRAMESPLUSONE, 1, sizeof(unsigned int), *filePtr);
+
+        // +---------------------------------------------------------------+
+        // | Noise                                                         |
+        // +---------------------------------------------------------------+
+
+            // +-----------------------------------------------------------+
+            // | Leakage                                                   |
+            // +-----------------------------------------------------------+
+
+            // AlphaS: smoothing
+            fwrite(&myPostfilter->POSTFILTER_ALPHAS, 1, sizeof(float), *filePtr);
+
+            // Eta: reducing factor
+            fwrite(&myPostfilter->POSTFILTER_ETA, 1, sizeof(float), *filePtr);
+
+            // +-----------------------------------------------------------+
+            // | Reverberation                                             |
+            // +-----------------------------------------------------------+
+
+            // Gamma: Reverberation time
+            fwrite(&myPostfilter->POSTFILTER_GAMMA, 1, sizeof(float), *filePtr);
+
+            // Delta: Signal-to-reverberation ratio
+            fwrite(&myPostfilter->POSTFILTER_DELTA, 1, sizeof(float), *filePtr);
+
+        // +---------------------------------------------------------------+
+        // | Speech presence                                               |
+        // +---------------------------------------------------------------+
+
+        // AlphapMin
+        fwrite(&myPostfilter->POSTFILTER_ALPHAPMIN, 1, sizeof(float), *filePtr);
+
+        // +---------------------------------------------------------------+
+        // | Speech presence gain                                          |
+        // +---------------------------------------------------------------+
+
+        // Teta
+        fwrite(&myPostfilter->POSTFILTER_TETA_LOCAL, 1, sizeof(float), *filePtr);
+        fwrite(&myPostfilter->POSTFILTER_TETA_GLOBAL, 1, sizeof(float), *filePtr);
+        fwrite(&myPostfilter->POSTFILTER_TETA_FRAME, 1, sizeof(float), *filePtr);
+
+        // Alpha_zeta
+        fwrite(&myPostfilter->POSTFILTER_ALPHAZETA, 1, sizeof(float), *filePtr);
+
+        // Maximum a priori probability of speech absence
+        fwrite(&myPostfilter->POSTFILTER_MAXQ, 1, sizeof(float), *filePtr);
+
+        // Minimum gain allowed when speech is absent
+        fwrite(&myPostfilter->POSTFILTER_GMIN, 1, sizeof(float), *filePtr);
+
+        // Size of the local window
+        fwrite(&myPostfilter->POSTFILTER_LOCALWINDOWSIZE, 1, sizeof(unsigned int), *filePtr);
+
+
+        // Size of the global window
+        fwrite(&myPostfilter->POSTFILTER_GLOBALWINDOWSIZE, 1, sizeof(unsigned int), *filePtr);
+
+        // Size of the frame window
+        fwrite(&myPostfilter->POSTFILTER_FRAMEWINDOWSIZE, 1, sizeof(int), *filePtr);
+
+    // +-------------------------------------------------------------------+
+    // | Variables                                                         |
+    // +-------------------------------------------------------------------+
+
+        // +---------------------------------------------------------------+
+        // | Sources                                                       |
+        // +---------------------------------------------------------------+
+
+            // Separated sources
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->YReal[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->YImag[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->YPower[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // Filtered sources
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->SReal[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->SImag[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->SPower[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                fwrite(&myPostfilter->sourcesID[indexSource], 1, sizeof(ID_TYPE), *filePtr);
+            }
+
+        // +---------------------------------------------------------------+
+        // | Noise                                                         |
+        // +---------------------------------------------------------------+
+
+            // +-----------------------------------------------------------+
+            // | Static                                                    |
+            // +-----------------------------------------------------------+
+
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->lambdaStat[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // +-----------------------------------------------------------+
+            // | Leakage                                                   |
+            // +-----------------------------------------------------------+
+
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->Z[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->lambdaLeak[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // +-----------------------------------------------------------+
+            // | Reverberation                                             |
+            // +-----------------------------------------------------------+
+
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->lambdaRev[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // +-----------------------------------------------------------+
+            // | Total                                                     |
+            // +-----------------------------------------------------------+
+
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->lambda[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+        // +---------------------------------------------------------------+
+        // | Speech presence gain                                          |
+        // +---------------------------------------------------------------+
+
+            // gamma(k,l)
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->gamma[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // xi(k,l)
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->xi[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // alphaP(k,l)
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->alphaP[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // v(k,l)
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->v[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // G_H1(k,l)
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->GH1[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+        // +---------------------------------------------------------------+
+        // | Speech presence uncertainty                                   |
+        // +---------------------------------------------------------------+
+
+            // +-----------------------------------------------------------+
+            // | A priori SNR                                              |
+            // +-----------------------------------------------------------+
+
+            // Local
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->localZeta[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // Global
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->globalZeta[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // Frame
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->frameZeta[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // +-----------------------------------------------------------+
+            // | Speech presence probabilities                             |
+            // +-----------------------------------------------------------+
+
+            // Local
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->localP[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // Global
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->globalP[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // Frame
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->frameP[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // A priori probability of speech presence
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->p[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // A priori probability of speech absence
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->q[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
+
+            // +-----------------------------------------------------------+
+            // | Gain                                                      |
+            // +-----------------------------------------------------------+
+
+            // Gain
+            for (indexSource = 0; indexSource < myPostfilter->POSTFILTER_NBSOURCES; indexSource++)
+            {
+                for (indexSample = 0; indexSample < myPostfilter->POSTFILTER_NFRAMES; indexSample++)
+                {
+                    fwrite(&myPostfilter->G[indexSource][indexSample], 1, sizeof(float), *filePtr);
+                }
+            }
 
 }
