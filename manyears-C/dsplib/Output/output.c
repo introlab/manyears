@@ -164,8 +164,10 @@ void outputInit(struct objOutput* myOutput, struct ParametersStruct* myParameter
         if (myPathSeparationWave != NULL)
         {
 
-            lenPathSeparation = strlen(myPathSeparationWave);
-            myOutput->pathSeparation = (char*) newTable1D(lenPathSeparation + strlen(temp) + 1, sizeof(char));
+            //lenPathSeparation = strlen(myPathSeparationWave);
+            //myOutput->pathSeparation = (char*) newTable1D(lenPathSeparation + strlen(temp) + 1, sizeof(char));
+            lenPathSeparation = strlen(myPathSeparationWave) + strlen(temp);
+            myOutput->pathSeparation = (char*) newTable1D(lenPathSeparation + 1, sizeof(char));
             strcpy(myOutput->pathSeparation, myPathSeparationWave);
             strcat(myOutput->pathSeparation, temp);
             myOutput->deleteSeparated = 1;
