@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.6)
 ########################
 SET(CPACK_PACKAGE_VERSION_MAJOR "1")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
-SET(CPACK_PACKAGE_VERSION_PATCH "0")
+SET(CPACK_PACKAGE_VERSION_PATCH "1")
 SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 
 
@@ -92,8 +92,9 @@ SET(QT_USE_QTOPENGL TRUE)
 
 find_package(Qt4 QUIET)
 if(QT4_FOUND)
-	MESSAGE("WARNING : manyears GUI will not be compiled because Qt4 not found")
 	include(${QT_USE_FILE})
+else(QT4_FOUND)
+    MESSAGE("WARNING : manyears GUI will not be compiled because Qt4 not found")
 endif(QT4_FOUND)
 
 #Files excluded from package
