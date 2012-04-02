@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 2.6)
 ########################
 SET(CPACK_PACKAGE_VERSION_MAJOR "1")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
-SET(CPACK_PACKAGE_VERSION_PATCH "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "2")
 SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH})
 
 
@@ -15,7 +15,7 @@ SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION
 #set(CMAKE_OSX_ARCHITECTURES "i386")
 
 #SET THE BUILD TYPE HERE, Release, Debug
-SET(CMAKE_BUILD_TYPE Debug)
+SET(CMAKE_BUILD_TYPE Release)
 
 #Here we are assuming SSE3 support
 IF (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
@@ -115,6 +115,8 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/QtCore4.dll"
 	    "${QT_BINARY_DIR}/QtDesigner4.dll"
 	    "${QT_BINARY_DIR}/QtDesignerComponents4.dll"
+            "${QT_BINARY_DIR}/QtCLucene4.dll"
+            "${QT_BINARY_DIR}/QtScriptTools4.dll"
 	    "${QT_BINARY_DIR}/QtGui4.dll"
 	    "${QT_BINARY_DIR}/QtHelp4.dll"
 	    "${QT_BINARY_DIR}/QtNetwork4.dll"
@@ -125,7 +127,11 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/QtTest4.dll"
 	    "${QT_BINARY_DIR}/QtWebKit4.dll"
 	    "${QT_BINARY_DIR}/QtXml4.dll"
-    )
+            "${QT_BINARY_DIR}/QtXmlPatterns4.dll"
+            "${QT_BINARY_DIR}/QtDeclarative4.dll"
+            "${QT_BINARY_DIR}/QtMultimedia4.dll"
+            "${QT_BINARY_DIR}/phonon4.dll"
+)
 
 	IF(MINGW)
 		SET (QT_DLL ${QT_DLL}
