@@ -98,8 +98,7 @@ public:
 #endif
         m_window->raise();
 
-        //Install handlers
-        qInstallMsgHandler(ManyEarsMsgHandler);
+        
     }
 
 
@@ -192,6 +191,9 @@ int main(int argc, char *argv[])
     MDIWindow* mainWindow;
 
     mainWindow = new MDIWindow();
+
+    //Install handlers
+    qInstallMsgHandler(ManyEarsMsgHandler);
 
     return a.exec();
 
