@@ -1262,7 +1262,16 @@ QVector<QString> InputOutputManager::getListSoundcards()
 
       if ( info.probed == true )
       {
-          rtnStrings.push_back(QString(info.name.c_str()));
+
+          if (info.inputChannels >=  this->getNumberChannels())
+          {
+              qDebug("Adding compatible card : %s",info.name.c_str());
+              rtnStrings.push_back(QString(info.name.c_str()));
+          }
+          else
+          {
+              qDebug() << "Rejecting device (not enough input channels) : " << QString(info.name.c_str()) + " nbInputChannels : " + QString::number(info.inputChannels);
+          }
       }
 
     }
@@ -1295,7 +1304,12 @@ void InputOutputManager::openStream()
 
             // Parameters for the stream
             RtAudio::StreamParameters audioParameters;
+
+
+            //DL Index modified to fit compatible sound cards...
             audioParameters.deviceId = this->soundcardIndex;
+
+
             audioParameters.firstChannel = 0;
             audioParameters.nChannels = this->getNumberChannels();
 
@@ -1313,7 +1327,7 @@ void InputOutputManager::openStream()
             }
             catch ( RtError& e )
             {
-                // Error
+                qDebug("RtError : %s",e.what());
             }
 
         }
@@ -1464,8 +1478,19 @@ void InputOutputManager::startStream()
 
         if (this->fromSoundCard == true)
         {
-            this->rtaudio->startStream();
-            this->streamIsRunning = true;
+            qDebug("Start stream from sound card");
+
+
+            if (rtaudio->isStreamOpen())
+            {
+                this->rtaudio->startStream();
+                this->streamIsRunning = true;
+            }
+            else
+            {
+                qDebug("Stream is not opened, cannot start.");
+
+            }
         }
 
         // +-----------------------------------------------+
@@ -1594,9 +1619,19 @@ void InputOutputManager::okPushButtonClicked()
         {
             this->projFromSoundCard = true;
             this->projFromFile = false;
-            this->projSoundcardIndex = this->listSoundCard->currentRow();
 
-            inputIsValid = true;
+            //this->projSoundcardIndex = this->listSoundCard->currentRow();
+            //DL - Get the adequate RtAudio index device
+
+            for (unsigned int i = 0; i < rtaudio->getDeviceCount(); i++)
+            {
+                if (this->listSoundCard->item(this->listSoundCard->currentRow())->text() == QString(rtaudio->getDeviceInfo(i).name.c_str()) )
+                {
+                    this->projSoundcardIndex = i;
+                    inputIsValid = true;
+                    break;
+                }
+            }    
         }
     }
 
@@ -1790,11 +1825,17 @@ void InputOutputManager::fileCallBack()
 
 int rtAudioCallBack(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void* inputOutputManager)
 {
-
-    // Call the general callback
-    InputOutputManager* inputOutputManagerPtr = reinterpret_cast<InputOutputManager*>(inputOutputManager);
-    inputOutputManagerPtr->streamCallBack((signed short*) inputBuffer);
-
+    
+    if (nBufferFrames != INPUT_HOPSIZE)
+    {
+        qDebug("Received  nBufferFrames %i outputBuffer=%p, inputBuffer=%p streamTime=%f",nBufferFrames,outputBuffer,inputBuffer,streamTime);
+    }
+    else
+    {
+        // Call the general callback
+        InputOutputManager* inputOutputManagerPtr = reinterpret_cast<InputOutputManager*>(inputOutputManager);
+        inputOutputManagerPtr->streamCallBack((signed short*) inputBuffer);
+    }
     return 0;
 
 }
@@ -1835,3 +1876,4 @@ EndOfStreamEvent& EndOfStreamEvent::operator=(const EndOfStreamEvent& _endOfStre
 	(*this) = _endOfStreamEvent;
 	return *this;
 }
+

@@ -48,7 +48,7 @@ extern "C" {
 }
 #endif
 
-//#define SHOW_DEBUG
+#define SHOW_DEBUG
 
 //#define TEST_RTAUDIO
 
@@ -108,6 +108,9 @@ public:
 
         QString currentText =  m_edit->toPlainText() +  message;
         m_edit->setText(currentText.right(1000));
+
+
+
         //QTextCursor c =  m_edit->textCursor();
         //c.movePosition(QTextCursor::End);
         //m_edit->setTextCursor(c);
@@ -129,6 +132,13 @@ public:
         return QApplication::event(event);
     }
 
+    virtual bool notify ( QObject * receiver, QEvent * e )
+    {
+        
+        //qDebug("got event type: %i",e->type());
+        return QApplication::notify(receiver,e);
+    }
+    
 
     ~ManyEarsApp()
     {
