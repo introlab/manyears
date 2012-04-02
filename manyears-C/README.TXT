@@ -10,9 +10,25 @@ Author: Francois Grondin
 Original Code: Jean-Marc Valin                                              
 Modified Code: Simon Briere                                                 
 Support : Dominic Letourneau
-Version: 1.1.0                                                              
-Date: July 1st, 2010                                                        
-                                
+Version: 1.1.2                                                             
+Date: 02/04 2012                                                        
+           
+CHANGES
+-------
+
+1.1.2
+-----
+* Updated RTAudio
+* Added debug Window
+* Displaying only supported sound card in sound card selection GUI
+* Avoid crashing when the driver does not send us the required data size
+
+
+1.1.0
+-----
+Initial release.
+
+                     
 LICENSE                                                                     
 -------
 
