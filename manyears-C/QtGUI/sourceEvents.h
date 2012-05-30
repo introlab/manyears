@@ -3,6 +3,7 @@
 
 #include <QEvent>
 #include <QList>
+#include <QVector>
 
 // XxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxX
 // x                                                           x
@@ -378,6 +379,49 @@ public:
     // +-------------------------------------------------------+
 
     QList<TrackedSource> list;
+
+};
+
+
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+// % Separated source                                          %
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+class SeparatedSourceEvent: public QEvent
+{
+
+public:
+
+    /***********************************************************
+    * Constructor                                              *
+    ***********************************************************/
+
+    SeparatedSourceEvent(const QVector<short> &data);
+
+    SeparatedSourceEvent();
+
+    SeparatedSourceEvent(const SeparatedSourceEvent &e);
+
+    /***********************************************************
+    * Destructor                                               *
+    ***********************************************************/
+
+    ~SeparatedSourceEvent();
+
+    /***********************************************************
+    * Operators                                                *
+    ***********************************************************/
+
+    // +-------------------------------------------------------+
+    // | Equal                                                 |
+    // +-------------------------------------------------------+
+
+    SeparatedSourceEvent& operator=(const SeparatedSourceEvent& _separatedSourceEvent);
+
+
+
+    QVector<short> m_data;
 
 };
 

@@ -133,6 +133,8 @@ public:
     const unsigned int getSampleRate();
     const unsigned int getNumberChannels();
 
+    RtAudio* getRtAudio() {return rtaudio;}
+
 private:
 
     /***********************************************************

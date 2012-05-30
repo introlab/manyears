@@ -219,6 +219,16 @@ MDIWindow::MDIWindow()
         this->mdiArea->addSubWindow(this->windowTrackedSphere);
         this->windowTrackedSphere->hide();
 
+        ///Stream Output Window Begin
+        windowStreamOutput = new MdiSubWindow(this);
+        windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
+        windowStreamOutput->setWindowTitle("Stream Output Control");
+        windowStreamOutput->setGeometry(subWindowWidth,subWindowHeight*2,subWindowWidth,subWindowHeight);
+        mdiArea->addSubWindow(windowStreamOutput);
+        windowStreamOutput->show();
+        //Stream Output Window End
+
+
         QObject::connect(this->dockConfigSystem, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_system_changes()));
         QObject::connect(this->dockConfigView, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_view_changes()));
         QObject::connect(this->windowPotentialLatitude, SIGNAL(windowIsHidden()), this, SLOT(window_potential_latitude_changes()));
@@ -270,6 +280,8 @@ MDIWindow::MDIWindow()
 
         runningThread->pushPotentialSourceEventReceiver(this->potentialSourcesManager);
         runningThread->pushTrackedSourceEventReceiver(this->trackedSourcesManager);
+        runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
+
 
         // Input/Output Manager -> Main Window
         this->inputOutputManager->pushEventReceiver(this);
@@ -631,6 +643,7 @@ void MDIWindow::startup_showMain()
 
     this->splashScreen->close();
     this->show();
-    this->inputOutputManager->askUser(true);
+    //We do not need a valid selection at startup...
+    this->inputOutputManager->askUser(false);
 
 }

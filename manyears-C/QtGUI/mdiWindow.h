@@ -21,6 +21,7 @@
 #include "mdiSubWindow.h"
 #include "aboutDialog.h"
 #include "coreThread.h"
+#include "StreamOutputWidget.h"
 
 class MDIWindow: public QMainWindow
 {
@@ -188,6 +189,7 @@ private:
         MdiSubWindow* windowTrackedLatitude;
         MdiSubWindow* windowTrackedLongitude;
         MdiSubWindow* windowTrackedSphere;
+        MdiSubWindow* windowStreamOutput;
 
         // +---------------------------------------------------+
         // | Dialogs                                           |

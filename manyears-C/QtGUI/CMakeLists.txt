@@ -10,6 +10,7 @@ SET(QT_USE_QTSVG TRUE)
 SET(QT_USE_QTXML TRUE)
 SET(QT_USE_QTSCRIPT TRUE)
 SET(QT_USE_QTOPENGL TRUE)
+SET(QT_USE_QTMULTIMEDIA TRUE)
 
 find_package(Qt4 REQUIRED)
 find_package(OpenGL REQUIRED)
@@ -35,6 +36,7 @@ SET(ManyEars_SRCS
     inputOutputManager.cpp
     coreThread.cpp
     sourceEvents.cpp
+    StreamOutputWidget.cpp
 )
 
 SET(ManyEars_HEADERS 
@@ -54,10 +56,11 @@ SET(ManyEars_HEADERS
     inputOutputManager.h
     coreThread.h
     sourceEvents.h
+    StreamOutputWidget.h
 )
 
 SET(ManyEars_UIS
-
+    StreamOutputWidget.ui
 )
 
 SET(qrc 
@@ -80,10 +83,11 @@ QT4_WRAP_CPP(ManyEars_MOC_SRCS ${ManyEars_HEADERS})
 
 #Include directories
 INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
-					${OPENGL_INCLUDE_DIR}
+                    ${OPENGL_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/
                     ${PROJECT_SOURCE_DIR}/dsplib
                     ${PROJECT_SOURCE_DIR}/RTAudio
+                    ${CMAKE_CURRENT_BINARY_DIR}
                     )
 
 #include files

@@ -135,8 +135,8 @@ IF (WIN32)
 
 	IF(MINGW)
 		SET (QT_DLL ${QT_DLL}
-		"${QT_BINARY_DIR}/mingwm10.dll"
-        "${QT_BINARY_DIR}/libgcc_s_dw2-1.dll"
+                "C:/QtSDK/mingw/bin/mingwm10.dll"
+                "C:/QtSDK/mingw/bin/libgcc_s_dw2-1.dll"
 		)
 	ENDIF(MINGW)
 	

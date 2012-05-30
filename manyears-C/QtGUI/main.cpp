@@ -48,8 +48,7 @@ extern "C" {
 }
 #endif
 
-#define SHOW_DEBUG
-
+//#define SHOW_DEBUG
 //#define TEST_RTAUDIO
 
 int myCallBack(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *manager)
@@ -192,8 +191,12 @@ int main(int argc, char *argv[])
 
     mainWindow = new MDIWindow();
 
+#ifdef SHOW_DEBUG
+
     //Install handlers
     qInstallMsgHandler(ManyEarsMsgHandler);
+
+#endif
 
     return a.exec();
 

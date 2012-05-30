@@ -94,6 +94,12 @@ public:
 
     void pushTrackedSourceEventReceiver(QObject* _eventReceiver);
 
+    // +-------------------------------------------------------+
+    // | Separated sources                                     |
+    // +-------------------------------------------------------+
+    void pushSeparatedSourceEventReceiver(QObject* _eventReceiver);
+
+
 protected:
 
     /***********************************************************
@@ -120,6 +126,9 @@ private:
 
     void stopIsDone();
 
+    //DL Added 10-05-2012
+    void singleStreamSeparation();
+
     /***********************************************************
     * Fields                                                   *
     ***********************************************************/
@@ -143,6 +152,7 @@ private:
 
     QList<QObject*> receiverPotentialSources;
     QList<QObject*> receiverTrackedSources;
+    QList<QObject*> receiverSeparatedSources;
 
     // +-------------------------------------------------------+
     // | Mutex/Semaphores                                      |

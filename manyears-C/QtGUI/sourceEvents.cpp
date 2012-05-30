@@ -535,3 +535,38 @@ void TrackedSourceEvent::pushSource(TrackedSource _source)
 
 }
 
+
+
+
+SeparatedSourceEvent::SeparatedSourceEvent(const QVector<short> &data)
+    : QEvent(QEvent::User), m_data(data)
+{
+
+}
+
+
+SeparatedSourceEvent::SeparatedSourceEvent()
+    : QEvent(QEvent::User)
+{
+    //Empty data
+}
+
+SeparatedSourceEvent::SeparatedSourceEvent(const SeparatedSourceEvent &e)
+    : QEvent(QEvent::User), m_data(e.m_data)
+{
+
+}
+
+SeparatedSourceEvent::~SeparatedSourceEvent()
+{
+    //Nothing to do
+}
+
+
+
+SeparatedSourceEvent& SeparatedSourceEvent::operator=(const SeparatedSourceEvent& _separatedSourceEvent)
+{
+    m_data = _separatedSourceEvent.m_data;
+}
+
+

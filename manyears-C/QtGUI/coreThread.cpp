@@ -1,4 +1,5 @@
 #include "coreThread.h"
+#include <QVector>
 
 /***********************************************************
 * Constructor                                              *
@@ -86,6 +87,16 @@ void CoreThread::pushTrackedSourceEventReceiver(QObject* _eventReceiver)
 }
 
 // +-------------------------------------------------------+
+// | Separated sources                                     |
+// +-------------------------------------------------------+
+void CoreThread::pushSeparatedSourceEventReceiver(QObject* _eventReceiver)
+{
+    qDebug("CoreThread::pushSeparatedSourceEventReceiver(QObject* _eventReceiver = %p)",_eventReceiver);
+    this->receiverSeparatedSources.push_back(_eventReceiver);
+}
+
+
+// +-------------------------------------------------------+
 // | Run function                                          |
 // +-------------------------------------------------------+
 
@@ -105,8 +116,13 @@ void CoreThread::run()
     // +---------------------------------------------------+
 
     this->libraryContext = createEmptyOverallContext();
+
+
+
     this->libraryContext.myParameters = new struct ParametersStruct;
     *(this->libraryContext.myParameters) = this->libraryParameters;
+
+
 
     microphonesInit(this->libraryContext.myMicrophones, 8);
 
@@ -155,8 +171,30 @@ void CoreThread::run()
     preprocessorInit(this->libraryContext.myPreprocessor, this->libraryContext.myParameters, this->libraryContext.myMicrophones);
     beamformerInit(this->libraryContext.myBeamformer, this->libraryContext.myParameters, this->libraryContext.myMicrophones);
     mixtureInit(this->libraryContext.myMixture, this->libraryContext.myParameters);
+
+
+    //Separation init added (DL - 10/05/2012)
+    // Initialize the gss
+    gssInit(this->libraryContext.myGSS, this->libraryContext.myParameters, this->libraryContext.myMicrophones);
+
+    // Initialize the postfilter
+    postfilterInit(this->libraryContext.myPostfilter, this->libraryContext.myParameters);
+
+    // Initialize the postprocessor
+    postprocessorInit(this->libraryContext.myPostprocessorSeparated, this->libraryContext.myParameters);
+    postprocessorInit(this->libraryContext.myPostprocessorPostfiltered, this->libraryContext.myParameters);
+    //DL END
+
+
     potentialSourcesInit(this->libraryContext.myPotentialSources, this->libraryContext.myParameters);
     trackedSourcesInit(this->libraryContext.myTrackedSources, this->libraryContext.myParameters);
+
+
+    //Separation init added (DL - 10/05/2012)
+    separatedSourcesInit(this->libraryContext.mySeparatedSources, this->libraryContext.myParameters);
+    postfilteredSourcesInit(this->libraryContext.myPostfilteredSources, this->libraryContext.myParameters);
+    //DL END
+
 
     // +---------------------------------------------------+
     // | Thread loop                                       |
@@ -217,6 +255,16 @@ void CoreThread::run()
 
         mixtureUpdate(this->libraryContext.myMixture, this->libraryContext.myTrackedSources, this->libraryContext.myPotentialSources);
 
+
+        // +-----------------------------------------------+
+        // | Separate Sources                              |
+        // +-----------------------------------------------+
+        gssProcess(this->libraryContext.myGSS, this->libraryContext.myPreprocessor, this->libraryContext.myTrackedSources, this->libraryContext.mySeparatedSources);
+        postfilterProcess(this->libraryContext.myPostfilter, this->libraryContext.mySeparatedSources, this->libraryContext.myPreprocessor, this->libraryContext.myPostfilteredSources);
+        postprocessorProcessFrameSeparated(this->libraryContext.myPostprocessorSeparated, this->libraryContext.myTrackedSources, this->libraryContext.mySeparatedSources);
+        postprocessorProcessFramePostfiltered(this->libraryContext.myPostprocessorPostfiltered, this->libraryContext.myTrackedSources, this->libraryContext.myPostfilteredSources);
+
+
         // +-----------------------------------------------+
         // | Send potential sources found                  |
         // +-----------------------------------------------+
@@ -255,6 +303,12 @@ void CoreThread::run()
             QCoreApplication::postEvent(this->receiverTrackedSources[indexReceiver], new TrackedSourceEvent(tmpTracked));
         }
 
+        // +-----------------------------------------------+
+        // | Send single stream separation                 |
+        // +-----------------------------------------------+
+        singleStreamSeparation();
+
+
     }
 
 
@@ -262,13 +316,19 @@ void CoreThread::run()
     // +---------------------------------------------------+
     // | Terminate                                         |
     // +---------------------------------------------------+
-
-    microphonesTerminate(this->libraryContext.myMicrophones);
     preprocessorTerminate(this->libraryContext.myPreprocessor);
     beamformerTerminate(this->libraryContext.myBeamformer);
     mixtureTerminate(this->libraryContext.myMixture);
+    gssTerminate(this->libraryContext.myGSS);
+    postfilterTerminate(this->libraryContext.myPostfilter);
+    postprocessorTerminate(this->libraryContext.myPostprocessorSeparated);
+    postprocessorTerminate(this->libraryContext.myPostprocessorPostfiltered);
     potentialSourcesTerminate(this->libraryContext.myPotentialSources);
     trackedSourcesTerminate(this->libraryContext.myTrackedSources);
+    separatedSourcesTerminate(this->libraryContext.mySeparatedSources);
+    postfilteredSourcesTerminate(this->libraryContext.myPostfilteredSources);
+    microphonesTerminate(this->libraryContext.myMicrophones);
+
 
     deleteOverallContext(this->libraryContext);
 
@@ -463,5 +523,67 @@ void CoreThread::stopIsDone()
 
     // Release the semaphore
     this->semaStopDone.release();
+
+}
+
+void CoreThread::singleStreamSeparation()
+{
+
+    //THIS IS CALLED FROM THE RUNNING THREAD, BE CAREFUL...
+
+    unsigned int indexSource;
+    unsigned int indexSource2;
+    unsigned int indexSample;
+    signed short currentSample;
+    float x,y,z;
+    float x2,y2,z2;
+    char exists = 0;
+
+
+    // Take the first source for now
+    struct objPostprocessor* myPostprocessor = this->libraryContext.myPostprocessorSeparated;
+
+
+    //Set Data to 0
+    float separated_data[512];
+
+
+    QVector<short> S16LEdata(512,0); //size,value
+
+
+    for(indexSource = 0; indexSource < myPostprocessor->PP_NSOURCES; indexSource++)
+    {
+
+        // If a source is found
+        if (myPostprocessor->sourcesID[indexSource] != ID_NOSOURCE)
+        {
+
+            // Position
+            x = myPostprocessor->sourcesPosition[indexSource][0];
+            y = myPostprocessor->sourcesPosition[indexSource][1];
+            z = myPostprocessor->sourcesPosition[indexSource][2];
+
+            // Extract the frame
+            // qDebug("Extract the frame");
+            postprocessorExtractHop(myPostprocessor, myPostprocessor->sourcesID[indexSource], separated_data);
+
+
+            for (indexSample = 0; indexSample < 512; indexSample++)
+            {
+                currentSample = (signed short) floor((separated_data[indexSample] * 30.0) * 32768.0 + 0.5);
+                //TODO Apply Saturation...
+                S16LEdata[indexSample] += currentSample;
+            }
+
+        }
+    }
+
+    //Emit the signal tha we have a new chunk of data available
+    for (int indexReceiver = 0; indexReceiver < this->receiverSeparatedSources.size(); indexReceiver++)
+    {
+        //qDebug("posting sep event : %p",this->receiverSeparatedSources[indexReceiver]);
+        QCoreApplication::postEvent(this->receiverSeparatedSources[indexReceiver], new SeparatedSourceEvent(S16LEdata),Qt::HighEventPriority);
+    }
+
 
 }

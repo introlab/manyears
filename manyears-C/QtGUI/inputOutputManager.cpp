@@ -1351,7 +1351,7 @@ void InputOutputManager::openStream()
             // Set the timer setting
             float timeOneFrame;
             timeOneFrame = ((float) this->getHopSize()) / ((float) this->getSampleRate());
-            this->inputFileTimer.setInterval(timeOneFrame * 1000);
+            this->inputFileTimer.setInterval(timeOneFrame * 1000 / 10); //10X faster than real time
 
             // Create the buffer to receive samples
             this->inputFileBuffer = new signed short[this->getHopSize() * this->getNumberChannels()];

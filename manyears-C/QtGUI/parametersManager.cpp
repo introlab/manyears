@@ -1580,6 +1580,9 @@ struct ParametersStruct ParametersManager::getParametersSystem()
 
     ParametersStruct parametersStruct;
 
+    //Set default parameters
+    ParametersLoadDefault(&parametersStruct);
+
     // Create a vector
     ConfigurationVector configurationVector;
 
