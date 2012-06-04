@@ -567,6 +567,7 @@ SeparatedSourceEvent::~SeparatedSourceEvent()
 SeparatedSourceEvent& SeparatedSourceEvent::operator=(const SeparatedSourceEvent& _separatedSourceEvent)
 {
     m_data = _separatedSourceEvent.m_data;
+	return *this;
 }
 
 
