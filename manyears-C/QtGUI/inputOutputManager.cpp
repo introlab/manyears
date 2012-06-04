@@ -1873,7 +1873,6 @@ EndOfStreamEvent::~EndOfStreamEvent()
 
 EndOfStreamEvent& EndOfStreamEvent::operator=(const EndOfStreamEvent& _endOfStreamEvent)
 {
-	(*this) = _endOfStreamEvent;
 	return *this;
 }
 

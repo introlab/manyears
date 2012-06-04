@@ -1534,7 +1534,7 @@ UpdateGraphRefreshEvent::UpdateGraphRefreshEvent(): QEvent(QEvent::User)
 
 UpdateGraphRefreshEvent::UpdateGraphRefreshEvent(const UpdateGraphResizeEvent& _updateGraphRefreshEvent): QEvent(QEvent::User)
 {
-    *this = _updateGraphRefreshEvent;
+    this->listSources = _updateGraphRefreshEvent.getSourcesAllFrames();
 }
 
 UpdateGraphRefreshEvent::UpdateGraphRefreshEvent(QList< QList<SourceDisplayed> > _sources): QEvent(QEvent::User)
@@ -1562,7 +1562,6 @@ UpdateGraphRefreshEvent::~UpdateGraphRefreshEvent()
 UpdateGraphRefreshEvent& UpdateGraphRefreshEvent::operator=(const UpdateGraphRefreshEvent& _updateGraphRefreshEvent)
 {
     this->setSourcesAllFrames(_updateGraphRefreshEvent.getSourcesAllFrames());
-
     return (*this);
 }
 

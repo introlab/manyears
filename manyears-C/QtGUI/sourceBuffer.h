@@ -924,7 +924,7 @@ public:
 
     void setSourcesAllFrames( QList< QList<SourceDisplayed> > _sources);
 
-private:
+protected:
 
     /***********************************************************
     * Fields                                                   *
@@ -991,7 +991,7 @@ public:
 
     void setSourcesAllFrames( QList< QList<SourceDisplayed> > _sources);
 
-private:
+protected:
 
     /***********************************************************
     * Fields                                                   *
