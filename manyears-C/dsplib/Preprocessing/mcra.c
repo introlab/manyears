@@ -228,7 +228,7 @@ void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource)
 
 #ifdef USE_SIMD
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA;
 #endif
 
     // Make sure both have the same frame size

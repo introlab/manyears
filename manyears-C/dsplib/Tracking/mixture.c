@@ -405,7 +405,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD;
 
     // Variables needed for SSE computations
     float* weightArrayPtr;
@@ -594,7 +594,7 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
                     indexParticle -= 4;
                 }
 
-                for (indexParticle; indexParticle < myMixture->FILTER_NBPARTICLES; indexParticle++)
+                for (indexParticle=0; indexParticle < myMixture->FILTER_NBPARTICLES; indexParticle++)
                 {
                     sum_wfqi_pOq_xvji += myMixture->listFilters[indexFilter].weight[indexParticle] * myMixture->pOq_xvji[indexParticle];
                 }

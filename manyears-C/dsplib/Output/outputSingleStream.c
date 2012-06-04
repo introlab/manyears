@@ -172,8 +172,6 @@ void outputSingleStreamInit(struct objOutputSingleStream* myOutputSingleStream, 
 void outputSingleStreamTerminate(struct objOutputSingleStream* myOutputSingleStream)
 {
 
-    unsigned int indexSource;
-
     // *************************************************************************
     // * STEP 1: Delete strings                                                *
     // *************************************************************************
@@ -254,14 +252,9 @@ void outputSingleStreamProcess(struct objOutputSingleStream* myOutputSingleStrea
 {
 
     unsigned int indexSource;
-    unsigned int indexSource2;
     unsigned int indexSample;
-
     signed short currentSample;
-
     float x,y,z;
-    float x2,y2,z2;
-
     char exists = 0;
 
     // *************************************************************************

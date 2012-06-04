@@ -43,7 +43,7 @@ void StreamOutputWidget::scanOutputDevice()
     //Get available output devices...
     QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
 
-    for (unsigned int i =0; i < myList.size(); i++)
+    for (int i =0; i < myList.size(); i++)
     {
         m_ui.m_comboDeviceSelection->addItem(myList[i].deviceName());
         //qDebug() << " Adding item " << myList[i].deviceName();
@@ -63,7 +63,7 @@ void StreamOutputWidget::notify()
         while(m_frames.size() > 0)
         {
             //Try to output as many frames as possible according to buffer size
-            if (m_audioOutput->bytesFree() > m_frames.front().size() * sizeof(short))
+            if ((unsigned int) m_audioOutput->bytesFree() >  m_frames.front().size() * sizeof(short))
             {
                 //qDebug("Writing frame");
                 m_IODevice->write((char*) m_frames.front().data(),m_frames.front().size() * sizeof(short));
@@ -91,7 +91,7 @@ void StreamOutputWidget::startButtonClicked()
         m_audioOutput = NULL;
     }
 
-    for (unsigned int i =0; i < myList.size(); i++)
+    for (int i =0; i < myList.size(); i++)
     {
         if (myList[i].deviceName() == m_ui.m_comboDeviceSelection->currentText())
         {

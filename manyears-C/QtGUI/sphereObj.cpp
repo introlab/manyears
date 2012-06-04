@@ -109,10 +109,12 @@ void Sphere::initSphere(float _radius)
     //
     // Where each set (x,y,z) represents one end of the triangle:
     //
+    /*
     //               o (x1,y1,z1)
     //              / \
     //  (x2,y2,z2) o---o (x3,y3,z3)
     //
+    */
     // Define an array to store initial points for level 0
     // Each point is represented by a row of 3 points:
     //
@@ -136,7 +138,7 @@ void Sphere::initSphere(float _radius)
     // New triangles are then generated for level 4, and there is no more space
     // between triangles since the array is now full
     unsigned int stepSize;
-
+/*
     // When the array of triangles is being filled, use the following variables
     // to generate new triangles:
     //
@@ -149,6 +151,7 @@ void Sphere::initSphere(float _radius)
     //                  |
     //              Point 23
     //
+*/
     float point1[3];
     float point2[3];
     float point3[3];

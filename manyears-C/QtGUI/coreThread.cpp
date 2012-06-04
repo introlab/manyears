@@ -220,7 +220,7 @@ void CoreThread::run()
         // | Copy buffer to the library                    |
         // +-----------------------------------------------+
 
-        for (int indexChannel = 0; indexChannel < numberChannels; indexChannel++)
+        for (unsigned int indexChannel = 0; indexChannel < numberChannels; indexChannel++)
         {
 
             preprocessorPushFrames(this->libraryContext.myPreprocessor, hopSize, indexChannel);
@@ -271,7 +271,7 @@ void CoreThread::run()
 
         PotentialSourceEvent tmpPotential;
 
-        for (int indexSource = 0; indexSource < potentialSourcesGetNumberSources(this->libraryContext.myPotentialSources); indexSource++)
+        for (unsigned int indexSource = 0; indexSource < potentialSourcesGetNumberSources(this->libraryContext.myPotentialSources); indexSource++)
         {
             tmpPotential.pushSource(PotentialSource(potentialSourcesGetX(this->libraryContext.myPotentialSources, indexSource),
                                                     potentialSourcesGetY(this->libraryContext.myPotentialSources, indexSource),
@@ -290,7 +290,7 @@ void CoreThread::run()
 
         TrackedSourceEvent tmpTracked;
 
-        for (int indexSource = 0; indexSource < trackedSourcesGetMaxNumberSources(this->libraryContext.myTrackedSources); indexSource++)
+        for (unsigned int indexSource = 0; indexSource < trackedSourcesGetMaxNumberSources(this->libraryContext.myTrackedSources); indexSource++)
         {
 
             tmpTracked.pushSource(TrackedSource(trackedSourcesGetX(this->libraryContext.myTrackedSources, indexSource),
@@ -532,12 +532,10 @@ void CoreThread::singleStreamSeparation()
     //THIS IS CALLED FROM THE RUNNING THREAD, BE CAREFUL...
 
     unsigned int indexSource;
-    unsigned int indexSource2;
     unsigned int indexSample;
     signed short currentSample;
     float x,y,z;
-    float x2,y2,z2;
-    char exists = 0;
+
 
 
     // Take the first source for now

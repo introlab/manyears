@@ -122,12 +122,14 @@ void sphereInit(struct objSphere *mySphere, unsigned int numberLevels)
     // | x1 y1 z1 | x2 y2 z2 | x3 y3 z3 |
     // +----------+----------+----------+
     //
+    /*
     // Where each set (x,y,z) represents one end of the triangle:
     //
     //               o (x1,y1,z1)
     //              / \
     //  (x2,y2,z2) o---o (x3,y3,z3)
     //
+    */
     // This array is created dynamically since the number of
     // triangles may change
     float** sphereTriangles;
@@ -177,6 +179,7 @@ void sphereInit(struct objSphere *mySphere, unsigned int numberLevels)
     // Use the following variable to flag if the point is already in the list
     unsigned char pointAlreadyInList;
 
+    /*
     // When the array of triangles is being filled, use the following variables
     // to generate new triangles:
     //
@@ -189,6 +192,7 @@ void sphereInit(struct objSphere *mySphere, unsigned int numberLevels)
     //                  |
     //              Point 23
     //
+    */
     float point1[3];
     float point2[3];
     float point3[3];

@@ -29,7 +29,6 @@ AboutDialog::AboutDialog()
     int xText = widthImage + 20 + sideMargin;
     int yText = 10;
     int widthText = 500;
-    int heightText = 20;
 
     // Read text
     QString resCopyright;

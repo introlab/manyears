@@ -836,7 +836,7 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC;
 
 #endif
 

@@ -166,7 +166,7 @@ void matrixInit(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA;
 
 #endif
 
@@ -278,7 +278,7 @@ void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -438,7 +438,7 @@ void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -552,7 +552,7 @@ void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -668,7 +668,7 @@ void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -789,7 +789,7 @@ void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -1138,7 +1138,7 @@ void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMa
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC;
 
 #endif
 
@@ -1242,7 +1242,7 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB;
 
 #endif
 
@@ -1324,7 +1324,7 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA;
 
 #endif
 
@@ -1402,7 +1402,7 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC;
 
 #endif
 
@@ -1735,7 +1735,7 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regD, regF;
 
 #endif
 
@@ -1837,7 +1837,7 @@ void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* 
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD, regE;
 
 #endif
 
@@ -1935,7 +1935,7 @@ void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struc
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD, regE, regF;
 
 #endif
 

@@ -429,7 +429,7 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
 #ifndef USE_SIMD
 
     unsigned int indexArray;
-
+/*
     // The basic structure in this algorithm is a butterfly as follows:
     //
     // a o---o-->--o--->---o A = a + b
@@ -440,7 +440,7 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
     //        /   \  Wn(r)
     // b o---o-->--o--->---o B = (a - b) Wn(r)
     //         -1
-
+*/
     // Define the INDEX of the input parameter a
     unsigned int a;
     // Define the INDEX of the input parameter b
@@ -576,13 +576,8 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
 
     // Array index
     unsigned int indexGroup;
-    unsigned int indexSubGroup;
     unsigned int indexLevel;
     unsigned int indexArray;
-
-    // Pointer to copy memory
-    float *ptr1;
-    float *ptr2;
 
     // Define variables for the last two levels
     float valueAReal;
@@ -601,7 +596,7 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
     unsigned int indexRevBitOrder;
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD, regE, regF, regG;
 
     // *************************************************************************
     // * STEP 0: Copy source                                                   *
@@ -953,7 +948,7 @@ void ifftCompute(struct objFFT* myFFT, float *sourceArrayReal, float *sourceArra
     unsigned int k;
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD, regE, regF;
 
     regA.m128_f32[0] = -1;
     regA.m128_f32[1] = -1;

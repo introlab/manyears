@@ -1013,7 +1013,7 @@ float** InputOutputManager::createBuffer()
 
     newBuffer = new float*[this->getNumberChannels()];
 
-    for (int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+    for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
     {
         newBuffer[indexChannel] = new float[this->getHopSize()];
     }
@@ -1029,7 +1029,7 @@ float** InputOutputManager::createBuffer()
 void InputOutputManager::deleteBuffer(float** _buffer)
 {
 
-    for (int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+    for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
     {
 
         delete _buffer[indexChannel];
@@ -1789,9 +1789,9 @@ void InputOutputManager::fileCallBack()
     endHasBeenReached = false;
 
     // Load the samples for a complete hop size
-    for (int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
+    for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
     {
-        for (int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+        for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
         {
             if (feof(this->inputFile)  == 0)
             {

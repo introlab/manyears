@@ -752,7 +752,7 @@ void postfilterRefreshSources(struct objPostfilter* myPostfilter, struct objSepa
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    __m128_mod regA, regB, regC, regD, regE;
 
 #endif
 

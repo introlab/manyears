@@ -123,14 +123,6 @@ void Graph3D::paintGL()
     GLfloat p1x, p1y, p1z;
     GLfloat p2x, p2y, p2z;
     GLfloat p3x, p3y, p3z;
-    GLfloat p1e, p2e, p3e;
-
-    GLfloat maxX, maxY, maxZ;
-
-    QColor p1color, p2color, p3color;
-
-    int p1index, p2index, p3index;
-
     GLfloat red, green, blue;
     QColor sphereColor;
 

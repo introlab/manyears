@@ -1,6 +1,9 @@
 #include "propertyEditor.h"
-
+#include <limits.h>
 #include <QDebug>
+
+#define MAX_FLOAT (1.0/0.0)
+#define MIN_FLOAT (-1.0/0.0)
 
 /***********************************************************
 * Constructor                                              *
@@ -837,7 +840,7 @@ QString PropertyEditor::displayInputBox(QString _key)
 
     case Property::P_FLOAT:
 
-        floatValue = (float) QInputDialog::getDouble(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getFloat(), -3.4028E+38, +3.4028E+38, 4, &ok);
+        floatValue = (float) QInputDialog::getDouble(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getFloat(), MIN_FLOAT, MAX_FLOAT, 4, &ok);
 
         if (ok == true)
         {
@@ -849,7 +852,7 @@ QString PropertyEditor::displayInputBox(QString _key)
 
     case Property::P_FLOAT_POS:
 
-        floatValue = (float) QInputDialog::getDouble(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getFloat(), 0, +3.4028E+38, 4, &ok);
+        floatValue = (float) QInputDialog::getDouble(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getFloat(), 0, MAX_FLOAT, 4, &ok);
 
         if (ok == true)
         {
@@ -861,7 +864,7 @@ QString PropertyEditor::displayInputBox(QString _key)
 
     case Property::P_INT:
 
-        intValue = (int) QInputDialog::getInt(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getInt(), -2147483648, 2147483647, 1, &ok);
+        intValue = (int) QInputDialog::getInt(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getInt(), INT_MIN, INT_MAX, 1, &ok);
 
         if (ok == true)
         {
@@ -873,7 +876,7 @@ QString PropertyEditor::displayInputBox(QString _key)
 
     case Property::P_INT_POS:
 
-        intValue = (int) QInputDialog::getInt(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getInt(), 0, 2147483647, 1, &ok);
+        intValue = (int) QInputDialog::getInt(this, "Enter a new value...", _selectedProperty->getDescription(), _selectedProperty->getInt(), 0, INT_MAX, 1, &ok);
 
         if (ok == true)
         {

@@ -1117,7 +1117,7 @@ void filterProb(struct objFilter *myFilter, float positionX, float positionY, fl
         indexParticle -= 4;
     }
 
-    for (indexParticle; indexParticle < myFilter->FILTER_NBPARTICLES; indexParticle++)
+    for (indexParticle=0; indexParticle < myFilter->FILTER_NBPARTICLES; indexParticle++)
     {
 
         // Compute the equation: p(O_q|x_j,i) = 0.8 * exp(4*d) + 0.18 * exp(0.4*d) + 0.02 * exp(0.1*d)
