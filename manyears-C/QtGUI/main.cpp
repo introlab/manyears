@@ -48,17 +48,8 @@ extern "C" {
 }
 #endif
 
-//#define SHOW_DEBUG
-//#define TEST_RTAUDIO
+#define SHOW_DEBUG
 
-int myCallBack(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *manager)
-{
-    qDebug() << "Samples ready";
-
-    return 0;
-}
-
-//int fillBuffer2(void *outputBuffer, void *inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void *manager);
 
 
 void ManyEarsMsgHandler(QtMsgType type, const char *msg);
@@ -84,34 +75,43 @@ class ManyEarsApp :  public QApplication
 public:
 
     ManyEarsApp(int argc, char**argv)
-        : QApplication(argc, argv)
+        : QApplication(argc, argv), m_mainWindow(NULL), m_window(NULL), m_edit(NULL)
     {
-
-        m_window = new QMainWindow(NULL);
-        m_edit = new QTextEdit(m_window);
-        m_window->setCentralWidget(m_edit);
-
-        m_window->resize(1280,1024);
-#ifdef SHOW_DEBUG
-        m_window->show();
-#endif
-        m_window->raise();
 
         
     }
 
+    void init()
+    {
+	//Main Window
+	m_mainWindow = new MDIWindow();
+	m_mainWindow->show();
+
+
+        m_window = new QMainWindow(NULL);
+        m_edit = new QTextEdit(m_window);
+        m_window->setCentralWidget(m_edit);
+        m_window->resize(1280,1024);
+
+#ifdef SHOW_DEBUG
+        m_window->show();
+        m_window->raise();
+#endif
+
+    }
 
     void printDebug(const QString &message)
     {
 
-        QString currentText =  m_edit->toPlainText() +  message;
-        m_edit->setText(currentText.right(1000));
-
-
-
+        // QString currentText =  m_edit->toPlainText() +  message;
+        //m_edit->setText(currentText.right(1000));
         //QTextCursor c =  m_edit->textCursor();
         //c.movePosition(QTextCursor::End);
         //m_edit->setTextCursor(c);
+	if (m_edit)
+	{
+		m_edit->append(message);
+	}
 
     }
 
@@ -120,11 +120,11 @@ public:
         if (event->type() == QEvent::User)
         {
             PrintEvent *pEvent = dynamic_cast<PrintEvent*>(event);
-            if (pEvent)
+            if (pEvent && m_edit)
             {
                 m_edit->append(pEvent->m_message);
-            }
-            return true;
+        	return true;
+	    }
         }
 
         return QApplication::event(event);
@@ -147,8 +147,9 @@ public:
 
     }
 
-        protected:
+	protected:
 
+    MDIWindow *m_mainWindow;
     QMainWindow *m_window;
     QTextEdit *m_edit;
 
@@ -186,10 +187,7 @@ int main(int argc, char *argv[])
 {
 
     ManyEarsApp a( argc, argv );
-
-    MDIWindow* mainWindow;
-
-    mainWindow = new MDIWindow();
+    a.init();
 
 #ifdef SHOW_DEBUG
 
@@ -199,6 +197,5 @@ int main(int argc, char *argv[])
 #endif
 
     return a.exec();
-
 }
 
