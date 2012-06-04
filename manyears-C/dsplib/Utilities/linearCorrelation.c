@@ -761,8 +761,14 @@ void linearCorrelationCompute(struct objLinearCorrelation* myLinearCorrelation)
 
     // SIMD registers
     __m128_mod regA, regB, regC, regD;
-
+#else
+    float sum=0;
+    unsigned int indexElementAB = 0;
+    float elementA,elementB;
+    float elementResult;
 #endif
+
+
 
     indexElementResult = 0;
 
