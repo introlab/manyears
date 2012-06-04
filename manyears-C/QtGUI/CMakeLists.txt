@@ -88,6 +88,9 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/dsplib
                     ${PROJECT_SOURCE_DIR}/RTAudio
                     ${CMAKE_CURRENT_BINARY_DIR}
+		    #This is for Linux Ubuntu 12.04
+		    "${QT_INCLUDE_DIR}/../QtMultimediaKit"
+		    "${QT_INCLUDE_DIR}/../QtMobility"
                     )
 
 #include files
@@ -121,7 +124,8 @@ IF (UNIX)
         ELSE(APPLE)	
 	    #ManyEars Executable
             add_executable(ManyEars main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
-	    target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib)
+	    #Remove QtMultimediaKit on older systems
+	    target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib -lQtMultimediaKit) 
 	    INSTALL(TARGETS ManyEars DESTINATION bin)
 	ENDIF(APPLE)
    
