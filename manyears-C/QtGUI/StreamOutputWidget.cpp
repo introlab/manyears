@@ -169,10 +169,10 @@ bool StreamOutputWidget::event(QEvent* event)
     {
         SeparatedSourceEvent* sepEvent = dynamic_cast<SeparatedSourceEvent*>(event);
 
-        if (sepEvent)
+        if (sepEvent && m_audioOutput)
         {
             //qDebug("Writing to stack...");
-            m_frames.push_back(sepEvent->m_data);
+            pushFrame(sepEvent->m_data);
             notify();
             return true;
         }
