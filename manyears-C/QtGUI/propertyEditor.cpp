@@ -1,9 +1,11 @@
 #include "propertyEditor.h"
 #include <limits.h>
 #include <QDebug>
+#include <float.h>
 
-#define MAX_FLOAT (1.0/0.0)
-#define MIN_FLOAT (-1.0/0.0)
+#define MAX_FLOAT FLT_MAX 
+#define MIN_FLOAT FLT_MIN
+
 
 /***********************************************************
 * Constructor                                              *

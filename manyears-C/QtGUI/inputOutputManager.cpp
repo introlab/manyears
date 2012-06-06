@@ -1343,7 +1343,11 @@ void InputOutputManager::openStream()
             QString filePath = this->inputFileName;
 
             // Open the stream
-            this->inputFile = fopen(filePath.toStdString().c_str(), "rb");
+            //this->inputFile = fopen(filePath.toStdString().c_str(), "rb");
+
+			inputFile.setFileName(filePath);
+			inputFile.open(QIODevice::ReadOnly);
+			//TODO OPEN BINARY?
 
             // Flag it
             this->inputFileOpened = true;
@@ -1437,7 +1441,7 @@ void InputOutputManager::closeStreamIfOpened()
             // Check if the stream was opened in the first place
             if (this->inputFileOpened == true)
             {
-                fclose(this->inputFile);
+                inputFile.close();
                 delete this->inputFileBuffer;
                 this->inputFileOpened = false;
             }
@@ -1503,11 +1507,10 @@ void InputOutputManager::startStream()
             // Reset file pointer
             if (this->inputFileOpened == true)
             {
-                fclose(this->inputFile);
-
+                inputFile.close();
                 QString filePath = this->inputFileName;
-
-                this->inputFile = fopen(filePath.toStdString().c_str(), "rb");
+				inputFile.setFileName(filePath);
+                inputFile.open(QIODevice::ReadOnly);
             }
 
             this->inputFileTimer.start();
@@ -1793,9 +1796,11 @@ void InputOutputManager::fileCallBack()
     {
         for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
         {
-            if (feof(this->inputFile)  == 0)
+            if (!inputFile.atEnd())
             {
-                fread(&inputShort, sizeof(short), 1, this->inputFile);
+                //fread(&inputShort, sizeof(short), 1, this->inputFile);
+				//Read from file
+				inputFile.read((char*)&inputShort, sizeof(short));			
             }
             else
             {

@@ -96,7 +96,7 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
 #include files
 IF (WIN32)
     #ManyEars Executable
-    add_executable(ManyEars WIN32 main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
+    add_executable(ManyEars main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
 
 	IF (MINGW)
 		set_target_properties(ManyEars PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})

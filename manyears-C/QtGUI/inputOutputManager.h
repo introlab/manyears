@@ -7,7 +7,7 @@
 #include <QSemaphore>
 #include <QString>
 #include <QTimer>
-
+#include <QFile>
 #include <QDialog>
 #include <QGroupBox>
 #include <QLabel>
@@ -308,7 +308,7 @@ private:
             // | File                                          |
             // +-----------------------------------------------+
 
-            FILE* inputFile;
+            QFile inputFile;
             bool inputFileOpened;
             QTimer inputFileTimer;
             signed short* inputFileBuffer;

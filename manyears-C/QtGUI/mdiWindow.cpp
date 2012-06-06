@@ -220,14 +220,15 @@ MDIWindow::MDIWindow()
         this->windowTrackedSphere->hide();
 
         ///Stream Output Window Begin
-        windowStreamOutput = new MdiSubWindow(this);
+#if 0
+		windowStreamOutput = new MdiSubWindow(this);
         windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
         windowStreamOutput->setWindowTitle("Stream Output Control");
         windowStreamOutput->setGeometry(subWindowWidth,subWindowHeight*2,subWindowWidth,subWindowHeight);
         mdiArea->addSubWindow(windowStreamOutput);
         windowStreamOutput->show();
         //Stream Output Window End
-
+#endif
 
         QObject::connect(this->dockConfigSystem, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_system_changes()));
         QObject::connect(this->dockConfigView, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_view_changes()));
@@ -280,8 +281,9 @@ MDIWindow::MDIWindow()
 
         runningThread->pushPotentialSourceEventReceiver(this->potentialSourcesManager);
         runningThread->pushTrackedSourceEventReceiver(this->trackedSourcesManager);
-        runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
-
+#if 0
+		runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
+#endif 
 
         // Input/Output Manager -> Main Window
         this->inputOutputManager->pushEventReceiver(this);

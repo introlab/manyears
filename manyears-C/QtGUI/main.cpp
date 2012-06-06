@@ -48,7 +48,7 @@ extern "C" {
 }
 #endif
 
-#define SHOW_DEBUG
+//#define SHOW_DEBUG
 
 
 
