@@ -154,7 +154,9 @@ void InputOutputManager::streamCallBack(signed short* inputBuffer)
         {
             for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
             {
-                fwrite(bufferToCopy++, sizeof(short), 1, this->outputFile);
+                //fwrite(bufferToCopy++, sizeof(short), 1, this->outputFile);
+				outputFile.write((char*) bufferToCopy,sizeof(short));
+				bufferToCopy++;
             }
         }
     }
@@ -1373,7 +1375,9 @@ void InputOutputManager::openStream()
             QString filePath = this->outputFileName;
 
             // Open the stream
-            this->outputFile = fopen(filePath.toStdString().c_str(), "wb");
+            //this->outputFile = fopen(filePath.toStdString().c_str(), "wb");
+			outputFile.setFileName(filePath);
+			outputFile.open(QIODevice::WriteOnly);
 
             // Flag it
             this->outputFileOpened = true;
@@ -1457,7 +1461,8 @@ void InputOutputManager::closeStreamIfOpened()
             // Check if the stream was opened in the first place
             if (this->outputFileOpened == true)
             {
-                fclose(this->outputFile);
+                //fclose(this->outputFile);
+				outputFile.close();
                 this->outputFileOpened = false;
             }
 
@@ -1528,11 +1533,14 @@ void InputOutputManager::startStream()
             // Reset file pointer
             if (this->outputFileOpened == true)
             {
-                fclose(this->outputFile);
+                //fclose(this->outputFile);
+				outputFile.close();
 
                 QString filePath = this->outputFileName;
 
-                this->outputFile = fopen(filePath.toStdString().c_str(), "wb");
+                //this->outputFile = fopen(filePath.toStdString().c_str(), "wb");
+				outputFile.setFileName(filePath);
+				outputFile.open(QIODevice::WriteOnly);
             }
 
         }

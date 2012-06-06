@@ -317,7 +317,7 @@ private:
         // | Data output                                       |
         // +---------------------------------------------------+
 
-        FILE* outputFile;
+        QFile outputFile;
         bool outputFileOpened;
 
     // +-------------------------------------------------------+
