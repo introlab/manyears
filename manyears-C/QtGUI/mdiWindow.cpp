@@ -281,7 +281,7 @@ MDIWindow::MDIWindow()
         runningThread->pushTrackedSourceEventReceiver(this->trackedSourcesManager);
 		
 		//DL SeparatedStream receiver...
-		//runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
+		runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
 
 
         // Input/Output Manager -> Main Window
