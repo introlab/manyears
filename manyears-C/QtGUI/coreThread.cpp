@@ -546,8 +546,8 @@ void CoreThread::singleStreamSeparation()
     float separated_data[512];
 
 
-    QVector<short> S16LEdata(512,0); //size,value
-
+    //QVector<short> S16LEdata(512,0); //size,value
+	QVector<float> output_data(512,0);//size,value
 
     for(indexSource = 0; indexSource < myPostprocessor->PP_NSOURCES; indexSource++)
     {
@@ -570,7 +570,8 @@ void CoreThread::singleStreamSeparation()
             {
                 currentSample = (signed short) floor((separated_data[indexSample] * 30.0) * 32768.0 + 0.5);
                 //TODO Apply Saturation...
-                S16LEdata[indexSample] += currentSample;
+                //S16LEdata[indexSample] += currentSample;
+				output_data[indexSample] += separated_data[indexSample];
             }
 
         }
@@ -580,7 +581,8 @@ void CoreThread::singleStreamSeparation()
     for (int indexReceiver = 0; indexReceiver < this->receiverSeparatedSources.size(); indexReceiver++)
     {
         //qDebug("posting sep event : %p",this->receiverSeparatedSources[indexReceiver]);
-        QCoreApplication::postEvent(this->receiverSeparatedSources[indexReceiver], new SeparatedSourceEvent(S16LEdata),Qt::HighEventPriority);
+        //QCoreApplication::postEvent(this->receiverSeparatedSources[indexReceiver], new SeparatedSourceEvent(S16LEdata),Qt::HighEventPriority);
+		QCoreApplication::postEvent(this->receiverSeparatedSources[indexReceiver], new SeparatedSourceEvent(output_data),Qt::HighEventPriority);
     }
 
 

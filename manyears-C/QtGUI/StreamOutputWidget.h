@@ -17,8 +17,8 @@ public:
 
     StreamOutputWidget(QWidget *parent=NULL);
     ~StreamOutputWidget();
-    QVector<short> popFrame();
-    void pushFrame(const QVector<short> &frame);
+    QVector<float> popFrame();
+    void pushFrame(const QVector<float> &frame);
 
 protected slots:
 
@@ -34,10 +34,8 @@ protected:
     virtual bool event(QEvent* event);
     void scanOutputDevice();
     Ui::StreamOutputWidget m_ui;
-    QList<QVector<short> > m_frames;
+    QList<QVector<float> > m_frames;
     QMutex m_mutex;
-    int m_inCounter;
-    int m_outCounter;
     QTimer *m_timer;
     QAudioOutput *m_audioOutput;
     QIODevice *m_IODevice;

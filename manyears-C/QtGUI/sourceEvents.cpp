@@ -538,7 +538,7 @@ void TrackedSourceEvent::pushSource(TrackedSource _source)
 
 
 
-SeparatedSourceEvent::SeparatedSourceEvent(const QVector<short> &data)
+SeparatedSourceEvent::SeparatedSourceEvent(const QVector<float> &data)
     : QEvent(QEvent::User), m_data(data)
 {
 

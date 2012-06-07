@@ -4,16 +4,14 @@
 #include "sourceEvents.h"
 #include <QAudioDeviceInfo>
 #include <QDateTime>
+#include <limits.h>
 
+#define MAX_BUFFER_SIZE 10000
 
 StreamOutputWidget::StreamOutputWidget(QWidget *parent)
     : QWidget(parent), m_mutex(QMutex::Recursive), m_audioOutput(NULL), m_IODevice(NULL)
 
 {
-    m_outCounter = 0;
-    m_inCounter = 0;
-
-
     //Create GUI components
     m_ui.setupUi(this);
 
@@ -41,13 +39,22 @@ StreamOutputWidget::~StreamOutputWidget()
 void StreamOutputWidget::scanOutputDevice()
 {
     //Get available output devices...
-    QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+	/*
+	QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+
 
     for (int i =0; i < myList.size(); i++)
     {
         m_ui.m_comboDeviceSelection->addItem(myList[i].deviceName());
         //qDebug() << " Adding item " << myList[i].deviceName();
     }
+	*/
+
+	m_ui.m_comboDeviceSelection->addItem(QAudioDeviceInfo::defaultOutputDevice().deviceName());
+
+	
+
+
 }
 
 void StreamOutputWidget::notify()
@@ -66,7 +73,33 @@ void StreamOutputWidget::notify()
             if ((unsigned int) m_audioOutput->bytesFree() >  m_frames.front().size() * sizeof(short))
             {
                 //qDebug("Writing frame");
-                m_IODevice->write((char*) m_frames.front().data(),m_frames.front().size() * sizeof(short));
+                //m_IODevice->write((char*) m_frames.front().data(),m_frames.front().size() * sizeof(short));
+
+				float *frame_data = m_frames.front().data();
+
+				//APPLY GAIN
+				QVector<short> S16LEdata(m_frames.front().size(),0); 
+
+				for (int indexSample = 0; indexSample < S16LEdata.size(); indexSample++)
+				{
+					//APPLY GAIN & SATURATION
+					float currentSample = floor((frame_data[indexSample] * (float)m_ui.m_dial->value() * 32768.0f + 0.5f));
+
+					if (currentSample > (float) SHRT_MAX)
+					{
+						currentSample = (float) SHRT_MAX;
+					}
+					else if (currentSample < (float) SHRT_MIN)
+					{
+						currentSample = (float) SHRT_MIN;
+					}
+					
+					S16LEdata[indexSample] = (short) (currentSample);
+				}
+
+				//Write to device
+				m_IODevice->write((char*)S16LEdata.data(),S16LEdata.size() * sizeof(short));
+
                 popFrame();
             }
             else
@@ -83,18 +116,19 @@ void StreamOutputWidget::startButtonClicked()
     qDebug("void StreamOutputWidget::startButtonClicked()");
 
     //Get available output devices...
-    QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+    //QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
 
     if (m_audioOutput)
     {
         delete m_audioOutput;
         m_audioOutput = NULL;
     }
-
+#if 0
     for (int i =0; i < myList.size(); i++)
     {
         if (myList[i].deviceName() == m_ui.m_comboDeviceSelection->currentText())
         {
+#endif
             //QAudioFormat
             QAudioFormat format;
 
@@ -105,13 +139,15 @@ void StreamOutputWidget::startButtonClicked()
             format.setCodec("audio/pcm");
             format.setByteOrder(QAudioFormat::LittleEndian);
             format.setSampleType(QAudioFormat::SignedInt);
-            m_audioOutput = new QAudioOutput(myList[i],format,this);
+            //m_audioOutput = new QAudioOutput(myList[i],format,this);
+			m_audioOutput = new QAudioOutput(QAudioDeviceInfo::defaultOutputDevice(),format,this);
 
             //We have 10ms frames, this should be enough
             m_audioOutput->setNotifyInterval(5);
+#if 0
         }
     }
-
+#endif
     if (m_audioOutput)
     {
         connect(m_audioOutput,SIGNAL(stateChanged(QAudio::State)),this,SLOT(audioStateChanged(QAudio::State)));
@@ -145,10 +181,6 @@ void StreamOutputWidget::clearButtonClicked()
 {
     QMutexLocker lock(&m_mutex);
 
-    //Reset counters
-    m_inCounter = 0;
-    m_outCounter = 0;
-
     //Clear frames
     m_frames.clear();
 
@@ -157,10 +189,8 @@ void StreamOutputWidget::clearButtonClicked()
 }
 
 void StreamOutputWidget::refreshTimeout()
-{
-    //qDebug("StreamOutputWidget::refreshTimeout()");
-    m_ui.m_controlLcdIn->display(m_inCounter);
-    m_ui.m_controlLcdOut->display(m_outCounter);
+{    
+	m_ui.m_bufferLcdOut->display(m_frames.size());    
 }
 
 bool StreamOutputWidget::event(QEvent* event)
@@ -169,7 +199,7 @@ bool StreamOutputWidget::event(QEvent* event)
     {
         SeparatedSourceEvent* sepEvent = dynamic_cast<SeparatedSourceEvent*>(event);
 
-        if (sepEvent && m_audioOutput)
+        if (sepEvent)
         {
             //qDebug("Writing to stack...");
             pushFrame(sepEvent->m_data);
@@ -183,34 +213,34 @@ bool StreamOutputWidget::event(QEvent* event)
     return false;
 }
 
-QVector<short> StreamOutputWidget::popFrame()
+QVector<float> StreamOutputWidget::popFrame()
 {
     QMutexLocker lock(&m_mutex);
 
     if (m_frames.empty())
     {
-        qDebug("StreamOutputWidget::popFrame() - Underrun...");
-        //m_ui.m_controlTextEdit->append("Audio underrun...");
-        return QVector<short>(512,0);
+        qDebug("StreamOutputWidget::popFrame() - Underrun...");     
+        return QVector<float>(512,0);
     }
     else
     {
-        //m_ui.m_controlLcdOut->display(m_ui.m_controlLcdOut->value() + 1);
-        //m_ui.m_controlLcdIn->display(m_ui.m_controlLcdIn->value() - 1);
-        QVector<short> vec = m_frames.front();
-        m_frames.pop_front();
-        m_outCounter++;
-        m_inCounter--;
+        QVector<float> vec = m_frames.front();
+        m_frames.pop_front();        
         return vec;
     }
 
 }
 
-void StreamOutputWidget::pushFrame(const QVector<short> &frame)
+void StreamOutputWidget::pushFrame(const QVector<float> &frame)
 {
     m_mutex.lock();
     m_frames.push_back(frame);
-    m_inCounter++;
+
+	if (m_frames.size() > MAX_BUFFER_SIZE)
+	{
+		m_frames.pop_front();
+
+	}
     m_mutex.unlock();
 }
 

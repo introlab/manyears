@@ -212,6 +212,15 @@ MDIWindow::MDIWindow()
         this->mdiArea->addSubWindow(this->windowTrackedLongitude);
         this->windowTrackedLongitude->hide();
 
+		///Stream Output Window Begin
+		windowStreamOutput = new MdiSubWindow(this);
+        windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
+        windowStreamOutput->setWindowTitle("Stream Output Control");
+        windowStreamOutput->setGeometry(0,subWindowHeight*2,subWindowWidth,subWindowHeight);
+        mdiArea->addSubWindow(windowStreamOutput);		
+        windowStreamOutput->show();
+        //Stream Output Window End
+
         this->windowTrackedSphere = new MdiSubWindow(this);
         this->windowTrackedSphere->setWidget(this->graphTrackedSphere);
         this->windowTrackedSphere->setWindowTitle("Tracked sources: 3D Sphere");
@@ -219,14 +228,7 @@ MDIWindow::MDIWindow()
         this->mdiArea->addSubWindow(this->windowTrackedSphere);
         this->windowTrackedSphere->hide();
 
-        ///Stream Output Window Begin
-		windowStreamOutput = new MdiSubWindow(this);
-        windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
-        windowStreamOutput->setWindowTitle("Stream Output Control");
-        windowStreamOutput->setGeometry(subWindowWidth,subWindowHeight*2,subWindowWidth,subWindowHeight);
-        mdiArea->addSubWindow(windowStreamOutput);
-        windowStreamOutput->show();
-        //Stream Output Window End
+
 
 
         QObject::connect(this->dockConfigSystem, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_system_changes()));
@@ -334,12 +336,14 @@ MDIWindow::MDIWindow()
     QCoreApplication::postEvent(windowTrackedLongitude, new ShowEvent());
     QCoreApplication::postEvent(windowTrackedSphere, new ShowEvent());
 
+	//Tile sub windows
+	//this->mdiArea->tileSubWindows();
+
     // +-------------------------------------------------------+
     // | Startup                                               |
     // +-------------------------------------------------------+
 
     this->startupTimer.singleShot(1, this, SLOT(startup_showSplash()));
-
 }
 
 /***********************************************************
@@ -646,5 +650,8 @@ void MDIWindow::startup_showMain()
     this->show();
     //We do not need a valid selection at startup...
     this->inputOutputManager->askUser(false);
+
+	//this->mdiArea->tileSubWindows();
+
 
 }

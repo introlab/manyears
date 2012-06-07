@@ -6,9 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
+    <width>320</width>
+    <height>240</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>320</width>
+    <height>240</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
     <width>640</width>
     <height>480</height>
-   </rect>
+   </size>
   </property>
   <property name="windowTitle">
    <string>Form</string>
@@ -19,7 +31,7 @@
      <property name="title">
       <string>Device Selection</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QComboBox" name="m_comboDeviceSelection">
         <property name="maxVisibleItems">
@@ -35,7 +47,7 @@
      <property name="title">
       <string>Control</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
@@ -76,29 +88,73 @@
          </spacer>
         </item>
         <item>
-         <widget class="QLabel" name="label">
-          <property name="text">
-           <string>In:</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLCDNumber" name="m_controlLcdIn"/>
-        </item>
-        <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>Out:</string>
+           <string>Buffer Size :</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLCDNumber" name="m_controlLcdOut"/>
+         <widget class="QLCDNumber" name="m_bufferLcdOut"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_3">
+          <property name="font">
+           <font>
+            <pointsize>24</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>Gain</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDial" name="m_dial">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="value">
+           <number>25</number>
+          </property>
+          <property name="notchesVisible">
+           <bool>true</bool>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
       <item>
        <widget class="QTextEdit" name="m_controlTextEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="readOnly">
          <bool>true</bool>
         </property>

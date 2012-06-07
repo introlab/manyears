@@ -397,7 +397,7 @@ public:
     * Constructor                                              *
     ***********************************************************/
 
-    SeparatedSourceEvent(const QVector<short> &data);
+    SeparatedSourceEvent(const QVector<float> &data);
 
     SeparatedSourceEvent();
 
@@ -421,7 +421,7 @@ public:
 
 
 
-    QVector<short> m_data;
+    QVector<float> m_data;
 
 };
 
