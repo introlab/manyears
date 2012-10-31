@@ -5,6 +5,7 @@
 #include <QAudioDeviceInfo>
 #include <QDateTime>
 #include <limits.h>
+#include <math.h>
 
 #define MAX_BUFFER_SIZE 10000
 
