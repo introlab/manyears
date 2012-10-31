@@ -96,7 +96,7 @@ find_package(Qt4 4.8.0 QUIET)
 if(QT4_FOUND)
 	include(${QT_USE_FILE})
 else(QT4_FOUND)
-    MESSAGE("WARNING : ManyEars GUI will not be compiled because Qt4 not found or obsolete. Try using the latest QtSDK from http://qt-project.org")
+    MESSAGE("WARNING : ManyEars GUI will not be compiled because Qt4 not found or obsolete. You need Qt 4.8 or higher.Try using the latest QtSDK from http://qt-project.org")
 endif(QT4_FOUND)
 
 #Files excluded from package
