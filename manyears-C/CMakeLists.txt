@@ -17,6 +17,9 @@ SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION
 #SET THE BUILD TYPE HERE, Release, Debug
 SET(CMAKE_BUILD_TYPE Release)
 
+#Additional modules
+SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/macros)
+
 #Here we are assuming SSE3 support
 IF (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
     MESSAGE( STATUS "Setting flags for GNU GCC")
@@ -86,18 +89,35 @@ SET (LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #   
 # -> this will cause cmake to include and link against the OpenGL module
 
-SET(QT_USE_QTNETWORK TRUE)
-SET(QT_USE_QTSVG TRUE)
-SET(QT_USE_QTXML TRUE)
-SET(QT_USE_QTSCRIPT TRUE)
-SET(QT_USE_QTOPENGL TRUE)
+IF (NOT MANYEARS_GUI_DISABLED)
 
-find_package(Qt4 4.8.0 QUIET)
-if(QT4_FOUND)
+    SET(QT_USE_QTNETWORK TRUE)
+    SET(QT_USE_QTSVG TRUE)
+    SET(QT_USE_QTXML TRUE)
+    SET(QT_USE_QTSCRIPT TRUE)
+    SET(QT_USE_QTOPENGL TRUE)
+    SET(QT_USE_QTMULTIMEDIA TRUE)
+
+    find_package(QtMobility COMPONENTS MultimediaKit)
+    find_package(Qt4 4.8.0 QUIET)
+    
+    if (QTMOBILITY_FOUND)
+        MESSAGE("QT_MOBILITY_INCLUDE_DIR : ${QTMOBILITY_INCLUDE_DIRS} QT_MOBILITY_LIB: ${QTMOBILITY_LIBRARIES}")
+    ENDIF (QTMOBILITY_FOUND)
+    
+    
+    if(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
 	include(${QT_USE_FILE})
-else(QT4_FOUND)
-    MESSAGE("WARNING : ManyEars GUI will not be compiled because Qt4 not found or obsolete. You need Qt 4.8 or higher.Try using the latest QtSDK from http://qt-project.org")
-endif(QT4_FOUND)
+    else(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
+        MESSAGE("WARNING : ManyEars GUI will not be compiled because Qt4 not found or obsolete. You need Qt 4.8 or higher.Try using the latest QtSDK from http://qt-project.org")
+        MESSAGE("DEBUG: QT4_FOUND: ${QT4_FOUND} QT_MULTIMEDIA_FOUND: ${QT_MULTIMEDIA_FOUND}  QT_MOBILITY_FOUND: ${QTMOBILITY_FOUND}")
+        SET(MANYEARS_GUI_DISABLED TRUE)
+    endif(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
+
+ELSE (NOT MANYEARS_GUI_DISABLED)
+    MESSAGE("ManyEars GUI disabled.")
+ENDIF (NOT MANYEARS_GUI_DISABLED)
+
 
 #Files excluded from package
 set(CPACK_SOURCE_IGNORE_FILES
@@ -117,8 +137,8 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/QtCore4.dll"
 	    "${QT_BINARY_DIR}/QtDesigner4.dll"
 	    "${QT_BINARY_DIR}/QtDesignerComponents4.dll"
-            "${QT_BINARY_DIR}/QtCLucene4.dll"
-            "${QT_BINARY_DIR}/QtScriptTools4.dll"
+        "${QT_BINARY_DIR}/QtCLucene4.dll"
+        "${QT_BINARY_DIR}/QtScriptTools4.dll"
 	    "${QT_BINARY_DIR}/QtGui4.dll"
 	    "${QT_BINARY_DIR}/QtHelp4.dll"
 	    "${QT_BINARY_DIR}/QtNetwork4.dll"
@@ -129,10 +149,10 @@ IF (WIN32)
 	    "${QT_BINARY_DIR}/QtTest4.dll"
 	    "${QT_BINARY_DIR}/QtWebKit4.dll"
 	    "${QT_BINARY_DIR}/QtXml4.dll"
-            "${QT_BINARY_DIR}/QtXmlPatterns4.dll"
-            "${QT_BINARY_DIR}/QtDeclarative4.dll"
-            "${QT_BINARY_DIR}/QtMultimedia4.dll"
-            "${QT_BINARY_DIR}/phonon4.dll"
+        "${QT_BINARY_DIR}/QtXmlPatterns4.dll"
+        "${QT_BINARY_DIR}/QtDeclarative4.dll"
+        "${QT_BINARY_DIR}/QtMultimedia4.dll"
+        "${QT_BINARY_DIR}/phonon4.dll"
 )
 
 	IF(MINGW)
@@ -211,7 +231,7 @@ IF (UNIX)
 	    INSTALL(FILES ${PROJECT_SOURCE_DIR}/README.TXT DESTINATION .)
 
         ELSE(APPLE)
-            	    ##########################
+            ##########################
 		    # Packaging stuff for Linux
 		    ##########################
 		    SET(CPACK_GENERATOR DEB)
@@ -244,9 +264,9 @@ ADD_SUBDIRECTORY(dsplib)
 ADD_SUBDIRECTORY(RTAudio)
 ADD_SUBDIRECTORY(example)
 ADD_SUBDIRECTORY(demo)
-IF(QT4_FOUND)
+IF(NOT MANYEARS_GUI_DISABLED)
 	ADD_SUBDIRECTORY(QtGUI)
-ENDIF(QT4_FOUND)
+ENDIF(NOT MANYEARS_GUI_DISABLED)
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)
 
