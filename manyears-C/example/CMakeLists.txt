@@ -17,11 +17,15 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/RTAudio
                     )
 
-
+#Batch application
 add_executable(manyears_console manyears_console.c)
 set_target_properties(manyears_console PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
 target_link_libraries(manyears_console ManyEarsLib -lm)
 
+#Live application
+add_executable(manyears_live manyears_live.cpp)
+set_target_properties(manyears_live PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
+target_link_libraries(manyears_live ManyEarsLib RTAudioLib -lm)
 
 #INSTALL DEMONSTRATION FILES
 INSTALL(FILES ${SRCS} DESTINATION example)
