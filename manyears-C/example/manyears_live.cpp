@@ -101,7 +101,6 @@ public:
                 workspaceReady_ == true)
         {
             cout << streamTime<< " processing..." << endl;
-            static short audio_raw_data[RAW_BUFFER_SIZE];
             static float audio_float_data[NB_MICROPHONES][SAMPLES_PER_FRAME];
 
             //#1 - Let's create the float data for processing
@@ -109,7 +108,7 @@ public:
             {
                 for (unsigned int frame_index = 0; frame_index < frame_size; frame_index++)
                 {
-                    audio_float_data[channel][frame_index] = ((float) audio_raw_data[channel + (nb_channels * frame_index)]) / 32768.0;
+                    audio_float_data[channel][frame_index] = ((float) frames[channel + (nb_channels * frame_index)]) / 32768.0;
                 }
 
                 // Copy frames to the beamformer frames, will do 50% overlap internally
@@ -146,18 +145,10 @@ public:
                     x = trackedSourcesGetX(workspace.myTrackedSources,source_index);
                     y = trackedSourcesGetY(workspace.myTrackedSources,source_index);
                     z = trackedSourcesGetZ(workspace.myTrackedSources,source_index);
+                    
+                    printf("Source ID: %i           x: %f y: %f z: %f\n",source_id,x,y,z);
                 }
-                else
-                {
-                    x = 0.0;
-                    y = 0.0;
-                    z = 0.0;
-                }
-
-                printf("Source ID: %i           x: %f y: %f z: %f\n",source_id,x,y,z);
             }
-
-            printf("\n");
 
             return true;
         }
