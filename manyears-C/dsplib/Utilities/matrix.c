@@ -89,6 +89,11 @@
 
 #include "Utilities/matrix.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
+
 /*******************************************************************************
  * matrixCreate     		                                               *
  * --------------------------------------------------------------------------- *
@@ -166,7 +171,10 @@ void matrixInit(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA;
+    float32x4_t regA;
+
+    static const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
 
 #endif
 
@@ -202,17 +210,17 @@ void matrixInit(struct objMatrix* matrix, unsigned int nRows, unsigned int nCols
 #else
 
                 // Load the constant zero
-                regA.m128_f32[0] = 0.0;
-                regA.m128_f32[1] = 0.0;
-                regA.m128_f32[2] = 0.0;
-                regA.m128_f32[3] = 0.0;
+                //regA_f32[0] = 0.0;
+                //regA_f32[1] = 0.0;
+                //regA_f32[2] = 0.0;
+                //regA_f32[3] = 0.0;
+		regA = vld1q_f32(zeros);
 
                 for (k = 0; k < matrix->nFrames; k+=4)
                 {
                     // Copy the constant in memory
-                     _mm_store_ps(&matrix->valueReal[indexRow][indexCol][k],regA.m128);
-                     _mm_store_ps(&matrix->valueImag[indexRow][indexCol][k],regA.m128);
-
+		    vst1q_f32(&matrix->valueReal[indexRow][indexCol][k],regA);
+		    vst1q_f32(&matrix->valueImag[indexRow][indexCol][k],regA);
                 }
 
                 for (k = k - 4; k < matrix->nFrames; k++)
@@ -278,7 +286,7 @@ void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB;
 
 #endif
 
@@ -307,12 +315,13 @@ void matrixCopy(struct objMatrix* matrixSource, struct objMatrix* matrixDest)
                 {
 
                     // Load values
-                    regA.m128 = _mm_load_ps(&matrixSource->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&matrixSource->valueImag[indexRow][indexCol][k]);
+		    regA = vld1q_f32(&matrixSource->valueReal[indexRow][indexCol][k]);
+		    regB = vld1q_f32(&matrixSource->valueImag[indexRow][indexCol][k]);
 
                     // Store values
-                     _mm_store_ps(&matrixDest->valueReal[indexRow][indexCol][k],regA.m128);
-                     _mm_store_ps(&matrixDest->valueImag[indexRow][indexCol][k],regB.m128);
+		    vst1q_f32(&matrixDest->valueReal[indexRow][indexCol][k],regA);
+		    vst1q_f32(&matrixDest->valueImag[indexRow][indexCol][k],regB);
+
 
                 }
                 for (k = k - 4; k < matrixSource->nFrames; k++)
@@ -438,7 +447,7 @@ void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB;
 
 #endif
 
@@ -469,12 +478,12 @@ void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex)
             {
 
                 // Load values
-                regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
-
+		regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+		regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		
                 // Store values
-                 _mm_store_ps(&matrix->valueReal[indexRow][indexCol][k],regA.m128);
-                 _mm_store_ps(&matrix->valueImag[indexRow][indexCol][k],regB.m128);
+		vst1q_f32(&matrix->valueReal[indexRow][indexCol][k],regA);
+		vst1q_f32(&matrix->valueImag[indexRow][indexCol][k],regB);
 
             }
             for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -505,12 +514,12 @@ void matrixInsertRow(struct objMatrix* matrix, unsigned int newRowIndex)
             {
 
                 // Load values
-                regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+		regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                 // Store values
-                 _mm_store_ps(&matrix->valueReal[indexRow+1][indexCol][k],regA.m128);
-                 _mm_store_ps(&matrix->valueImag[indexRow+1][indexCol][k],regB.m128);
+		vst1q_f32(&matrix->valueReal[indexRow+1][indexCol][k],regA);
+		vst1q_f32(&matrix->valueImag[indexRow+1][indexCol][k],regB);
 
             }
             for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -552,7 +561,7 @@ void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB;
 
 #endif
 
@@ -583,12 +592,12 @@ void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
             {
 
                 // Load values
-                regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+		regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                 // Store values
-                 _mm_store_ps(&matrix->valueReal[indexRow][indexCol][k],regA.m128);
-                 _mm_store_ps(&matrix->valueImag[indexRow][indexCol][k],regB.m128);
+		vst1q_f32(&matrix->valueReal[indexRow][indexCol][k],regA);
+		vst1q_f32(&matrix->valueImag[indexRow][indexCol][k],regB);
 
             }
             for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -620,12 +629,12 @@ void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
             {
 
                 // Load values
-                regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+		regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                 // Store values
-                 _mm_store_ps(&matrix->valueReal[indexRow][indexCol+1][k],regA.m128);
-                 _mm_store_ps(&matrix->valueImag[indexRow][indexCol+1][k],regB.m128);
+		vst1q_f32(&matrix->valueReal[indexRow][indexCol+1][k],regA);
+		vst1q_f32(&matrix->valueImag[indexRow][indexCol+1][k],regB);
 
             }
             for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -668,7 +677,7 @@ void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB;
 
 #endif
 
@@ -702,13 +711,12 @@ void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
                 {
 
                     // Load values
-                    regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		    regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+	   	    regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                     // Store values
-                     _mm_store_ps(&matrix->valueReal[indexRow][indexCol][k],regA.m128);
-                     _mm_store_ps(&matrix->valueImag[indexRow][indexCol][k],regB.m128);
-
+		    vst1q_f32(&matrix->valueReal[indexRow][indexCol][k],regA);
+		    vst1q_f32(&matrix->valueImag[indexRow][indexCol][k],regB);
                 }
                 for (k = k - 4; k < oldMatrix->nFrames; k++)
                 {
@@ -739,12 +747,12 @@ void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
                 {
 
                     // Load values
-                    regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+		    regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+		    regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                     // Store values
-                     _mm_store_ps(&matrix->valueReal[indexRow-1][indexCol][k],regA.m128);
-                     _mm_store_ps(&matrix->valueImag[indexRow-1][indexCol][k],regB.m128);
+		    vst1q_f32(&matrix->valueReal[indexRow-1][indexCol][k],regA);
+		    vst1q_f32(&matrix->valueImag[indexRow-1][indexCol][k],regB);
 
                 }
                 for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -789,7 +797,7 @@ void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB;
 
 #endif
 
@@ -823,12 +831,12 @@ void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
                 {
 
                     // Load values
-                    regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+                    regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+                    regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                     // Store values
-                     _mm_store_ps(&matrix->valueReal[indexRow][indexCol][k],regA.m128);
-                     _mm_store_ps(&matrix->valueImag[indexRow][indexCol][k],regB.m128);
+                    vst1q_f32(&matrix->valueReal[indexRow][indexCol][k],regA);
+                    vst1q_f32(&matrix->valueImag[indexRow][indexCol][k],regB);
 
                 }
                 for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -860,12 +868,12 @@ void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
                 {
 
                     // Load values
-                    regA.m128 = _mm_load_ps(&oldMatrix->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&oldMatrix->valueImag[indexRow][indexCol][k]);
+                    regA = vld1q_f32(&oldMatrix->valueReal[indexRow][indexCol][k]);
+                    regB = vld1q_f32(&oldMatrix->valueImag[indexRow][indexCol][k]);
 
                     // Store values
-                     _mm_store_ps(&matrix->valueReal[indexRow][indexCol-1][k],regA.m128);
-                     _mm_store_ps(&matrix->valueImag[indexRow][indexCol-1][k],regB.m128);
+                    vst1q_f32(&matrix->valueReal[indexRow][indexCol-1][k],regA);
+                    vst1q_f32(&matrix->valueImag[indexRow][indexCol-1][k],regB);
 
                 }
                 for (k = k - 4; k < oldMatrix->nFrames; k++)
@@ -952,7 +960,10 @@ void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, stru
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
+
+    static const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
 
 #endif
 
@@ -974,10 +985,11 @@ void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, stru
 #ifdef USE_SIMD
 
         // Load the constant zero
-        regA.m128_f32[0] = 0.0;
-        regA.m128_f32[1] = 0.0;
-        regA.m128_f32[2] = 0.0;
-        regA.m128_f32[3] = 0.0;
+        //regA_f32[0] = 0.0;
+        //regA_f32[1] = 0.0;
+        //regA_f32[2] = 0.0;
+        //regA_f32[3] = 0.0;
+	regA = vld1q_f32(zeros);
 
 #endif
 
@@ -1001,8 +1013,8 @@ void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, stru
                 for (k = 0; k < newNFrames; k+=4)
                 {
 
-                    _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regA.m128);
-                    _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regA.m128);
+                    vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regA);
+                    vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regA);
 
                 }
                 for (k = k - 4; k < newNFrames; k++)
@@ -1038,40 +1050,40 @@ void matrixMultMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, stru
                     {
 
                         // Load values for the element A
-                        regB.m128 = _mm_load_ps(&matrixA->valueReal[indexRow][indexLine][k]);
-                        regC.m128 = _mm_load_ps(&matrixA->valueImag[indexRow][indexLine][k]);
+                        regB = vld1q_f32(&matrixA->valueReal[indexRow][indexLine][k]);
+                        regC = vld1q_f32(&matrixA->valueImag[indexRow][indexLine][k]);
 
                         // Load values for the element B
-                        regD.m128 = _mm_load_ps(&matrixB->valueReal[indexLine][indexCol][k]);
-                        regE.m128 = _mm_load_ps(&matrixB->valueImag[indexLine][indexCol][k]);
+                        regD = vld1q_f32(&matrixB->valueReal[indexLine][indexCol][k]);
+                        regE = vld1q_f32(&matrixB->valueImag[indexLine][indexCol][k]);
 
                         // Re{Result} = Re{A}*Re{B} - Im{A}*Im{B}
-                        regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
-                        regG.m128 = _mm_mul_ps(regC.m128,regE.m128);
-                        regH.m128 = _mm_sub_ps(regF.m128,regG.m128);
+                        regF = vmulq_f32(regB,regD);
+                        regG = vmulq_f32(regC,regE);
+                        regH = vsubq_f32(regF,regG);
 
                         // Load accumulator value
-                        regF.m128 = _mm_load_ps(&matrixResult->valueReal[indexRow][indexCol][k]);
+                        regF = vld1q_f32(&matrixResult->valueReal[indexRow][indexCol][k]);
 
                         // Add to accumulator
-                        regF.m128 = _mm_add_ps(regF.m128,regH.m128);
+                        regF = vaddq_f32(regF,regH);
 
                         // Store result
-                        _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regF.m128);
+                        vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regF);
 
                         // Im{Result} = Re{A}*Im{B} + Im{A}*Re{B}
-                        regF.m128 = _mm_mul_ps(regB.m128,regE.m128);
-                        regG.m128 = _mm_mul_ps(regC.m128,regD.m128);
-                        regH.m128 = _mm_add_ps(regF.m128,regG.m128);
+                        regF = vmulq_f32(regB,regE);
+                        regG = vmulq_f32(regC,regD);
+                        regH = vaddq_f32(regF,regG);
 
                         // Load accumulator value
-                        regF.m128 = _mm_load_ps(&matrixResult->valueImag[indexRow][indexCol][k]);
+                        regF = vld1q_f32(&matrixResult->valueImag[indexRow][indexCol][k]);
 
                         // Add to accumulator
-                        regF.m128 = _mm_add_ps(regF.m128,regH.m128);
+                        regF = vaddq_f32(regF,regH);
 
                         // Store result
-                        _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regF.m128);
+                        vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regF);
 
                     }
                     for (k = k - 4; k < newNFrames; k++)
@@ -1138,7 +1150,9 @@ void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMa
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC;
+    float32x4_t regA, regB, regC;
+
+    float scalarv[4] __attribute__((aligned (16))) = {scalar,scalar,scalar,scalar} ; //aligned on 16 bytes
 
 #endif
 
@@ -1155,10 +1169,11 @@ void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMa
 #ifdef USE_SIMD
 
     // Load the scalar
-    regA.m128_f32[0] = scalar;
-    regA.m128_f32[1] = scalar;
-    regA.m128_f32[2] = scalar;
-    regA.m128_f32[3] = scalar;
+    //regA_f32[0] = scalar;
+    //regA_f32[1] = scalar;
+    //regA_f32[2] = scalar;
+    //regA_f32[3] = scalar;
+    regA = vld1q_f32(scalarv);
 
 #endif
 
@@ -1184,16 +1199,16 @@ void matrixMultScalar(struct objMatrix* matrixSource, float scalar, struct objMa
             {
 
                 // Load values
-                regB.m128 = _mm_load_ps(&matrixSource->valueReal[indexRow][indexCol][k]);
-                regC.m128 = _mm_load_ps(&matrixSource->valueImag[indexRow][indexCol][k]);
+                regB = vld1q_f32(&matrixSource->valueReal[indexRow][indexCol][k]);
+                regC = vld1q_f32(&matrixSource->valueImag[indexRow][indexCol][k]);
 
                 // Multiply
-                regB.m128 = _mm_mul_ps(regA.m128,regB.m128);
-                regC.m128 = _mm_mul_ps(regA.m128,regC.m128);
+                regB = vmulq_f32(regA,regB);
+                regC = vmulq_f32(regA,regC);
 
                 // Store values
-                _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regB.m128);
-                _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regC.m128);
+                vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regB);
+                vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regC);
 
             }
             for (k = k - 4; k < newNFrames; k++)
@@ -1242,7 +1257,9 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB;
+    float32x4_t regA, regB, regC;
+
+    static const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
 
 #endif
 
@@ -1255,10 +1272,11 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // Load the constant -1
-    regA.m128_f32[0] = -1.0;
-    regA.m128_f32[1] = -1.0;
-    regA.m128_f32[2] = -1.0;
-    regA.m128_f32[3] = -1.0;
+    //regA_f32[0] = -1.0;
+    //regA_f32[1] = -1.0;
+    //regA_f32[2] = -1.0;
+    //regA_f32[3] = -1.0;
+    regA = vld1q_f32(minus_1);
 
 #endif
 
@@ -1276,9 +1294,9 @@ void matrixRemoveIdentity(struct objMatrix* matrix)
 
             for (k = 0; k < matrix->nFrames; k+=4)
             {
-                regB.m128 = _mm_load_ps(&matrix->valueReal[indexRowCol][indexRowCol][k]);
-                regB.m128 = _mm_add_ps(regA.m128,regB.m128);
-                _mm_store_ps(&matrix->valueReal[indexRowCol][indexRowCol][k], regB.m128);
+                regB = vld1q_f32(&matrix->valueReal[indexRowCol][indexRowCol][k]);
+                regC = vaddq_f32(regA,regB);
+                vst1q_f32(&matrix->valueReal[indexRowCol][indexRowCol][k], regC);
             }
             for (k = k - 4; k < matrix->nFrames; k++)
             {
@@ -1324,7 +1342,9 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA;
+    float32x4_t regA;
+
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
 
 #endif
 
@@ -1337,10 +1357,11 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 #ifdef USE_SIMD
 
     // Load the constant 0
-    regA.m128_f32[0] = 0.0;
-    regA.m128_f32[1] = 0.0;
-    regA.m128_f32[2] = 0.0;
-    regA.m128_f32[3] = 0.0;
+    //regA_f32[0] = 0.0;
+    //regA_f32[1] = 0.0;
+    //regA_f32[2] = 0.0;
+    //regA_f32[3] = 0.0;
+    regA = vld1q_f32(zeros);
 
 #endif
 
@@ -1359,8 +1380,8 @@ void matrixRemoveDiagonal(struct objMatrix* matrix)
 
             for (k = 0; k < matrix->nFrames; k+=4)
             {
-                _mm_store_ps(&matrix->valueReal[indexRowCol][indexRowCol][k],regA.m128);
-                _mm_store_ps(&matrix->valueImag[indexRowCol][indexRowCol][k],regA.m128);
+                vst1q_f32(&matrix->valueReal[indexRowCol][indexRowCol][k],regA);
+                vst1q_f32(&matrix->valueImag[indexRowCol][indexRowCol][k],regA);
             }
             for (k = k - 4; k < matrix->nFrames; k++)
             {
@@ -1402,7 +1423,9 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC;
+    float32x4_t regA, regB, regC;
+
+    static const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
 
 #endif
 
@@ -1419,10 +1442,11 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
 #ifdef USE_SIMD
 
     // Load the constant -1
-    regA.m128_f32[0] = -1.0;
-    regA.m128_f32[1] = -1.0;
-    regA.m128_f32[2] = -1.0;
-    regA.m128_f32[3] = -1.0;
+    //regA_f32[0] = -1.0;
+    //regA_f32[1] = -1.0;
+    //regA_f32[2] = -1.0;
+    //regA_f32[3] = -1.0;
+    regA = vld1q_f32(minus_1);
 
 #endif
 
@@ -1446,15 +1470,15 @@ void matrixHermitian(struct objMatrix* matrixSource, struct objMatrix* matrixDes
             {
 
                 // Load the values
-                regB.m128 = _mm_load_ps(&matrixSource->valueReal[indexRow][indexCol][k]);
-                regC.m128 = _mm_load_ps(&matrixSource->valueImag[indexRow][indexCol][k]);
+                regB = vld1q_f32(&matrixSource->valueReal[indexRow][indexCol][k]);
+                regC = vld1q_f32(&matrixSource->valueImag[indexRow][indexCol][k]);
 
                 // Compute the complexe conjugate
-                regC.m128 = _mm_mul_ps(regC.m128,regA.m128);
+                regC = vmulq_f32(regC,regA);
 
                 // Save the values
-                _mm_store_ps(&matrixDest->valueReal[indexCol][indexRow][k],regB.m128);
-                _mm_store_ps(&matrixDest->valueImag[indexCol][indexRow][k],regC.m128);
+                vst1q_f32(&matrixDest->valueReal[indexCol][indexRow][k],regB);
+                vst1q_f32(&matrixDest->valueImag[indexCol][indexRow][k],regC);
 
             }
             for (k = k - 4; k < matrixSource->nFrames; k++)
@@ -1491,7 +1515,7 @@ void matrixMultMatrixPerElement(struct objMatrix* matrixA, struct objMatrix* mat
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
 
 #endif
 
@@ -1539,23 +1563,23 @@ void matrixMultMatrixPerElement(struct objMatrix* matrixA, struct objMatrix* mat
                 for (k = 0; k < nFrames; k+=4)
                 {
 
-                    regA.m128 = _mm_load_ps(&matrixA->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&matrixA->valueImag[indexRow][indexCol][k]);
-                    regC.m128 = _mm_load_ps(&matrixB->valueReal[indexRow][indexCol][k]);
-                    regD.m128 = _mm_load_ps(&matrixB->valueImag[indexRow][indexCol][k]);
+                    regA = vld1q_f32(&matrixA->valueReal[indexRow][indexCol][k]);
+                    regB = vld1q_f32(&matrixA->valueImag[indexRow][indexCol][k]);
+                    regC = vld1q_f32(&matrixB->valueReal[indexRow][indexCol][k]);
+                    regD = vld1q_f32(&matrixB->valueImag[indexRow][indexCol][k]);
 
                     // Re{A*B} = Re{A}*Re{B} - Im{A}*Im{B}
-                    regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
-                    regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
-                    regG.m128 = _mm_sub_ps(regE.m128,regF.m128);
+                    regE = vmulq_f32(regA,regC);
+                    regF = vmulq_f32(regB,regD);
+                    regG = vsubq_f32(regE,regF);
 
                     // Im{A*B} = Re{A}*Im{B} + Im{A}*Re{B}
-                    regE.m128 = _mm_mul_ps(regA.m128,regD.m128);
-                    regF.m128 = _mm_mul_ps(regB.m128,regC.m128);
-                    regH.m128 = _mm_add_ps(regE.m128,regF.m128);
+                    regE = vmulq_f32(regA,regD);
+                    regF = vmulq_f32(regB,regC);
+                    regH = vaddq_f32(regE,regF);
 
-                    _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regG.m128);
-                    _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regH.m128);
+                    vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regG);
+                    vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regH);
 
                 }
                 for (k = k - 4; k < nFrames; k++)
@@ -1592,7 +1616,7 @@ void matrixDividePerElement(struct objMatrix* matrixA, struct objMatrix* matrixB
 
     unsigned int indexRow;
     unsigned int indexCol;
-    unsigned int k;
+    unsigned int i,k;
 
     unsigned int nRows;
     unsigned int nCols;
@@ -1608,7 +1632,11 @@ void matrixDividePerElement(struct objMatrix* matrixA, struct objMatrix* matrixB
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
+
+    float veca[4] __attribute__((aligned (16))); //aligned on 16 bytes
+    float vecb[4] __attribute__((aligned (16))); //aligned on 16 bytes
+    
 
 #endif
 
@@ -1658,33 +1686,51 @@ void matrixDividePerElement(struct objMatrix* matrixA, struct objMatrix* matrixB
                 for (k = 0; k < nFrames; k+=4)
                 {
 
-                    regA.m128 = _mm_load_ps(&matrixA->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&matrixA->valueImag[indexRow][indexCol][k]);
-                    regC.m128 = _mm_load_ps(&matrixB->valueReal[indexRow][indexCol][k]);
-                    regD.m128 = _mm_load_ps(&matrixB->valueImag[indexRow][indexCol][k]);
+                    regA = vld1q_f32(&matrixA->valueReal[indexRow][indexCol][k]);
+                    regB = vld1q_f32(&matrixA->valueImag[indexRow][indexCol][k]);
+                    regC = vld1q_f32(&matrixB->valueReal[indexRow][indexCol][k]);
+                    regD = vld1q_f32(&matrixB->valueImag[indexRow][indexCol][k]);
 
                     // (Re{B}*Re{B} + Im{B}*Im{B})
-                    regE.m128 = _mm_mul_ps(regC.m128,regC.m128);
-                    regF.m128 = _mm_mul_ps(regD.m128,regD.m128);
-                    regH.m128 = _mm_add_ps(regE.m128,regF.m128);
+                    regE = vmulq_f32(regC,regC);
+                    regF = vmulq_f32(regD,regD);
+                    regH = vaddq_f32(regE,regF);
 
                     // (Re{A}*Re{B} + Im{A}*Im{B})
-                    regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
-                    regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
-                    regG.m128 = _mm_add_ps(regE.m128,regF.m128);
+                    regE = vmulq_f32(regA,regC);
+                    regF = vmulq_f32(regB,regD);
+                    regG = vaddq_f32(regE,regF);
 
                     // Re{A*B} = (Re{A}*Re{B} + Im{A}*Im{B})/(Re{B}*Re{B} + Im{B}*Im{B})
-                    regE.m128 = _mm_div_ps(regG.m128,regH.m128);
-                    _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regE.m128);
+                
+                    //We have no NEON divide engine
+                    //regE = vdivq_f32(regG,regH);                  
+                    //vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regE);
+                    vst1q_f32(veca,regG);
+                    vst1q_f32(vecb,regH);
+                    for (i = 0; i < 4; i++)
+                    {
+                        matrixResult->valueReal[indexRow][indexCol][k+i] = veca[i] / vecb[i];
+                    }                    
+                    
+                    
 
                     // (Im{A}*Re{B} - Re{A}*Im{B})
-                    regE.m128 = _mm_mul_ps(regB.m128,regC.m128);
-                    regF.m128 = _mm_mul_ps(regA.m128,regD.m128);
-                    regG.m128 = _mm_sub_ps(regE.m128,regF.m128);
+                    regE = vmulq_f32(regB,regC);
+                    regF = vmulq_f32(regA,regD);
+                    regG = vsubq_f32(regE,regF);
 
                     // Im{A*B} = (Im{A}*Re{B} - Re{A}*Im{B})/(Re{B}*Re{B} + Im{B}*Im{B})
-                    regE.m128 = _mm_div_ps(regG.m128,regH.m128);
-                    _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regE.m128);
+                    //We have no NEON divide engine
+                    //regE = vdivq_f32(regG,regH);
+                    //vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regE);
+                    vst1q_f32(veca,regG);
+                    vst1q_f32(vecb,regH);
+                    for (i = 0; i < 4; i++)
+                    {
+                        matrixResult->valueImag[indexRow][indexCol][k+i] = veca[i] / vecb[i];
+                    }  
+                    
 
                 }
                 for (k = k - 4; k < nFrames; k++)
@@ -1723,7 +1769,7 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 
     unsigned int indexRow;
     unsigned int indexCol;
-    unsigned int k;
+    unsigned int i,k;
 
     unsigned int nRows;
     unsigned int nCols;
@@ -1735,7 +1781,13 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regD, regF;
+    float32x4_t regA, regB, regD, regF;
+
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
+    static const float ones[4] __attribute__((aligned (16))) = {1,1,1,1} ; //aligned on 16 bytes
+
+    float veca[4] __attribute__((aligned (16))); //aligned on 16 bytes
+    float vecb[4] __attribute__((aligned (16))); //aligned on 16 bytes
 
 #endif
 
@@ -1746,16 +1798,18 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
 #ifdef USE_SIMD
 
     // Load the constant 1
-    regA.m128_f32[0] = 1.0;
-    regA.m128_f32[1] = 1.0;
-    regA.m128_f32[2] = 1.0;
-    regA.m128_f32[3] = 1.0;
+    //regA_f32[0] = 1.0;
+    //regA_f32[1] = 1.0;
+    //regA_f32[2] = 1.0;
+    //regA_f32[3] = 1.0;
+    regA = vld1q_f32(ones);
 
     // Load the constant 0
-    regB.m128_f32[0] = 0.0;
-    regB.m128_f32[1] = 0.0;
-    regB.m128_f32[2] = 0.0;
-    regB.m128_f32[3] = 0.0;
+    //regB_f32[0] = 0.0;
+    //regB_f32[1] = 0.0;
+    //regB_f32[2] = 0.0;
+    //regB_f32[3] = 0.0;
+    regB = vld1q_f32(zeros);
 
 #endif
 
@@ -1788,12 +1842,20 @@ void matrixInvRealPerElement(struct objMatrix* matrixSource, struct objMatrix* m
             for (k = 0; k < nFrames; k+=4)
             {
 
-                regD.m128 = _mm_load_ps(&matrixSource->valueReal[indexRow][indexCol][k]);
+                regD = vld1q_f32(&matrixSource->valueReal[indexRow][indexCol][k]);
 
-                regF.m128 = _mm_div_ps(regA.m128,regD.m128);
+                //regF = vdivq_f32(regA,regD);
+                vst1q_f32(veca,regA);
+                vst1q_f32(vecb,regD);
 
-                _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regF.m128);
-                _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regB.m128);
+                //vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regF);
+                for (i = 0; i < 4; i++)
+                {
+                    matrixResult->valueReal[indexRow][indexCol][k + i] = veca[i] / vecb[i];
+                }
+                
+
+                vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regB);
 
             }
             for (k = k - 4; k < nFrames; k++)
@@ -1837,7 +1899,7 @@ void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* 
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE;
+    float32x4_t regA, regB, regC, regD, regE;
 
 #endif
 
@@ -1879,16 +1941,16 @@ void matrixMultScalarPerFrame(struct objMatrix* matrixSource, struct objMatrix* 
             for (k = 0; k < nFrames; k+=4)
             {
 
-                regA.m128 = _mm_load_ps(&matrixFrames->valueReal[0][0][k]);
+                regA = vld1q_f32(&matrixFrames->valueReal[0][0][k]);
 
-                regB.m128 = _mm_load_ps(&matrixSource->valueReal[indexRow][indexCol][k]);
-                regC.m128 = _mm_load_ps(&matrixSource->valueImag[indexRow][indexCol][k]);
+                regB = vld1q_f32(&matrixSource->valueReal[indexRow][indexCol][k]);
+                regC = vld1q_f32(&matrixSource->valueImag[indexRow][indexCol][k]);
 
-                regD.m128 = _mm_mul_ps(regA.m128,regB.m128);
-                regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
+                regD = vmulq_f32(regA,regB);
+                regE = vmulq_f32(regA,regC);
 
-                _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regD.m128);
-                _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regE.m128);
+                vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regD);
+                vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regE);
 
             }
             for (k = k - 4; k < nFrames; k++)
@@ -1935,7 +1997,7 @@ void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struc
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF;
+    float32x4_t regA, regB, regC, regD, regE, regF;
 
 #endif
 
@@ -1979,19 +2041,19 @@ void matrixAddMatrix(struct objMatrix* matrixA, struct objMatrix* matrixB, struc
                 for (k = 0; k < nFrames; k+=4)
                 {
 
-                    regA.m128 = _mm_load_ps(&matrixA->valueReal[indexRow][indexCol][k]);
-                    regB.m128 = _mm_load_ps(&matrixA->valueImag[indexRow][indexCol][k]);
-                    regC.m128 = _mm_load_ps(&matrixB->valueReal[indexRow][indexCol][k]);
-                    regD.m128 = _mm_load_ps(&matrixB->valueImag[indexRow][indexCol][k]);
+                    regA = vld1q_f32(&matrixA->valueReal[indexRow][indexCol][k]);
+                    regB = vld1q_f32(&matrixA->valueImag[indexRow][indexCol][k]);
+                    regC = vld1q_f32(&matrixB->valueReal[indexRow][indexCol][k]);
+                    regD = vld1q_f32(&matrixB->valueImag[indexRow][indexCol][k]);
 
                     // Re{A+B} = Re{A} + Re{B}
-                    regE.m128 = _mm_add_ps(regA.m128,regC.m128);
+                    regE = vaddq_f32(regA,regC);
 
                     // Im{A+B} = Im{A} + Im{B}
-                    regF.m128 = _mm_add_ps(regB.m128,regD.m128);
+                    regF = vaddq_f32(regB,regD);
 
-                    _mm_store_ps(&matrixResult->valueReal[indexRow][indexCol][k],regE.m128);
-                    _mm_store_ps(&matrixResult->valueImag[indexRow][indexCol][k],regF.m128);
+                    vst1q_f32(&matrixResult->valueReal[indexRow][indexCol][k],regE);
+                    vst1q_f32(&matrixResult->valueImag[indexRow][indexCol][k],regF);
 
                 }
                 for (k = k - 4; k < nFrames; k++)
