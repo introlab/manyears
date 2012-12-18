@@ -101,11 +101,21 @@
 // This "patch" is required since the type m128 is not always recognized
 // in all environments.
 
+
+#ifdef __ARM_NEON__
+	#warning "Using NEON"
+	#include <arm_neon.h>
+#endif
+
 #ifdef USE_SIMD
 
-#include <xmmintrin.h>
-#include <sys/types.h>
 
+
+#ifdef __i386__
+
+	#include <xmmintrin.h>
+	#include <sys/types.h>
+#endif
 
 #ifdef __GNUC__
 

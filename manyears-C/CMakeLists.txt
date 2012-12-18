@@ -28,6 +28,7 @@ IF (CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX )
     SET(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-O2 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon")
     SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-O2 -pipe -march=armv7-a -mcpu=cortex-a8 -mtune=cortex-a8 -mfpu=neon")
     SET(MANYEARS_LINK_FLAGS "-O2")
+#    ADD_DEFINITIONS(-DUSE_SIMD)
 ENDIF(CMAKE_COMPILER_IS_GNUCC OR CMAKE_COMPILER_IS_GNUCXX)
 
 IF (MSVC)

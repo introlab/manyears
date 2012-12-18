@@ -426,153 +426,6 @@ void fftTerminate(struct objFFT* myFFT)
 void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArrayImag, float* destArrayReal, float* destArrayImag)
 {
 
-#ifndef USE_SIMD
-
-    unsigned int indexArray;
-/*
-    // The basic structure in this algorithm is a butterfly as follows:
-    //
-    // a o---o-->--o--->---o A = a + b
-    //        \   /
-    //         \ /
-    //          X
-    //         / \
-    //        /   \  Wn(r)
-    // b o---o-->--o--->---o B = (a - b) Wn(r)
-    //         -1
-*/
-    // Define the INDEX of the input parameter a
-    unsigned int a;
-    // Define the INDEX of the input parameter b
-    unsigned int b;
-    // Define the parameter r
-    unsigned int r;
-
-    // Define the real part of the input parameter a
-    float valueAReal;
-    // Define the imaginary part of the input parameter a
-    float valueAImag;
-    // Define the real part of the input parameter b
-    float valueBReal;
-    // Define the imaginary part of the input parameter b
-    float valueBImag;
-    // Define the real part of the output parameter A
-    float newValueAReal;
-    // Define the imaginary part of the output parameter A
-    float newValueAImag;
-    // Define the real part of the output parameter B
-    float newValueBReal;
-    // Define the imaginary part of the output parameter B
-    float newValueBImag;
-
-    // Define accumulator to compute the index of parameters a and b
-    unsigned int accumulatorA;
-    // Define accumulator to compute the index of parameter r
-    unsigned int accumulatorR;
-
-    // Define the nubmer of groups in the current level
-    unsigned int numberGroups;
-    // Define the number of points per group
-    unsigned int numberSubGroups;
-
-    // Define the index of the level
-    unsigned int indexLevel;
-    // Define the index of the group
-    unsigned int indexGroup;
-    // Define the index of the point inside the group
-    unsigned int indexSubGroup;
-
-    // Define the index to generate the reverse bit order array
-    unsigned int indexRevBitOrder;
-
-    // Temporary variables to speed up butterfly computation
-    float diffABReal;
-    float diffABImag;
-    float curWnReal;
-    float curWnImag;
-
-    // Load parameters
-    numberGroups = 1;
-    numberSubGroups = myFFT->FFT_HALFSIZE;
-
-    // Copy all elements from the source array in the working array
-    for (indexArray = 0; indexArray < myFFT->FFT_SIZE; indexArray++)
-    {
-        myFFT->workingArrayReal[indexArray] = sourceArrayReal[indexArray];
-        myFFT->workingArrayImag[indexArray] = sourceArrayImag[indexArray];
-    }
-
-    // Loop for each level
-    for (indexLevel = 0; indexLevel < myFFT->FFT_NBLEVELS; indexLevel++)
-    {
-
-        accumulatorA = 0;
-        accumulatorR = 0;
-
-        // Loop for each group in the current level
-        for (indexGroup = 0; indexGroup < numberGroups; indexGroup++)
-        {
-
-            // Loop for each element of the group
-            for (indexSubGroup = 0; indexSubGroup < numberSubGroups; indexSubGroup++)
-            {
-
-                // Calculate the indexes
-                a = accumulatorA;
-                b = accumulatorA + numberSubGroups;
-                r = accumulatorR;
-                accumulatorA++;
-                accumulatorR += numberGroups;
-
-                // Load the values a and b (these are complex values)
-                valueAReal = myFFT->workingArrayReal[a];
-                valueAImag = myFFT->workingArrayImag[a];
-                valueBReal = myFFT->workingArrayReal[b];
-                valueBImag = myFFT->workingArrayImag[b];
-
-                // Apply A = a + b from the butterfly
-                newValueAReal = valueAReal + valueBReal;
-                newValueAImag = valueAImag + valueBImag;
-
-                // Apply B = (a - b) * Wn(r) from the butterfly
-                diffABReal = valueAReal - valueBReal;
-                diffABImag = valueAImag - valueBImag;
-                curWnReal = myFFT->WnReal[r];
-                curWnImag = myFFT->WnImag[r];
-                newValueBReal = diffABReal * curWnReal - diffABImag * curWnImag;
-                newValueBImag = diffABReal * curWnImag + diffABImag * curWnReal;
-
-                // Save results at the same place as the initial values
-                myFFT->workingArrayReal[a] = newValueAReal;
-                myFFT->workingArrayImag[a] = newValueAImag;
-                myFFT->workingArrayReal[b] = newValueBReal;
-                myFFT->workingArrayImag[b] = newValueBImag;
-
-            }
-
-            // Update accumulators
-            accumulatorA += numberSubGroups;
-            accumulatorR = 0;
-
-        }
-
-        // Divide the number of points by group by 2 for the next level
-        numberSubGroups >>= 1;
-        // Multiply the number of groups by 2 for the next level
-        numberGroups <<= 1;
-
-    }
-
-    // Reorder result (it is actually in reverse bit order) and copy to destination array
-    for (indexRevBitOrder = 0; indexRevBitOrder < myFFT->FFT_SIZE; indexRevBitOrder++)
-    {
-
-        destArrayReal[indexRevBitOrder] = myFFT->workingArrayReal[myFFT->revBitOrderArray[indexRevBitOrder]];
-        destArrayImag[indexRevBitOrder] = myFFT->workingArrayImag[myFFT->revBitOrderArray[indexRevBitOrder]];
-
-    }
-
-#else
 
     // Array index
     unsigned int indexGroup;
@@ -596,7 +449,10 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
     unsigned int indexRevBitOrder;
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG;
+    //__m128_mod regA, regB, regC, regD, regE, regF, regG;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG;	
+
+	
 
     // *************************************************************************
     // * STEP 0: Copy source                                                   *
@@ -607,18 +463,24 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
     {
 
         // Load sourceArrayReal[k] in regA
-        regA.m128 = _mm_load_ps(&sourceArrayReal[indexArray]);
+        //regA.m128 = _mm_load_ps(&sourceArrayReal[indexArray]);
+	regA = vld1q_f32(&sourceArrayReal[indexArray]);
 
         // Load sourceArrayImag[k] in regB
-        regB.m128 = _mm_load_ps(&sourceArrayImag[indexArray]);
+        //regB.m128 = _mm_load_ps(&sourceArrayImag[indexArray]);
+	regB = vld1q_f32(&sourceArrayImag[indexArray]);
 
         // Copy regA in workingArrayReal[k]
-        _mm_store_ps(&myFFT->workingArrayReal[indexArray], regA.m128);
+        //_mm_store_ps(&myFFT->workingArrayReal[indexArray], regA.m128);
+	vst1q_f32(&myFFT->workingArrayReal[indexArray], regA);
 
         // Copy regB in workingArrayImag[k]
-        _mm_store_ps(&myFFT->workingArrayImag[indexArray], regB.m128);
+        //_mm_store_ps(&myFFT->workingArrayImag[indexArray], regB.m128);
+	vst1q_f32(&myFFT->workingArrayImag[indexArray], regB);
 
     }
+
+
 
     // *************************************************************************
     // * STEP 1: Perform computations for all levels except two last one       *
@@ -634,44 +496,65 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
             {
 
                 // Load arguments aReal, aImag, bReal and bImag
-                regA.m128 = _mm_load_ps(myFFT->simdARealGroups[indexGroup]);
-                regB.m128 = _mm_load_ps(myFFT->simdAImagGroups[indexGroup]);
-                regC.m128 = _mm_load_ps(myFFT->simdBRealGroups[indexGroup]);
-                regD.m128 = _mm_load_ps(myFFT->simdBImagGroups[indexGroup]);
+                //regA.m128 = _mm_load_ps(myFFT->simdARealGroups[indexGroup]);
+                //regB.m128 = _mm_load_ps(myFFT->simdAImagGroups[indexGroup]);
+                //regC.m128 = _mm_load_ps(myFFT->simdBRealGroups[indexGroup]);
+                //regD.m128 = _mm_load_ps(myFFT->simdBImagGroups[indexGroup]);
+		regA = vld1q_f32(myFFT->simdARealGroups[indexGroup]);
+		regB = vld1q_f32(myFFT->simdAImagGroups[indexGroup]);
+		regC = vld1q_f32(myFFT->simdBRealGroups[indexGroup]);
+		regD = vld1q_f32(myFFT->simdBImagGroups[indexGroup]);
 
                 // First addition: (aReal + bReal), (aImag + bImag)
-                regE.m128 = _mm_add_ps(regA.m128,regC.m128);
-                regF.m128 = _mm_add_ps(regB.m128,regD.m128);
+                //regE.m128 = _mm_add_ps(regA.m128,regC.m128);
+                //regF.m128 = _mm_add_ps(regB.m128,regD.m128);
+		regE = vaddq_f32(regA,regC);
+		regF = vaddq_f32(regB,regD);
+
 
                 // Store A = (aReal + bReal) + j(aImag + bImag)
-                _mm_store_ps(myFFT->simdARealGroups[indexGroup], regE.m128);
-                _mm_store_ps(myFFT->simdAImagGroups[indexGroup], regF.m128);
+                //_mm_store_ps(myFFT->simdARealGroups[indexGroup], regE.m128);
+                //_mm_store_ps(myFFT->simdAImagGroups[indexGroup], regF.m128);
+		vst1q_f32(myFFT->simdARealGroups[indexGroup], regE);
+		vst1q_f32(myFFT->simdAImagGroups[indexGroup], regF);
 
                 // Second addition: B = (aReal - bReal), (aImag - bImag)
-                regE.m128 = _mm_sub_ps(regA.m128,regC.m128);
-                regF.m128 = _mm_sub_ps(regB.m128,regD.m128);
+                //regE.m128 = _mm_sub_ps(regA.m128,regC.m128);
+                //regF.m128 = _mm_sub_ps(regB.m128,regD.m128);
+		regE = vsubq_f32(regA,regC);
+		regF = vsubq_f32(regB,regD);
 
                 // Load twiddle factor WnReal and WnImag
-                regA.m128 = _mm_load_ps(myFFT->simdRRealGroups[indexGroup]);
-                regB.m128 = _mm_load_ps(myFFT->simdRImagGroups[indexGroup]);
+                //regA.m128 = _mm_load_ps(myFFT->simdRRealGroups[indexGroup]);
+                //regB.m128 = _mm_load_ps(myFFT->simdRImagGroups[indexGroup]);
+		regA = vld1q_f32(myFFT->simdRRealGroups[indexGroup]);
+		regB = vld1q_f32(myFFT->simdRImagGroups[indexGroup]);
 
                 // Multiplications
 
                 // (E*A - F*B)
-                regC.m128 = _mm_mul_ps(regE.m128,regA.m128);
-                regD.m128 = _mm_mul_ps(regF.m128,regB.m128);
-                regG.m128 = _mm_sub_ps(regC.m128,regD.m128);
+                //regC.m128 = _mm_mul_ps(regE.m128,regA.m128);
+                //regD.m128 = _mm_mul_ps(regF.m128,regB.m128);
+                //regG.m128 = _mm_sub_ps(regC.m128,regD.m128);
+		regC = vmulq_f32(regE,regA);
+		regD = vmulq_f32(regF,regB);
+		regG = vsubq_f32(regC,regD);
 
                 // (F*A + E*B)
-                regC.m128 = _mm_mul_ps(regF.m128,regA.m128);
-                regD.m128 = _mm_mul_ps(regE.m128,regB.m128);
-                regA.m128 = _mm_add_ps(regC.m128,regD.m128);
+                //regC.m128 = _mm_mul_ps(regF.m128,regA.m128);
+                //regD.m128 = _mm_mul_ps(regE.m128,regB.m128);
+                //regA.m128 = _mm_add_ps(regC.m128,regD.m128);
+		regC = vmulq_f32(regF,regA);
+		regD = vmulq_f32(regE,regB);
+		regA = vaddq_f32(regC,regD);
 
                 // Store B = (aReal - bReal) * WnReal - (aImag - bImag) * WnImag
                 //         + j[ (aImag - bImag) * WnReal + (aReal - bReal) * WnImag ]
 
-                _mm_store_ps(myFFT->simdBRealGroups[indexGroup], regG.m128);
-                _mm_store_ps(myFFT->simdBImagGroups[indexGroup], regA.m128);
+                //_mm_store_ps(myFFT->simdBRealGroups[indexGroup], regG.m128);
+                //_mm_store_ps(myFFT->simdBImagGroups[indexGroup], regA.m128);
+		vst1q_f32(myFFT->simdBRealGroups[indexGroup], regG);
+		vst1q_f32(myFFT->simdBImagGroups[indexGroup], regA);
 
                 // Increment the counter
                 indexGroup++;
@@ -679,6 +562,8 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
             }
 
         }
+
+
 
     // *************************************************************************
     // * STEP 2: Perform computations for level 1                              *
@@ -743,6 +628,7 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
 
     }
 
+
     // *************************************************************************
     // * STEP 3: Perform computations for level 0                              *
     // *************************************************************************
@@ -793,7 +679,7 @@ void fftCompute(struct objFFT* myFFT, float* sourceArrayReal, float* sourceArray
 
     }
 
-#endif
+
 
 }
 
@@ -921,72 +807,74 @@ void fftComputeTwice(struct objFFT* myFFT, float *sourceArray1, float *sourceArr
 void ifftCompute(struct objFFT* myFFT, float *sourceArrayReal, float *sourceArrayImag, float *destArrayReal, float *destArrayImag)
 {
 
-#ifndef USE_SIMD
+
 
     // Index to go through each element
     unsigned int k;
 
-    // Apply prefiltering
-    for (k = 0; k < myFFT->FFT_SIZE; k++)
-    {
-        destArrayImag[k] = -1.0f * sourceArrayImag[k];
-    }
-
-    // Compute FFT
-    fftCompute(myFFT, sourceArrayReal, destArrayImag, destArrayReal, destArrayImag);
-
-    // Apply post filtering
-    for (k = 0; k < myFFT->FFT_SIZE; k++)
-    {
-        destArrayReal[k] = myFFT->FFT_SIZE_INV * destArrayReal[k];
-        destArrayImag[k] = -1.0f * myFFT->FFT_SIZE_INV * destArrayImag[k];
-    }
-
-#else
-
-    // Index to go through each element
-    unsigned int k;
+    const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
+    const float fft_size_inv[4] __attribute__((aligned (16))) = {myFFT->FFT_SIZE_INV, myFFT->FFT_SIZE_INV, myFFT->FFT_SIZE_INV, myFFT->FFT_SIZE_INV};
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF;
+    //__m128_mod regA, regB, regC, regD, regE, regF;
+    float32x4_t regA, regB, regC, regD, regE, regF;
 
-    regA.m128_f32[0] = -1;
-    regA.m128_f32[1] = -1;
-    regA.m128_f32[2] = -1;
-    regA.m128_f32[3] = -1;
+	
+    //regA.m128_f32[0] = -1;
+    //regA.m128_f32[1] = -1;
+    //regA.m128_f32[2] = -1;
+    //regA.m128_f32[3] = -1;
+
+    regA = vld1q_f32(minus_1);
+
 
     // Apply prefiltering
     for (k = 0; k < myFFT->FFT_SIZE; k+=4)
     {
-        regB.m128 = _mm_load_ps(&sourceArrayImag[k]);
-        regC.m128 = _mm_mul_ps(regA.m128,regB.m128);
-        _mm_store_ps(&destArrayImag[k],regC.m128);
+        //regB.m128 = _mm_load_ps(&sourceArrayImag[k]);
+        //regC.m128 = _mm_mul_ps(regA.m128,regB.m128);
+        //_mm_store_ps(&destArrayImag[k],regC.m128);
+	regB = vld1q_f32(&sourceArrayImag[k]);
+	regC = vmulq_f32(regA,regB);
+	vst1q_f32(&destArrayImag[k],regC);
     }
 
     // Compute FFT
     fftCompute(myFFT, sourceArrayReal, destArrayImag, destArrayReal, destArrayImag);
 
-    regA.m128_f32[0] = myFFT->FFT_SIZE_INV;
-    regA.m128_f32[1] = myFFT->FFT_SIZE_INV;
-    regA.m128_f32[2] = myFFT->FFT_SIZE_INV;
-    regA.m128_f32[3] = myFFT->FFT_SIZE_INV;
-    regB.m128_f32[0] = -1 * myFFT->FFT_SIZE_INV;
-    regB.m128_f32[1] = -1 * myFFT->FFT_SIZE_INV;
-    regB.m128_f32[2] = -1 * myFFT->FFT_SIZE_INV;
-    regB.m128_f32[3] = -1 * myFFT->FFT_SIZE_INV;
+    //regA.m128_f32[0] = myFFT->FFT_SIZE_INV;
+    //regA.m128_f32[1] = myFFT->FFT_SIZE_INV;
+    //regA.m128_f32[2] = myFFT->FFT_SIZE_INV;
+    //regA.m128_f32[3] = myFFT->FFT_SIZE_INV;
+    regA = vld1q_f32(fft_size_inv);
+
+    //regB.m128_f32[0] = -1 * myFFT->FFT_SIZE_INV;
+    //regB.m128_f32[1] = -1 * myFFT->FFT_SIZE_INV;
+    //regB.m128_f32[2] = -1 * myFFT->FFT_SIZE_INV;
+    //regB.m128_f32[3] = -1 * myFFT->FFT_SIZE_INV;
+    regC = vld1q_f32(minus_1);
+    regB = vmulq_f32(regA,regC);
+
+    
 
     // Apply post filtering
     for (k = 0; k < myFFT->FFT_SIZE; k+= 4)
     {
-        regC.m128 = _mm_load_ps(&destArrayReal[k]);
-        regD.m128 = _mm_load_ps(&destArrayImag[k]);
-        regE.m128 = _mm_mul_ps(regC.m128,regA.m128);
-        regF.m128 = _mm_mul_ps(regD.m128,regB.m128);
-        _mm_store_ps(&destArrayReal[k],regE.m128);
-        _mm_store_ps(&destArrayImag[k],regF.m128);
+        //regC.m128 = _mm_load_ps(&destArrayReal[k]);
+        //regD.m128 = _mm_load_ps(&destArrayImag[k]);
+        //regE.m128 = _mm_mul_ps(regC.m128,regA.m128);
+        //regF.m128 = _mm_mul_ps(regD.m128,regB.m128);
+        //_mm_store_ps(&destArrayReal[k],regE.m128);
+        //_mm_store_ps(&destArrayImag[k],regF.m128);
+	regC = vld1q_f32(&destArrayReal[k]);
+	regD = vld1q_f32(&destArrayImag[k]);
+	regE = vmulq_f32(regC,regA);
+	regF = vmulq_f32(regD,regB);
+	vst1q_f32(&destArrayReal[k],regE);
+	vst1q_f32(&destArrayImag[k],regF);	
     }
 
-#endif
+
 
 }
 
