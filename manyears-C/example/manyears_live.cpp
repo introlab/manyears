@@ -126,12 +126,12 @@ public:
             mixtureUpdate(workspace.myMixture, workspace.myTrackedSources, workspace.myPotentialSources);
 
             //#5 Separate sources
-            //gssProcess(workspace.myGSS, workspace.myPreprocessor, workspace.myTrackedSources, workspace.mySeparatedSources);
-            //postfilterProcess(workspace.myPostfilter, workspace.mySeparatedSources, workspace.myPreprocessor, workspace.myPostfilteredSources);
+            gssProcess(workspace.myGSS, workspace.myPreprocessor, workspace.myTrackedSources, workspace.mySeparatedSources);
+            postfilterProcess(workspace.myPostfilter, workspace.mySeparatedSources, workspace.myPreprocessor, workspace.myPostfilteredSources);
 
             //#6 Postprocess
-            //postprocessorProcessFrameSeparated(workspace.myPostprocessorSeparated, workspace.myTrackedSources, workspace.mySeparatedSources);
-            //postprocessorProcessFramePostfiltered(workspace.myPostprocessorPostfiltered, workspace.myTrackedSources, workspace.myPostfilteredSources);
+            postprocessorProcessFrameSeparated(workspace.myPostprocessorSeparated, workspace.myTrackedSources, workspace.mySeparatedSources);
+            postprocessorProcessFramePostfiltered(workspace.myPostprocessorPostfiltered, workspace.myTrackedSources, workspace.myPostfilteredSources);
 
             //Print result
             for (unsigned int source_index = 0; source_index < trackedSourcesGetMaxNumberSources(workspace.myTrackedSources); source_index++)

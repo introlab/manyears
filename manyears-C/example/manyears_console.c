@@ -243,8 +243,8 @@ int main (int argc, char* argv[])
             postprocessorProcessFramePostfiltered(workspace.myPostprocessorPostfiltered, workspace.myTrackedSources, workspace.myPostfilteredSources);
 
             //#7 Output results in files
-            //outputProcess(workspace.myOutputSeparated, workspace.myPostprocessorSeparated);
-            //outputProcess(workspace.myOutputPostfiltered, workspace.myPostprocessorPostfiltered);
+            outputProcess(workspace.myOutputSeparated, workspace.myPostprocessorSeparated);
+            outputProcess(workspace.myOutputPostfiltered, workspace.myPostprocessorPostfiltered);
 
             //#8 Output results in terminal
 
