@@ -87,13 +87,16 @@
  *                                                                             *
  ******************************************************************************/
 
-#ifdef USE_SIMD
-#include <xmmintrin.h>
-#endif
+
 
 #include <stdio.h>
 
 #include "Tracking/filter.h"
+
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 
 // ---
 unsigned int resamplingCounter = 0;
@@ -831,7 +834,7 @@ void filterProb(struct objFilter *myFilter, float positionX, float positionY, fl
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
 
 #endif
 
@@ -866,22 +869,40 @@ void filterProb(struct objFilter *myFilter, float positionX, float positionY, fl
 #else
 
     // Load the constant -1 * 4 / ( 128 * stdDev * stdDev )
-    regA.m128_f32[0] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regA.m128_f32[1] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regA.m128_f32[2] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regA.m128_f32[3] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+/*
+    regA_f32[0] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regA_f32[1] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regA_f32[2] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regA_f32[3] = -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+*/
+    regA = (float32x4_t) {-1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                        -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION), 
+                        -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                        -1.0 * 4.0 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION)};
 
     // Load the constant 0.4 / ( 128 * stdDev * stdDev )
-    regB.m128_f32[0] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regB.m128_f32[1] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regB.m128_f32[2] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regB.m128_f32[3] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+/*
+    regB_f32[0] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regB_f32[1] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regB_f32[2] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regB_f32[3] = -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+*/
+    regB = (float32x4_t) {-1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                            -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                            -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                            -1.0 * 0.4 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION)};
 
     // Load the constant 0.1 / ( 128 * stdDev * stdDev )
-    regC.m128_f32[0] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regC.m128_f32[1] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regC.m128_f32[2] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
-    regC.m128_f32[3] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+/*
+    regC_f32[0] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regC_f32[1] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regC_f32[2] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+    regC_f32[3] = -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION);
+*/
+    regC = (float32x4_t) {-1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                            -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION), 
+                            -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION),
+                            -1.0 * 0.1 / (128.0 * myFilter->FILTER_STDDEVIATION * myFilter->FILTER_STDDEVIATION)};
 
     // Loop for each particle
     for (indexParticle = 0; (indexParticle + 3) < myFilter->FILTER_NBPARTICLES; indexParticle+=4)
@@ -895,220 +916,269 @@ void filterProb(struct objFilter *myFilter, float positionX, float positionY, fl
         // where d = -[(x-x')^2 + (y-y')^2 + (z-z')^2]/sigma^2
 
         // Load x
-        regD.m128_f32[0] = myFilter->position[indexParticle][0];
-        regD.m128_f32[1] = myFilter->position[indexParticle+1][0];
-        regD.m128_f32[2] = myFilter->position[indexParticle+2][0];
-        regD.m128_f32[3] = myFilter->position[indexParticle+3][0];
-
+/*
+        regD_f32[0] = myFilter->position[indexParticle][0];
+        regD_f32[1] = myFilter->position[indexParticle+1][0];
+        regD_f32[2] = myFilter->position[indexParticle+2][0];
+        regD_f32[3] = myFilter->position[indexParticle+3][0];
+*/
+        regD = (float32x4_t) {myFilter->position[indexParticle][0], 
+                                myFilter->position[indexParticle+1][0],
+                                myFilter->position[indexParticle+2][0],
+                                myFilter->position[indexParticle+3][0]};
+                
         // Load x'
-        regE.m128_f32[0] = positionX;
-        regE.m128_f32[1] = positionX;
-        regE.m128_f32[2] = positionX;
-        regE.m128_f32[3] = positionX;
+/*
+        regE_f32[0] = positionX;
+        regE_f32[1] = positionX;
+        regE_f32[2] = positionX;
+        regE_f32[3] = positionX;
+*/
+        regE = (float32x4_t) {positionX, positionX, positionX, positionX};
 
         // x' - x
-        regF.m128 = _mm_sub_ps(regE.m128,regD.m128);
+        regF = vsubq_f32(regE,regD);
 
         // (x' - x)^2
-        regH.m128 = _mm_mul_ps(regF.m128,regF.m128);
+        regH = vmulq_f32(regF,regF);
 
         // Load y
-        regD.m128_f32[0] = myFilter->position[indexParticle][1];
-        regD.m128_f32[1] = myFilter->position[indexParticle+1][1];
-        regD.m128_f32[2] = myFilter->position[indexParticle+2][1];
-        regD.m128_f32[3] = myFilter->position[indexParticle+3][1];
+/*
+        regD_f32[0] = myFilter->position[indexParticle][1];
+        regD_f32[1] = myFilter->position[indexParticle+1][1];
+        regD_f32[2] = myFilter->position[indexParticle+2][1];
+        regD_f32[3] = myFilter->position[indexParticle+3][1];
+*/
+        regD = (float32x4_t) {myFilter->position[indexParticle][1],
+                    myFilter->position[indexParticle+1][1],
+                    myFilter->position[indexParticle+2][1],
+                    myFilter->position[indexParticle+3][1]};
 
         // Load y'
-        regE.m128_f32[0] = positionY;
-        regE.m128_f32[1] = positionY;
-        regE.m128_f32[2] = positionY;
-        regE.m128_f32[3] = positionY;
+/*
+        regE_f32[0] = positionY;
+        regE_f32[1] = positionY;
+        regE_f32[2] = positionY;
+        regE_f32[3] = positionY;
+*/
+        regE = (float32x4_t) {positionY, positionY, positionY, positionY}; 
 
         // y' - y
-        regF.m128 = _mm_sub_ps(regE.m128,regD.m128);
+        regF = vsubq_f32(regE,regD);
 
         // (y' - y)^2
-        regG.m128 = _mm_mul_ps(regF.m128,regF.m128);
+        regG = vmulq_f32(regF,regF);
 
         // (x' - x)^2 + (y' - y)^2
-        regH.m128 = _mm_add_ps(regH.m128,regG.m128);
+        regH = vaddq_f32(regH,regG);
 
         // Load z
-        regD.m128_f32[0] = myFilter->position[indexParticle][2];
-        regD.m128_f32[1] = myFilter->position[indexParticle+1][2];
-        regD.m128_f32[2] = myFilter->position[indexParticle+2][2];
-        regD.m128_f32[3] = myFilter->position[indexParticle+3][2];
+/*
+        regD_f32[0] = myFilter->position[indexParticle][2];
+        regD_f32[1] = myFilter->position[indexParticle+1][2];
+        regD_f32[2] = myFilter->position[indexParticle+2][2];
+        regD_f32[3] = myFilter->position[indexParticle+3][2];
+*/
+        regD = (float32x4_t) {myFilter->position[indexParticle][2],
+                        myFilter->position[indexParticle+1][2],
+                        myFilter->position[indexParticle+2][2],
+                        myFilter->position[indexParticle+3][2]};
 
         // Load z'
-        regE.m128_f32[0] = positionZ;
-        regE.m128_f32[1] = positionZ;
-        regE.m128_f32[2] = positionZ;
-        regE.m128_f32[3] = positionZ;
+/*
+        regE_f32[0] = positionZ;
+        regE_f32[1] = positionZ;
+        regE_f32[2] = positionZ;
+        regE_f32[3] = positionZ;
+*/
+        regE = (float32x4_t) {positionZ, positionZ, positionZ, positionZ};
 
         // z' - z
-        regF.m128 = _mm_sub_ps(regE.m128,regD.m128);
+        regF = vsubq_f32(regE,regD);
 
         // (z' - z)^2
-        regG.m128 = _mm_mul_ps(regF.m128,regF.m128);
+        regG = vmulq_f32(regF,regF);
 
         // (x' - x)^2 + (y' - y)^2 + (z' - z)^2
-        regH.m128 = _mm_add_ps(regH.m128,regG.m128);
+        regH = vaddq_f32(regH,regG);
 
         // Load the constant 1
-        regD.m128_f32[0] = 1.0;
-        regD.m128_f32[1] = 1.0;
-        regD.m128_f32[2] = 1.0;
-        regD.m128_f32[3] = 1.0;
+/*
+        regD_f32[0] = 1.0;
+        regD_f32[1] = 1.0;
+        regD_f32[2] = 1.0;
+        regD_f32[3] = 1.0;
+*/
+        regD = (float32x4_t) {1.0, 1.0, 1.0, 1.0};
 
         // Load the constant 0
-        regC.m128_f32[0] = 0.0;
-        regC.m128_f32[1] = 0.0;
-        regC.m128_f32[2] = 0.0;
-        regC.m128_f32[3] = 0.0;
+/*
+        regC_f32[0] = 0.0;
+        regC_f32[1] = 0.0;
+        regC_f32[2] = 0.0;
+        regC_f32[3] = 0.0;
+*/
+        regC = (float32x4_t) {0.0, 0.0, 0.0, 0.0};
 
         // +--------------------------------------------------------------------+
         // | Compute 0.8 * exp(4*d)                                             |
         // +--------------------------------------------------------------------+
 
         // Compute -1 * distance * ( 4 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_mul_ps(regH.m128,regA.m128);
+        regE = vmulq_f32(regH,regA);
 
         // Compute 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_add_ps(regD.m128,regE.m128);
+        regE = vaddq_f32(regD,regE);
 
         // If 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) < 0 then set to 0
-        regF.m128 = _mm_cmpgt_ps(regE.m128,regC.m128);
-        regE.m128 = _mm_and_ps(regE.m128,regF.m128);
+        //regF = _mm_cmpgt_ps(regE,regC);
+        //regE = _mm_and_ps(regE,regF);
+        regE = vmaxq_f32(regC, regE);
+    
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 2
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 4
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 8
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 16
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 32
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 64
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 128
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Load the constant 0.8
-        regF.m128_f32[0] = 0.8;
-        regF.m128_f32[1] = 0.8;
-        regF.m128_f32[2] = 0.8;
-        regF.m128_f32[3] = 0.8;
+/*
+        regF_f32[0] = 0.8;
+        regF_f32[1] = 0.8;
+        regF_f32[2] = 0.8;
+        regF_f32[3] = 0.8;
+*/
+        regF = (float32x4_t) {0.8, 0.8, 0.8, 0.8};
 
         // Compute 0.8 * ( 1 + -1 * distance * ( 4 / (128 * stdDev * stdDev) ) ) ^ 128
-        regG.m128 = _mm_mul_ps(regF.m128,regE.m128);
+        regG = vmulq_f32(regF,regE);
 
         // +--------------------------------------------------------------------+
         // | Compute 0.18 * exp(0.4*d)                                          |
         // +--------------------------------------------------------------------+
 
         // Compute -1 * distance * ( 0.4 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_mul_ps(regH.m128,regB.m128);
+        regE = vmulq_f32(regH,regB);
 
         // Compute 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_add_ps(regD.m128,regE.m128);
+        regE = vaddq_f32(regD,regE);
 
         // If 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) < 0 then set to 0
-        regF.m128 = _mm_cmpgt_ps(regE.m128,regC.m128);
-        regE.m128 = _mm_and_ps(regE.m128,regF.m128);
+        //regF = _mm_cmpgt_ps(regE,regC);
+        //regE = _mm_and_ps(regE,regF);
+        regE = vmaxq_f32(regE, regC);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 2
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 4
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 8
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 16
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 32
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 64
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 128
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Load the constant 0.8
-        regF.m128_f32[0] = 0.18;
-        regF.m128_f32[1] = 0.18;
-        regF.m128_f32[2] = 0.18;
-        regF.m128_f32[3] = 0.18;
-
+/*
+        regF_f32[0] = 0.18;
+        regF_f32[1] = 0.18;
+        regF_f32[2] = 0.18;
+        regF_f32[3] = 0.18;
+*/
+        regF = (float32x4_t) {0.18, 0.18, 0.18, 0.18};
         // Compute 0.18 * ( 1 + -1 * distance * ( 0.4 / (128 * stdDev * stdDev) ) ) ^ 128
-        regF.m128 = _mm_mul_ps(regF.m128,regE.m128);
+        regF = vmulq_f32(regF,regE);
 
         // Compute 0.8 * exp(4*d) + 0.18 * exp(0.4*d)
-        regG.m128 = _mm_add_ps(regG.m128,regF.m128);
+        regG = vaddq_f32(regG,regF);
 
         // +--------------------------------------------------------------------+
         // | Compute 0.02 * exp(0.1*d)                                          |
         // +--------------------------------------------------------------------+
 
         // Compute -1 * distance * ( 0.1 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_mul_ps(regH.m128,regB.m128);
+        regE = vmulq_f32(regH,regB);
 
         // Compute 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) )
-        regE.m128 = _mm_add_ps(regD.m128,regE.m128);
+        regE = vaddq_f32(regD,regE);
 
         // If 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) < 0 then set to 0
-        regF.m128 = _mm_cmpgt_ps(regE.m128,regC.m128);
-        regE.m128 = _mm_and_ps(regE.m128,regF.m128);
+        //regF = _mm_cmpgt_ps(regE,regC);
+        //regE = _mm_and_ps(regE,regF);
+        regE = vmaxq_f32(regC, regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 2
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 4
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 8
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 16
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 32
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 64
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Compute ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 128
-        regE.m128 = _mm_mul_ps(regE.m128,regE.m128);
+        regE = vmulq_f32(regE,regE);
 
         // Load the constant 0.02
-        regF.m128_f32[0] = 0.02;
-        regF.m128_f32[1] = 0.02;
-        regF.m128_f32[2] = 0.02;
-        regF.m128_f32[3] = 0.02;
+/*
+        regF_f32[0] = 0.02;
+        regF_f32[1] = 0.02;
+        regF_f32[2] = 0.02;
+        regF_f32[3] = 0.02;
+*/
+        regF = (float32x4_t) {0.02, 0.02, 0.02, 0.02};
 
         // Compute 0.02 * ( 1 + -1 * distance * ( 0.1 / (128 * stdDev * stdDev) ) ) ^ 128
-        regF.m128 = _mm_mul_ps(regF.m128,regE.m128);
+        regF = vmulq_f32(regF,regE);
 
         // Compute 0.8 * exp(4*d) + 0.18 * exp(0.4*d) + 0.02 * exp(0.1*d)
-        regG.m128 = _mm_add_ps(regG.m128,regF.m128);
+        regG = vaddq_f32(regG,regF);
 
         // Save in the array of individual results
-        individualProb[indexParticle] = regG.m128_f32[0];
-        individualProb[indexParticle+1] = regG.m128_f32[1];
-        individualProb[indexParticle+2] = regG.m128_f32[2];
-        individualProb[indexParticle+3] = regG.m128_f32[3];
+/*
+        individualProb[indexParticle] = regG_f32[0];
+        individualProb[indexParticle+1] = regG_f32[1];
+        individualProb[indexParticle+2] = regG_f32[2];
+        individualProb[indexParticle+3] = regG_f32[3];
+*/
+        //individualProb must be aligned?
+        vst1q_f32(&individualProb[indexParticle], regG);
 
     }
 
