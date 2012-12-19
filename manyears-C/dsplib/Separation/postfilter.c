@@ -89,6 +89,10 @@
 
 #include "Separation/postfilter.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 /*******************************************************************************
  * postfilterInit                                                              *
  * --------------------------------------------------------------------------- *
@@ -752,7 +756,7 @@ void postfilterRefreshSources(struct objPostfilter* myPostfilter, struct objSepa
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE;
+    float32x4_t regA, regB, regC, regD, regE;
 
 #endif
 
@@ -815,16 +819,16 @@ void postfilterRefreshSources(struct objPostfilter* myPostfilter, struct objSepa
                     for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k+=4)
                     {
 
-                        regA.m128 = _mm_load_ps(&mySeparatedSources->sourcesFramesReal[indexID][k]);
-                        regB.m128 = _mm_load_ps(&mySeparatedSources->sourcesFramesImag[indexID][k]);
+                        regA = vld1q_f32(&mySeparatedSources->sourcesFramesReal[indexID][k]);
+                        regB = vld1q_f32(&mySeparatedSources->sourcesFramesImag[indexID][k]);
 
-                        regC.m128 = _mm_mul_ps(regA.m128,regA.m128);
-                        regD.m128 = _mm_mul_ps(regB.m128,regB.m128);
-                        regE.m128 = _mm_add_ps(regC.m128,regD.m128);
+                        regC = vmulq_f32(regA,regA);
+                        regD = vmulq_f32(regB,regB);
+                        regE = vaddq_f32(regC,regD);
 
-                        _mm_store_ps(&myPostfilter->YReal[indexSource][k], regA.m128);
-                        _mm_store_ps(&myPostfilter->YImag[indexSource][k], regB.m128);
-                        _mm_store_ps(&myPostfilter->YPower[indexSource][k], regE.m128);
+                        vst1q_f32(&myPostfilter->YReal[indexSource][k], regA);
+                        vst1q_f32(&myPostfilter->YImag[indexSource][k], regB);
+                        vst1q_f32(&myPostfilter->YPower[indexSource][k], regE);
 
                     }
                     for (k = k - 4; k < myPostfilter->POSTFILTER_NFRAMES; k++)
@@ -870,14 +874,14 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
     int indexID;
     unsigned int indexSource;
     unsigned int indexSource2;
-    unsigned int k;
+    unsigned int i,k;
 
     float tmp;
 
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
 
 #endif
 
@@ -933,30 +937,39 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
     #else
 
                 // Load the constant alphaS
-                regA.m128_f32[0] = myPostfilter->POSTFILTER_ALPHAS;
-                regA.m128_f32[1] = myPostfilter->POSTFILTER_ALPHAS;
-                regA.m128_f32[2] = myPostfilter->POSTFILTER_ALPHAS;
-                regA.m128_f32[3] = myPostfilter->POSTFILTER_ALPHAS;
+                //regA_f32[0] = myPostfilter->POSTFILTER_ALPHAS;
+                //regA_f32[1] = myPostfilter->POSTFILTER_ALPHAS;
+                //regA_f32[2] = myPostfilter->POSTFILTER_ALPHAS;
+                //regA_f32[3] = myPostfilter->POSTFILTER_ALPHAS;
+                regA = (float32x4_t) {myPostfilter->POSTFILTER_ALPHAS, 
+                                      myPostfilter->POSTFILTER_ALPHAS, 
+                                      myPostfilter->POSTFILTER_ALPHAS, 
+                                      myPostfilter->POSTFILTER_ALPHAS};
+
 
                 // Load the constant (1 - alphaS)
-                regB.m128_f32[0] = 1 - myPostfilter->POSTFILTER_ALPHAS;
-                regB.m128_f32[1] = 1 - myPostfilter->POSTFILTER_ALPHAS;
-                regB.m128_f32[2] = 1 - myPostfilter->POSTFILTER_ALPHAS;
-                regB.m128_f32[3] = 1 - myPostfilter->POSTFILTER_ALPHAS;
+                //regB_f32[0] = 1 - myPostfilter->POSTFILTER_ALPHAS;
+                //regB_f32[1] = 1 - myPostfilter->POSTFILTER_ALPHAS;
+                //regB_f32[2] = 1 - myPostfilter->POSTFILTER_ALPHAS;
+                //regB_f32[3] = 1 - myPostfilter->POSTFILTER_ALPHAS;
+                regB = (float32x4_t) {1 - myPostfilter->POSTFILTER_ALPHAS,
+                                      1 - myPostfilter->POSTFILTER_ALPHAS,
+                                      1 - myPostfilter->POSTFILTER_ALPHAS,
+                                      1 - myPostfilter->POSTFILTER_ALPHAS};
 
                 for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                 {
 
                     // Update Z: Z_m(k,l) = alphaS * Z_m,(k,l-1) + (1 - alphaS) * |Y_m(k,l)|^2
 
-                    regC.m128 = _mm_load_ps(&myPostfilter->Z[indexSource][k]);
-                    regD.m128 = _mm_load_ps(&myPostfilter->YPower[indexSource][k]);
+                    regC = vld1q_f32(&myPostfilter->Z[indexSource][k]);
+                    regD = vld1q_f32(&myPostfilter->YPower[indexSource][k]);
 
-                    regE.m128 = _mm_mul_ps(regA.m128, regC.m128);
-                    regF.m128 = _mm_mul_ps(regB.m128, regD.m128);
-                    regG.m128 = _mm_add_ps(regE.m128, regF.m128);
+                    regE = vmulq_f32(regA, regC);
+                    regF = vmulq_f32(regB, regD);
+                    regG = vaddq_f32(regE, regF);
 
-                    _mm_store_ps(&myPostfilter->Z[indexSource][k], regG.m128);
+                    vst1q_f32(&myPostfilter->Z[indexSource][k], regG);
 
                 }
 
@@ -982,11 +995,15 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #ifdef USE_SIMD
 
                 // Load the constant eta
-                regA.m128_f32[0] = myPostfilter->POSTFILTER_ETA;
-                regA.m128_f32[1] = myPostfilter->POSTFILTER_ETA;
-                regA.m128_f32[2] = myPostfilter->POSTFILTER_ETA;
-                regA.m128_f32[3] = myPostfilter->POSTFILTER_ETA;
+                //regA_f32[0] = myPostfilter->POSTFILTER_ETA;
+                //regA_f32[1] = myPostfilter->POSTFILTER_ETA;
+                //regA_f32[2] = myPostfilter->POSTFILTER_ETA;
+                //regA_f32[3] = myPostfilter->POSTFILTER_ETA;
 
+                regA = (float32x4_t) {myPostfilter->POSTFILTER_ETA,
+                                        myPostfilter->POSTFILTER_ETA,
+                                        myPostfilter->POSTFILTER_ETA,
+                                        myPostfilter->POSTFILTER_ETA};
 #endif
 
 #ifndef USE_SIMD
@@ -1000,15 +1017,16 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                 // Load the constant 0
-                regB.m128_f32[0] = 0.0;
-                regB.m128_f32[1] = 0.0;
-                regB.m128_f32[2] = 0.0;
-                regB.m128_f32[3] = 0.0;
+                //regB_f32[0] = 0.0;
+                //regB_f32[1] = 0.0;
+                //regB_f32[2] = 0.0;
+                //regB_f32[3] = 0.0;
+                regB = (float32x4_t) {0,0,0,0};
 
                 // Set lambda_leak to 0 everywhere
                 for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                 {
-                    _mm_store_ps(&myPostfilter->lambdaLeak[indexSource][k], regB.m128);
+                    vst1q_f32(&myPostfilter->lambdaLeak[indexSource][k], regB);
                 }
 
                 myPostfilter->lambdaLeak[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = 0.0;
@@ -1041,10 +1059,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 
                                 // Update: lambda_leak_m(k,l) += Z_i(k,l)
 
-                                regC.m128 = _mm_load_ps(&myPostfilter->Z[indexSource2][k]);
-                                regD.m128 = _mm_load_ps(&myPostfilter->lambdaLeak[indexSource][k]);
-                                regE.m128 = _mm_add_ps(regC.m128,regD.m128);
-                                _mm_store_ps(&myPostfilter->lambdaLeak[indexSource][k], regE.m128);
+                                regC = vld1q_f32(&myPostfilter->Z[indexSource2][k]);
+                                regD = vld1q_f32(&myPostfilter->lambdaLeak[indexSource][k]);
+                                regE = vaddq_f32(regC,regD);
+                                vst1q_f32(&myPostfilter->lambdaLeak[indexSource][k], regE);
 
                             }
 
@@ -1084,10 +1102,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                 {
 
-                    regB.m128 = _mm_load_ps(&myPostfilter->lambdaLeak[indexSource][k]);
-                    regC.m128 = _mm_mul_ps(regA.m128,regB.m128);
+                    regB = vld1q_f32(&myPostfilter->lambdaLeak[indexSource][k]);
+                    regC = vmulq_f32(regA,regB);
 
-                    _mm_store_ps(&myPostfilter->lambdaLeak[indexSource][k], regC.m128);
+                    vst1q_f32(&myPostfilter->lambdaLeak[indexSource][k], regC);
 
                 }
 
@@ -1125,29 +1143,37 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
             // Load the constant gamma
-            regA.m128_f32[0] = myPostfilter->POSTFILTER_GAMMA;
-            regA.m128_f32[1] = myPostfilter->POSTFILTER_GAMMA;
-            regA.m128_f32[2] = myPostfilter->POSTFILTER_GAMMA;
-            regA.m128_f32[3] = myPostfilter->POSTFILTER_GAMMA;
-
+            //regA_f32[0] = myPostfilter->POSTFILTER_GAMMA;
+            //regA_f32[1] = myPostfilter->POSTFILTER_GAMMA;
+            //regA_f32[2] = myPostfilter->POSTFILTER_GAMMA;
+            //regA_f32[3] = myPostfilter->POSTFILTER_GAMMA;
+            regA = (float32x4_t) {myPostfilter->POSTFILTER_GAMMA,
+                            myPostfilter->POSTFILTER_GAMMA,
+                            myPostfilter->POSTFILTER_GAMMA,
+                            myPostfilter->POSTFILTER_GAMMA};
+    
             // Load the constant (1-gamma)/delta
-            regB.m128_f32[0] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
-            regB.m128_f32[1] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
-            regB.m128_f32[2] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
-            regB.m128_f32[3] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
+            //regB_f32[0] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
+            //regB_f32[1] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
+            //regB_f32[2] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
+            //regB_f32[3] = ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA);
+            regB = (float32x4_t) {((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA),
+                    ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA),
+                    ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA),
+                    ((1 - myPostfilter->POSTFILTER_GAMMA)/myPostfilter->POSTFILTER_DELTA)};
 
             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
             {
 
                 // Update: lambda_rev(k,l) = gamma * lambda_rev(k,l-1) + ((1-gamma)/delta) * |Si(k,l-1)|^2
 
-                regC.m128 = _mm_load_ps(&myPostfilter->lambdaRev[indexSource][k]);
-                //regD.m128 = _mm_load_ps(&myPostfilter->SPower[indexSource][k]);
-                regD.m128 = _mm_load_ps(&myPostfilter->YPower[indexSource][k]);
-                regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
-                regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
-                regG.m128 = _mm_add_ps(regE.m128,regF.m128);
-                _mm_store_ps(&myPostfilter->lambdaRev[indexSource][k],regG.m128);
+                regC = vld1q_f32(&myPostfilter->lambdaRev[indexSource][k]);
+                //regD = vld1q_f32(&myPostfilter->SPower[indexSource][k]);
+                regD = vld1q_f32(&myPostfilter->YPower[indexSource][k]);
+                regE = vmulq_f32(regA,regC);
+                regF = vmulq_f32(regB,regD);
+                regG = vaddq_f32(regE,regF);
+                vst1q_f32(&myPostfilter->lambdaRev[indexSource][k],regG);
 
             }
 
@@ -1190,10 +1216,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
             {
 
                 // Update: lambda(k,l) = lambda_stat(k,l) + lambda_leak(k,l)
-                regA.m128 = _mm_load_ps(&myPostfilter->lambdaStat[indexSource][k]);
-                regB.m128 = _mm_load_ps(&myPostfilter->lambdaLeak[indexSource][k]);
-                regC.m128 = _mm_add_ps(regA.m128,regB.m128);
-                _mm_store_ps(&myPostfilter->lambda[indexSource][k],regC.m128);
+                regA = vld1q_f32(&myPostfilter->lambdaStat[indexSource][k]);
+                regB = vld1q_f32(&myPostfilter->lambdaLeak[indexSource][k]);
+                regC = vaddq_f32(regA,regB);
+                vst1q_f32(&myPostfilter->lambda[indexSource][k],regC);
 
             }
 
@@ -1222,10 +1248,10 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                     {
 
                         // Update: lambda(k,l) += lambda_rev(k,l)
-                        regA.m128 = _mm_load_ps(&myPostfilter->lambda[indexSource][k]);
-                        regB.m128 = _mm_load_ps(&myPostfilter->lambdaRev[indexSource2][k]);
-                        regC.m128 = _mm_add_ps(regA.m128,regB.m128);
-                        _mm_store_ps(&myPostfilter->lambda[indexSource][k], regC.m128);
+                        regA = vld1q_f32(&myPostfilter->lambda[indexSource][k]);
+                        regB = vld1q_f32(&myPostfilter->lambdaRev[indexSource2][k]);
+                        regC = vaddq_f32(regA,regB);
+                        vst1q_f32(&myPostfilter->lambda[indexSource][k], regC);
 
                     }
 
@@ -1255,8 +1281,6 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 // | Step A: Compute gamma(k,l)                                |
                 // +-----------------------------------------------------------+
 
-#ifndef USE_SIMD
-
                 for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                 {
 
@@ -1265,30 +1289,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 													      / (myPostfilter->lambda[indexSource][k] + 1E-10f);
                 }
 
-#else
 
-                // Load the constant 1E-10
-                regA.m128_f32[0] = 1E-10;
-                regA.m128_f32[1] = 1E-10;
-                regA.m128_f32[2] = 1E-10;
-                regA.m128_f32[3] = 1E-10;
-
-                for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                {
-
-                    // Update: gamma(k) = |Y(k)|^2 / lambda(k)
-                    regC.m128 = _mm_load_ps(&myPostfilter->YPower[indexSource][k]);
-                    regD.m128 = _mm_load_ps(&myPostfilter->lambda[indexSource][k]);
-                    regE.m128 = _mm_add_ps(regA.m128,regD.m128);
-                    regF.m128 = _mm_div_ps(regC.m128,regE.m128);
-                    _mm_store_ps(&myPostfilter->gamma[indexSource][k],regF.m128);
-
-                }
-                // Update: gamma(k) = |Y(k)|^2 / lambda(k)
-                myPostfilter->gamma[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = myPostfilter->YPower[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES]
-                                                                                         / (myPostfilter->lambda[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1E-10);
-
-#endif
 
                 // +-----------------------------------------------------------+
                 // | Step B: Compute alphaP(k,l)                               |
@@ -1310,74 +1311,11 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                     }
                 }
 
-#else
 
-                // Load the constant 1
-                regA.m128_f32[0] = 1.0;
-                regA.m128_f32[1] = 1.0;
-                regA.m128_f32[2] = 1.0;
-                regA.m128_f32[3] = 1.0;
-
-                // Load the constant alphaPmin
-                regB.m128_f32[0] = myPostfilter->POSTFILTER_ALPHAPMIN;
-                regB.m128_f32[1] = myPostfilter->POSTFILTER_ALPHAPMIN;
-                regB.m128_f32[2] = myPostfilter->POSTFILTER_ALPHAPMIN;
-                regB.m128_f32[3] = myPostfilter->POSTFILTER_ALPHAPMIN;
-
-                // Load the constant 0xFFFFFFFF
-                regC.m128_u32[0] = 0xFFFFFFFF;
-                regC.m128_u32[1] = 0xFFFFFFFF;
-                regC.m128_u32[2] = 0xFFFFFFFF;
-                regC.m128_u32[3] = 0xFFFFFFFF;
-
-                for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                {
-                    // alphaP(k,l) = (xi(k,l) / (xi(k,l) + 1))^2 + alphaPmin
-
-                    // Load xi(k,l)
-                    regD.m128 = _mm_load_ps(&myPostfilter->xi[indexSource][k]);
-
-                    // xi(k,l) + 1.0
-                    regE.m128 = _mm_add_ps(regA.m128,regD.m128);
-
-                    // (xi(k,l) / (xi(k,l) + 1))
-                    regF.m128 = _mm_div_ps(regD.m128,regE.m128);
-
-                    // (xi(k,l) / (xi(k,l) + 1))^2
-                    regF.m128 = _mm_mul_ps(regF.m128,regF.m128);
-
-                    // (xi(k,l) / (xi(k,l) + 1))^2 + alphaPmin
-                    regG.m128 = _mm_add_ps(regF.m128,regB.m128);
-
-                    // Make sure alphaP does not exceed 1
-                    regH.m128 = _mm_cmple_ps(regG.m128,regA.m128);
-                    regG.m128 = _mm_and_ps(regG.m128,regH.m128);
-                    regH.m128 = _mm_andnot_ps(regH.m128,regC.m128);
-                    regH.m128 = _mm_and_ps(regH.m128,regA.m128);
-                    regG.m128 = _mm_add_ps(regH.m128,regG.m128);
-
-                    // Store
-                    _mm_store_ps(&myPostfilter->alphaP[indexSource][k],regG.m128);
-                }
-
-                // alphaP(k,l) = (xi(k,l) / (xi(k,l) + 1))^2 + alphaPmin
-                myPostfilter->alphaP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] / (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1.0)) *
-                                                                                          (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] / (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1.0)) +
-                                                                                          myPostfilter->POSTFILTER_ALPHAPMIN;
-
-                // Make sure alphaP(k,l) does not exceed 1
-                if (myPostfilter->alphaP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] > 1.0)
-                {
-                    myPostfilter->alphaP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = 1.0;
-                }
-
-#endif
 
                 // +-----------------------------------------------------------+
                 // | Step C: Compute xi(k,l)                                   |
                 // +-----------------------------------------------------------+
-
-#ifndef USE_SIMD
 
                 for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                 {
@@ -1403,52 +1341,55 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                 // Load the constant 1
-                regA.m128_f32[0] = 1.0;
-                regA.m128_f32[1] = 1.0;
-                regA.m128_f32[2] = 1.0;
-                regA.m128_f32[3] = 1.0;
+                //regA_f32[0] = 1.0;
+                //regA_f32[1] = 1.0;
+                //regA_f32[2] = 1.0;
+                //regA_f32[3] = 1.0;
+                regA = (float32x4_t){1.0, 1.0, 1.0, 1.0};
 
                 // Load the constant 0
-                regB.m128_f32[0] = 0.0;
-                regB.m128_f32[1] = 0.0;
-                regB.m128_f32[2] = 0.0;
-                regB.m128_f32[3] = 0.0;
+                //regB_f32[0] = 0.0;
+                //regB_f32[1] = 0.0;
+                //regB_f32[2] = 0.0;
+                //regB_f32[3] = 0.0;
+                regB = (float32x4_t){0, 0, 0, 0};
 
                 for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                 {
 
                     // Load gamma(k,l)
-                    regC.m128 = _mm_load_ps(&myPostfilter->gamma[indexSource][k]);
+                    regC = vld1q_f32(&myPostfilter->gamma[indexSource][k]);
 
                     // gamma(k,l) - 1
-                    regD.m128 = _mm_sub_ps(regC.m128,regA.m128);
+                    regD = vsubq_f32(regC,regA);
 
                     // max{(gamma(k,l) - 1,0}
-                    regE.m128 = _mm_cmple_ps(regB.m128,regD.m128);
-                    regE.m128 = _mm_and_ps(regE.m128,regD.m128);
+                    //regE = _mm_cmple_ps(regB,regD);
+                    //regE = _mm_and_ps(regE,regD);
+                    regE = vmaxq_f32(regD,regB);
 
                     // Load alphaP(k,l))
-                    regD.m128 = _mm_load_ps(&myPostfilter->alphaP[indexSource][k]);
+                    regD = vld1q_f32(&myPostfilter->alphaP[indexSource][k]);
 
                     // Load (1 - alphaP(k,l))
-                    regF.m128 = _mm_sub_ps(regA.m128,regD.m128);
+                    regF = vsubq_f32(regA,regD);
 
                     // (1 - alphaP(k,l)) * G_H1^2(k,l-1)
-                    regG.m128 = _mm_load_ps(&myPostfilter->GH1[indexSource][k]);
-                    regG.m128 = _mm_mul_ps(regG.m128,regG.m128);
-                    regG.m128 = _mm_mul_ps(regF.m128,regG.m128);
+                    regG = vld1q_f32(&myPostfilter->GH1[indexSource][k]);
+                    regG = vmulq_f32(regG,regG);
+                    regG = vmulq_f32(regF,regG);
 
                     // (1 - alphaP(k,l)) * G_H1^2(k,l-1) * gamma(k,l)
-                    regG.m128 = _mm_mul_ps(regG.m128,regC.m128);
+                    regG = vmulq_f32(regG,regC);
 
                     // alphaP(k,l) * max{gamma(k,l)-1,0}
-                    regH.m128 = _mm_mul_ps(regD.m128,regE.m128);
+                    regH = vmulq_f32(regD,regE);
 
                     // (1 - alphaP(k,l)) * G_H1^2(k,l-1) * gamma(k,l) + alphaP(k,l) * max{gamma(k,l)-1,0}
-                    regH.m128 = _mm_add_ps(regG.m128,regH.m128);
+                    regH = vaddq_f32(regG,regH);
 
                     // Store
-                    _mm_store_ps(&myPostfilter->xi[indexSource][k], regH.m128);
+                    vst1q_f32(&myPostfilter->xi[indexSource][k], regH);
 
                 }
 
@@ -1481,8 +1422,6 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                 // | Step D: Compute v(k,l)                                    |
                 // +-----------------------------------------------------------+
 
-#ifndef USE_SIMD
-
                 for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                 {
                     // v(k,l) = gamma(k,l) * xi(k,l) / (xi(k,l) + 1)
@@ -1491,43 +1430,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                                       (myPostfilter->xi[indexSource][k] + 1.0f);
                 }
 
-#else
 
-                // Load the constant 1
-                regA.m128_f32[0] = 1.0;
-                regA.m128_f32[1] = 1.0;
-                regA.m128_f32[2] = 1.0;
-                regA.m128_f32[3] = 1.0;
-
-                for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                {
-
-                    // Load xi(k,l)
-                    regB.m128 = _mm_load_ps(&myPostfilter->xi[indexSource][k]);
-
-                    // xi(k,l) + 1
-                    regC.m128 = _mm_add_ps(regB.m128,regA.m128);
-
-                    // xi(k,l) / (xi(k,l) + 1)
-                    regD.m128 = _mm_div_ps(regB.m128,regC.m128);
-
-                    // Load gamma(k,l)
-                    regE.m128 = _mm_load_ps(&myPostfilter->gamma[indexSource][k]);
-
-                    // gamma(k,l) * xi(k,l) / (xi(k,l) + 1)
-                    regF.m128 = _mm_mul_ps(regE.m128,regD.m128);
-
-                    // Store
-                    _mm_store_ps(&myPostfilter->v[indexSource][k],regF.m128);
-
-                }
-
-                // v(k,l) = gamma(k,l) * xi(k,l) / (xi(k,l) + 1)
-                myPostfilter->v[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = myPostfilter->gamma[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] *
-                                                                                     myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] /
-                                                                                     (myPostfilter->xi[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] + 1.0);
-
-#endif
 
                 // +-----------------------------------------------------------+
                 // | Step E: Compute GH1(k,l)                                  |
@@ -1649,36 +1552,44 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                             // Load the constant alpha_zeta
-                            regA.m128_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            regA =(float32x4_t){myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA,
+                                            myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA};
 
                             // Load the constant 1 - alpha_zeta
-                            regB.m128_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            regB = (float32x4_t) {1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA};
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
                                 // zeta_local(k,l) = (1 - alpha_zeta) * zeta_local(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_local(j)*xi(k+j)]
 
                                 // Load zeta_local(k,l-1)
-                                regC.m128 = _mm_load_ps(&myPostfilter->localZeta[indexSource][k]);
+                                regC = vld1q_f32(&myPostfilter->localZeta[indexSource][k]);
                                 // Load sum_j=-w1..w2[h_local(j)*xi(k+j)
-                                regD.m128 = _mm_load_ps(&myPostfilter->localResultCropped[k]);
+                                regD = vld1q_f32(&myPostfilter->localResultCropped[k]);
 
                                 // (1 - alpha_zeta) * zeta_local(k,l-1)
-                                regE.m128 = _mm_mul_ps(regC.m128, regB.m128);
+                                regE = vmulq_f32(regC, regB);
                                 // alpha_zeta * sum_j=-w1..w2[h_local(j)*xi(k+j)
-                                regF.m128 = _mm_mul_ps(regD.m128, regA.m128);
+                                regF = vmulq_f32(regD, regA);
 
                                 // (1 - alpha_zeta) * zeta_local(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_local(j)*xi(k+j)]
-                                regG.m128 = _mm_add_ps(regE.m128, regF.m128);
+                                regG = vaddq_f32(regE, regF);
 
                                 // Store
-                                _mm_store_ps(&myPostfilter->localZeta[indexSource][k], regG.m128);
+                                vst1q_f32(&myPostfilter->localZeta[indexSource][k], regG);
                             }
 
                             // zeta_local(k,l) = (1 - alpha_zeta) * zeta_local(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_local(j)*xi(k+j)]
@@ -1703,36 +1614,45 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                             // Load the constant alpha_zeta
-                            regA.m128_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            regA =(float32x4_t){myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA,
+                                            myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA};
+
 
                             // Load the constant 1 - alpha_zeta
-                            regB.m128_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            regB = (float32x4_t) {1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA};
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
                                 // zeta_global(k,l) = (1 - alpha_zeta) * zeta_global(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_global(j)*xi(k+j)]
 
                                 // Load zeta_global(k,l-1)
-                                regC.m128 = _mm_load_ps(&myPostfilter->globalZeta[indexSource][k]);
+                                regC = vld1q_f32(&myPostfilter->globalZeta[indexSource][k]);
                                 // Load sum_j=-w1..w2[h_global(j)*xi(k+j)
-                                regD.m128 = _mm_load_ps(&myPostfilter->globalResultCropped[k]);
+                                regD = vld1q_f32(&myPostfilter->globalResultCropped[k]);
 
                                 // (1 - alpha_zeta) * zeta_global(k,l-1)
-                                regE.m128 = _mm_mul_ps(regC.m128, regB.m128);
+                                regE = vmulq_f32(regC, regB);
                                 // alpha_zeta * sum_j=-w1..w2[h_global(j)*xi(k+j)
-                                regF.m128 = _mm_mul_ps(regD.m128, regA.m128);
+                                regF = vmulq_f32(regD, regA);
 
                                 // (1 - alpha_zeta) * zeta_global(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_global(j)*xi(k+j)]
-                                regG.m128 = _mm_add_ps(regE.m128, regF.m128);
+                                regG = vaddq_f32(regE, regF);
 
                                 // Store
-                                _mm_store_ps(&myPostfilter->globalZeta[indexSource][k], regG.m128);
+                                vst1q_f32(&myPostfilter->globalZeta[indexSource][k], regG);
 
                             }
 
@@ -1758,36 +1678,44 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                             // Load the constant alpha_zeta
-                            regA.m128_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
-                            regA.m128_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[0] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[1] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[2] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regA_f32[3] = myPostfilter->POSTFILTER_ALPHAZETA;
+                            regA =(float32x4_t){myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA,
+                                            myPostfilter->POSTFILTER_ALPHAZETA, 
+                                            myPostfilter->POSTFILTER_ALPHAZETA};
 
                             // Load the constant 1 - alpha_zeta
-                            regB.m128_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
-                            regB.m128_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[0] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[1] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[2] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            //regB_f32[3] = 1.0 - myPostfilter->POSTFILTER_ALPHAZETA;
+                            regB = (float32x4_t) {1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA,
+                                                    1.0 - myPostfilter->POSTFILTER_ALPHAZETA};
 
                             for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                             {
                                 // zeta_frame(k,l) = (1 - alpha_zeta) * zeta_frame(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_frame(j)*xi(k+j)]
 
                                 // Load zeta_frame(k,l-1)
-                                regC.m128 = _mm_load_ps(&myPostfilter->frameZeta[indexSource][k]);
+                                regC = vld1q_f32(&myPostfilter->frameZeta[indexSource][k]);
                                 // Load sum_j=-w1..w2[h_frame(j)*xi(k+j)
-                                regD.m128 = _mm_load_ps(&myPostfilter->frameResultCropped[k]);
+                                regD = vld1q_f32(&myPostfilter->frameResultCropped[k]);
 
                                 // (1 - alpha_zeta) * zeta_frame(k,l-1)
-                                regE.m128 = _mm_mul_ps(regC.m128, regB.m128);
+                                regE = vmulq_f32(regC, regB);
                                 // alpha_zeta * sum_j=-w1..w2[h_frame(j)*xi(k+j)
-                                regF.m128 = _mm_mul_ps(regD.m128, regA.m128);
+                                regF = vmulq_f32(regD, regA);
 
                                 // (1 - alpha_zeta) * zeta_frame(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_frame(j)*xi(k+j)]
-                                regG.m128 = _mm_add_ps(regE.m128, regF.m128);
+                                regG = vaddq_f32(regE, regF);
 
                                 // Store
-                                _mm_store_ps(&myPostfilter->frameZeta[indexSource][k], regG.m128);
+                                vst1q_f32(&myPostfilter->frameZeta[indexSource][k], regG);
                             }
 
                             // zeta_frame(k,l) = (1 - alpha_zeta) * zeta_frame(k,l-1) + alpha_zeta * sum_j=-w1..w2[h_frame(j)*xi(k+j)]
@@ -1804,8 +1732,6 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             // | Step a: Local                                 |
                             // +-----------------------------------------------+
 
-#ifndef USE_SIMD
-
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
                                 // P_local(k,l) = 1 / (1 + ( teta / zeta_local(k,l) ) ^ 2)
@@ -1814,53 +1740,13 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 myPostfilter->localP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL);
                             }
 
-#else
 
-                            // Load the constant 1
-                            regA.m128_f32[0] = 1.0;
-                            regA.m128_f32[1] = 1.0;
-                            regA.m128_f32[2] = 1.0;
-                            regA.m128_f32[3] = 1.0;
-
-                            // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL;
-
-                            for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                            {
-                                // P_local(k,l) = 1 / (1 + ( teta / zeta_local(k,l) ) ^ 2)
-                                //              = (zeta_local(k,l))^2 / ( (zeta_local(k,l))^2 + teta^2 )
-
-                                // Load zeta_local(k,l)
-                                regC.m128 = _mm_load_ps(&myPostfilter->localZeta[indexSource][k]);
-
-                                // Compute zeta_local(k,l) ^ 2
-                                regD.m128 = _mm_mul_ps(regC.m128,regC.m128);
-
-                                // Compute ( (zeta_local(k,l))^2 + teta^2 )
-                                regE.m128 = _mm_add_ps(regD.m128,regB.m128);
-
-                                // Compute (zeta_local(k,l))^2 / ( (zeta_local(k,l))^2 + teta^2 )
-                                regF.m128 = _mm_div_ps(regD.m128,regE.m128);
-
-                                // Store
-                                _mm_store_ps(&myPostfilter->localP[indexSource][k], regF.m128);
-                            }
-
-                            // P_local(k,l) = 1 / (1 + ( teta / zeta_local(k,l) ) ^ 2)
-                            //              = (zeta_local(k,l))^2 / ( (zeta_local(k,l))^2 + teta^2 )
-                            tmp = myPostfilter->localZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->localZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->localP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_LOCAL * myPostfilter->POSTFILTER_TETA_LOCAL);
-
-#endif
 
                             // +-----------------------------------------------+
                             // | Step b: Global                                |
                             // +-----------------------------------------------+
 
-#ifndef USE_SIMD
+
 
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
@@ -1870,55 +1756,12 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 myPostfilter->globalP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL);
                             }
 
-#else
 
-
-                            // Load the constant 1
-                            regA.m128_f32[0] = 1.0;
-                            regA.m128_f32[1] = 1.0;
-                            regA.m128_f32[2] = 1.0;
-                            regA.m128_f32[3] = 1.0;
-
-                            // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL;
-
-                            for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                            {
-                                // P_global(k,l) = 1 / (1 + ( teta / zeta_global(k,l) ) ^ 2)
-                                //               = (zeta_global(k,l))^2 / ( (zeta_global(k,l))^2 + teta^2 )
-
-                                // Load zeta_global(k,l)
-                                regC.m128 = _mm_load_ps(&myPostfilter->globalZeta[indexSource][k]);
-
-                                // Compute zeta_global(k,l) ^ 2
-                                regD.m128 = _mm_mul_ps(regC.m128,regC.m128);
-
-                                // Compute ( (zeta_global(k,l))^2 + teta^2 )
-                                regE.m128 = _mm_add_ps(regD.m128,regB.m128);
-
-                                // Compute (zeta_global(k,l))^2 / ( (zeta_global(k,l))^2 + teta^2 )
-                                regF.m128 = _mm_div_ps(regD.m128,regE.m128);
-
-                                // Store
-                                _mm_store_ps(&myPostfilter->globalP[indexSource][k], regF.m128);
-                            }
-
-                            // P_global(k,l) = 1 / (1 + ( teta / zeta_global(k,l) ) ^ 2)
-                            //               = (zeta_global(k,l))^2 / ( (zeta_global(k,l))^2 + teta^2 )
-                            tmp = myPostfilter->globalZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->globalZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->globalP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_GLOBAL * myPostfilter->POSTFILTER_TETA_GLOBAL);
-
-#endif
 
 
                             // +-----------------------------------------------+
                             // | Step c: Frame                                 |
                             // +-----------------------------------------------+
-
-#ifndef USE_SIMD
 
                             for (k = 0; k < myPostfilter->POSTFILTER_NFRAMES; k++)
                             {
@@ -1928,48 +1771,7 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                                 myPostfilter->frameP[indexSource][k] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME);
                             }
 
-#else
 
-
-                            // Load the constant 1
-                            regA.m128_f32[0] = 1.0;
-                            regA.m128_f32[1] = 1.0;
-                            regA.m128_f32[2] = 1.0;
-                            regA.m128_f32[3] = 1.0;
-
-                            // Load the constant teta^2
-                            regB.m128_f32[0] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
-                            regB.m128_f32[1] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
-                            regB.m128_f32[2] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
-                            regB.m128_f32[3] = myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME;
-
-                            for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
-                            {
-                                // P_local(k,l) = 1 / (1 + ( teta / zeta_frame(k,l) ) ^ 2)
-                                //              = (zeta_frame(k,l))^2 / ( (zeta_frame(k,l))^2 + teta^2 )
-
-                                // Load zeta_frame(k,l)
-                                regC.m128 = _mm_load_ps(&myPostfilter->frameZeta[indexSource][k]);
-
-                                // Compute zeta_frame(k,l) ^ 2
-                                regD.m128 = _mm_mul_ps(regC.m128,regC.m128);
-
-                                // Compute ( (zeta_frame(k,l))^2 + teta^2 )
-                                regE.m128 = _mm_add_ps(regD.m128,regB.m128);
-
-                                // Compute (zeta_frame(k,l))^2 / ( (zeta_frame(k,l))^2 + teta^2 )
-                                regF.m128 = _mm_div_ps(regD.m128,regE.m128);
-
-                                // Store
-                                _mm_store_ps(&myPostfilter->frameP[indexSource][k], regF.m128);
-                            }
-
-                            // P_frame(k,l) = 1 / (1 + ( teta / zeta_frame(k,l) ) ^ 2)
-                            //              = (zeta_frame(k,l))^2 / ( (zeta_frame(k,l))^2 + teta^2 )
-                            tmp = myPostfilter->frameZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] * myPostfilter->frameZeta[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES];
-                            myPostfilter->frameP[indexSource][myPostfilter->POSTFILTER_HALFNFRAMES] = tmp / (tmp + myPostfilter->POSTFILTER_TETA_FRAME * myPostfilter->POSTFILTER_TETA_FRAME);
-
-#endif
 
                 // +-----------------------------------------------------------+
                 // | Step B: Compute the gain                                  |
@@ -2001,22 +1803,22 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
 #else
 
                         // Load the constant 1
-                        regA.m128_f32[0] = 1.0;
-                        regA.m128_f32[1] = 1.0;
-                        regA.m128_f32[2] = 1.0;
-                        regA.m128_f32[3] = 1.0;
+                        //regA_f32[0] = 1.0;
+                        //regA_f32[1] = 1.0;
+                        //regA_f32[2] = 1.0;
+                        //regA_f32[3] = 1.0;
+                        regA = (float32x4_t) {1.0, 1.0, 1.0, 1.0};
 
                         // Load the constant maxQ
-                        regB.m128_f32[0] = myPostfilter->POSTFILTER_MAXQ;
-                        regB.m128_f32[1] = myPostfilter->POSTFILTER_MAXQ;
-                        regB.m128_f32[2] = myPostfilter->POSTFILTER_MAXQ;
-                        regB.m128_f32[3] = myPostfilter->POSTFILTER_MAXQ;
-
-                        // Load the constant 0xFFFFFFFF
-                        regC.m128_u32[0] = 0xFFFFFFFF;
-                        regC.m128_u32[1] = 0xFFFFFFFF;
-                        regC.m128_u32[2] = 0xFFFFFFFF;
-                        regC.m128_u32[3] = 0xFFFFFFFF;
+                        //regB_f32[0] = myPostfilter->POSTFILTER_MAXQ;
+                        //regB_f32[1] = myPostfilter->POSTFILTER_MAXQ;
+                        //regB_f32[2] = myPostfilter->POSTFILTER_MAXQ;
+                        //regB_f32[3] = myPostfilter->POSTFILTER_MAXQ;
+                        regB = (float32x4_t) {myPostfilter->POSTFILTER_MAXQ,
+                                                myPostfilter->POSTFILTER_MAXQ,
+                                                myPostfilter->POSTFILTER_MAXQ,
+                                                myPostfilter->POSTFILTER_MAXQ};
+            
 
                         for (k = 0; k < myPostfilter->POSTFILTER_HALFNFRAMES; k+=4)
                         {
@@ -2024,30 +1826,31 @@ void postfilterProcess(struct objPostfilter* myPostfilter, struct objSeparatedSo
                             // q(k,l) = min(1 - P_local(k,l) * P_global(k,l) * P_frame(k,l), maxQ)
 
                             // Load P_local(k,l)
-                            regD.m128 = _mm_load_ps(&myPostfilter->localP[indexSource][k]);
+                            regD = vld1q_f32(&myPostfilter->localP[indexSource][k]);
 
                             // Load P_global(k,l)
-                            regE.m128 = _mm_load_ps(&myPostfilter->globalP[indexSource][k]);
+                            regE = vld1q_f32(&myPostfilter->globalP[indexSource][k]);
 
                             // Load P_frame(k,l)
-                            regF.m128 = _mm_load_ps(&myPostfilter->frameP[indexSource][k]);
+                            regF = vld1q_f32(&myPostfilter->frameP[indexSource][k]);
 
                             // P_local(k,l) * P_global(k,l) * P_frame(k,l)
-                            regG.m128 = _mm_mul_ps(regD.m128,regE.m128);
-                            regG.m128 = _mm_mul_ps(regG.m128,regF.m128);
+                            regG = vmulq_f32(regD,regE);
+                            regG = vmulq_f32(regG,regF);
 
                             // 1 - P_local(k,l) * P_global(k,l) * P_frame(k,l)
-                            regG.m128 = _mm_sub_ps(regA.m128,regG.m128);
+                            regG = vsubq_f32(regA,regG);
 
                             // min(1 - P_local(k,l) * P_global(k,l) * P_frame(k,l), maxQ)
-                            regE.m128 = _mm_cmple_ps(regB.m128,regG.m128);
-                            regD.m128 = _mm_andnot_ps(regE.m128,regC.m128);
-                            regH.m128 = _mm_and_ps(regD.m128, regG.m128);
-                            regE.m128 = _mm_and_ps(regE.m128, regB.m128);
-                            regH.m128 = _mm_add_ps(regE.m128, regH.m128);
+                            //regE = _mm_cmple_ps(regB,regG);
+                            //regD = _mm_andnot_ps(regE,regC);
+                            //regH = _mm_and_ps(regD, regG);
+                            //regE = _mm_and_ps(regE, regB);
+                            //regH = vaddq_f32(regE, regH);
+                            regH = vminq_f32(regG, regB);
 
                             // Store
-                            _mm_store_ps(&myPostfilter->q[indexSource][k], regH.m128);
+                            vst1q_f32(&myPostfilter->q[indexSource][k], regH);
 
                         }
 
