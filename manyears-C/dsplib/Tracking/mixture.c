@@ -89,6 +89,11 @@
 
 #include "Tracking/mixture.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
+
 /*******************************************************************************
  * Compatibility issues                                                        *
  ******************************************************************************/
@@ -405,7 +410,9 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD;
+    float32x4_t regA, regB, regC, regD;
+
+    float vec[4] __attribute__((aligned (16))); //aligned on 16 bytes
 
     // Variables needed for SSE computations
     float* weightArrayPtr;
@@ -563,30 +570,36 @@ void mixtureUpdate(struct objMixture *myMixture, struct objTrackedSources *myTra
                 pOq_xvjiArrayPtr = myMixture->pOq_xvji;
 
                 // Set regA to 0 everywhere
-                regA.m128_f32[0] = 0.0;
-                regA.m128_f32[1] = 0.0;
-                regA.m128_f32[2] = 0.0;
-                regA.m128_f32[3] = 0.0;
+/*
+                regA_f32[0] = 0.0;
+                regA_f32[1] = 0.0;
+                regA_f32[2] = 0.0;
+                regA_f32[3] = 0.0;
+*/
+                regA = (float32x4_t) {0.0, 0.0, 0.0, 0.0};
 
                 for (indexParticle = 0; (indexParticle + 3) < myMixture->FILTER_NBPARTICLES; indexParticle+=4)
                 {
 
                     // Load weight
-                    regB.m128 = _mm_load_ps(&weightArrayPtr[indexParticle]);
+                    regB = vld1q_f32(&weightArrayPtr[indexParticle]);
 
                     // Load pOq_xvji
-                    regC.m128 = _mm_load_ps(&pOq_xvjiArrayPtr[indexParticle]);
+                    regC = vld1q_f32(&pOq_xvjiArrayPtr[indexParticle]);
 
                     // weight * pOq_xvji
-                    regD.m128 = _mm_mul_ps(regB.m128, regC.m128);
+                    regD = vmulq_f32(regB, regC);
 
                     // Add to accumulator
-                    regA.m128 = _mm_add_ps(regA.m128, regD.m128);
+                    regA = vaddq_f32(regA, regD);
 
                 }
 
                 // Add all four floats to get overall sum
-                sum_wfqi_pOq_xvji = regA.m128_f32[0] + regA.m128_f32[1] + regA.m128_f32[2] + regA.m128_f32[3];
+                //sum_wfqi_pOq_xvji = regA_f32[0] + regA_f32[1] + regA_f32[2] + regA_f32[3];
+                vst1q_f32(vec,regA);
+                sum_wfqi_pOq_xvji = vec[0] + vec[1] + vec[2] + vec[3];
+
 
                 // Complete for particles left
                 if (indexParticle > myMixture->FILTER_NBPARTICLES)
