@@ -27,6 +27,12 @@ add_executable(manyears_live manyears_live.cpp)
 set_target_properties(manyears_live PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
 target_link_libraries(manyears_live ManyEarsLib RTAudioLib -lm)
 
+#FFT test
+add_executable(fft_test fft_test.cpp)
+set_target_properties(fft_test PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
+target_link_libraries(fft_test ManyEarsLib RTAudioLib -lm)
+
+
 #INSTALL DEMONSTRATION FILES
 INSTALL(FILES ${SRCS} DESTINATION example)
 
