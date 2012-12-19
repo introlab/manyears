@@ -89,6 +89,10 @@
 
 #include "Utilities/linearCorrelation.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 /*******************************************************************************
  * linearCorrelationInit                                                       *
  * --------------------------------------------------------------------------- *
@@ -760,7 +764,10 @@ void linearCorrelationCompute(struct objLinearCorrelation* myLinearCorrelation)
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC, regD;
+    float32x4_t regA, regB, regC, regD;
+
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
+    float vec[4] __attribute__((aligned (16))); //aligned on 16 bytes
 #else
     float sum=0;
     unsigned int indexElementAB = 0;
@@ -803,24 +810,26 @@ void linearCorrelationCompute(struct objLinearCorrelation* myLinearCorrelation)
             // Loop for all elements in vector A
 
             // Load the constant 0.0
-            regD.m128_f32[0] = 0.0;
-            regD.m128_f32[1] = 0.0;
-            regD.m128_f32[2] = 0.0;
-            regD.m128_f32[3] = 0.0;
+            //regD.m128_f32[0] = 0.0;
+            //regD.m128_f32[1] = 0.0;
+            //regD.m128_f32[2] = 0.0;
+            //regD.m128_f32[3] = 0.0;
+            regD = vld1q_f32(zeros);
 
             for (indexBlockAB = 0; indexBlockAB < myLinearCorrelation->vectorAnBlocks; indexBlockAB++)
             {
 
-                    regA.m128 = _mm_load_ps(&myLinearCorrelation->vectorA[indexElementB][indexBlockAB*4]);
-                    regB.m128 = _mm_load_ps(&myLinearCorrelation->vectorB[(indexBlockB + indexBlockAB)*4]);
-                    regC.m128 = _mm_mul_ps(regA.m128,regB.m128);
-                    regD.m128 = _mm_add_ps(regC.m128,regD.m128);
+                    regA = vld1q_f32(&myLinearCorrelation->vectorA[indexElementB][indexBlockAB*4]);
+                    regB = vld1q_f32(&myLinearCorrelation->vectorB[(indexBlockB + indexBlockAB)*4]);
+                    regC = vmulq_f32(regA,regB);
+                    regD = vaddq_f32(regC,regD);
             }
 
-            myLinearCorrelation->vectorResult[indexElementResult] = regD.m128_f32[0] +
-                                                                    regD.m128_f32[1] +
-                                                                    regD.m128_f32[2] +
-                                                                    regD.m128_f32[3];
+            vst1q_f32(vec,regD);
+            myLinearCorrelation->vectorResult[indexElementResult] = vec[0] +
+                                                                    vec[1] +
+                                                                    vec[2] +
+                                                                    vec[3];
 
 #endif
 

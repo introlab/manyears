@@ -89,6 +89,10 @@
 
 #include "Separation/gss.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 /*******************************************************************************
  * Compatibility issues                                                        *
  ******************************************************************************/
@@ -836,7 +840,10 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 #ifdef USE_SIMD
 
     // SIMD registers
-    __m128_mod regA, regB, regC;
+    float32x4_t regA, regB, regC;
+
+    static const float minus_1[4] __attribute__((aligned (16))) = {-1,-1,-1,-1} ; //aligned on 16 bytes
+    static const float zeros[4] __attribute__((aligned (16))) = {0,0,0,0} ; //aligned on 16 bytes
 
 #endif
 
@@ -869,10 +876,10 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
         for (k = 0; k < myGSS->GSS_HALFNFRAMES; k+=4)
         {
             // Load x(k)
-            regA.m128 = _mm_load_ps(&myPreprocessor->micArray[indexMicrophone]->xfreqReal[k]);
-            regB.m128 = _mm_load_ps(&myPreprocessor->micArray[indexMicrophone]->xfreqImag[k]);
-            _mm_store_ps(&myGSS->x->valueReal[indexMicrophone][0][k], regA.m128);
-            _mm_store_ps(&myGSS->x->valueImag[indexMicrophone][0][k], regB.m128);
+            regA = vld1q_f32(&myPreprocessor->micArray[indexMicrophone]->xfreqReal[k]);
+            regB = vld1q_f32(&myPreprocessor->micArray[indexMicrophone]->xfreqImag[k]);
+            vst1q_f32(&myGSS->x->valueReal[indexMicrophone][0][k], regA);
+            vst1q_f32(&myGSS->x->valueImag[indexMicrophone][0][k], regB);
 
         }
 
@@ -917,11 +924,12 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
     #ifdef USE_SIMD
 
         // Load the constant -1.0
-        regA.m128_f32[0] = -1.0;
-        regA.m128_f32[1] = -1.0;
-        regA.m128_f32[2] = -1.0;
-        regA.m128_f32[3] = -1.0;
+        //regA.m128_f32[0] = -1.0;
+        //regA.m128_f32[1] = -1.0;
+        //regA.m128_f32[2] = -1.0;
+        //regA.m128_f32[3] = -1.0;
 
+        regA = vld1q_f32(minus_1);
     #endif
 
         for (indexSource = 0; indexSource < nSources; indexSource++)
@@ -988,19 +996,19 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 
                     // Compute aij(k)   = exp(-j*2*pi*k*delay/N)
                     //                  = cos(2*pi*k*delay/N) - j * sin(2*pi*k*delay/N)
-                    regB.m128 = _mm_load_ps(&myGSS->cosTable[delayNorm][k]);
-                    regC.m128 = _mm_load_ps(&myGSS->sinTable[delayNorm][k]);
+                    regB = vld1q_f32(&myGSS->cosTable[delayNorm][k]);
+                    regC = vld1q_f32(&myGSS->sinTable[delayNorm][k]);
 
                     // Save in the matrix A(k)
-                    _mm_store_ps(&myGSS->A->valueReal[indexMicrophone][indexSource][k], regB.m128);
-                    _mm_store_ps(&myGSS->A->valueImag[indexMicrophone][indexSource][k], regC.m128);
+                    vst1q_f32(&myGSS->A->valueReal[indexMicrophone][indexSource][k], regB);
+                    vst1q_f32(&myGSS->A->valueImag[indexMicrophone][indexSource][k], regC);
 
                     // Compute complex conjugate
-                    regC.m128 = _mm_mul_ps(regA.m128,regC.m128);
+                    regC = vmulq_f32(regA,regC);
 
                     // Save in the matrix AH(k)
-                    _mm_store_ps(&myGSS->AH->valueReal[indexSource][indexMicrophone][k], regB.m128);
-                    _mm_store_ps(&myGSS->AH->valueImag[indexSource][indexMicrophone][k], regC.m128);
+                    vst1q_f32(&myGSS->AH->valueReal[indexSource][indexMicrophone][k], regB);
+                    vst1q_f32(&myGSS->AH->valueImag[indexSource][indexMicrophone][k], regC);
 
                 }
 
@@ -1185,10 +1193,10 @@ void gssProcess(struct objGSS* myGSS, struct objPreprocessor* myPreprocessor, st
 
             // Export y(k)
 
-            regA.m128 = _mm_load_ps(&myGSS->yFull->valueReal[indexID][0][k]);
-            regB.m128 = _mm_load_ps(&myGSS->yFull->valueImag[indexID][0][k]);
-            _mm_store_ps(&mySeparatedSources->sourcesFramesReal[indexID][k], regA.m128);
-            _mm_store_ps(&mySeparatedSources->sourcesFramesImag[indexID][k], regB.m128);
+            regA = vld1q_f32(&myGSS->yFull->valueReal[indexID][0][k]);
+            regB = vld1q_f32(&myGSS->yFull->valueImag[indexID][0][k]);
+            vst1q_f32(&mySeparatedSources->sourcesFramesReal[indexID][k], regA);
+            vst1q_f32(&mySeparatedSources->sourcesFramesImag[indexID][k], regB);
 
         }
         for (k = k - 4; k < myGSS->GSS_NFRAMES; k++)
