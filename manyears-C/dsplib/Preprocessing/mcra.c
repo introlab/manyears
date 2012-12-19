@@ -89,6 +89,10 @@
 
 #include "Preprocessing/mcra.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 /*******************************************************************************
  * mcraInit                                                                    *
  * --------------------------------------------------------------------------- *
@@ -228,7 +232,7 @@ void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource)
 
 #ifdef USE_SIMD
     // SIMD registers
-    __m128_mod regA;
+    float32x4_t regA;
 #endif
 
     // Make sure both have the same frame size
@@ -259,32 +263,32 @@ void mcraClone(struct objMcra* myMCRADest, struct objMcra* myMCRASource)
         for (k = 0; k < myMCRADest->MICST_FRAMESIZE; k+=4)
         {
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S[k]);
-            _mm_store_ps(&myMCRADest->S[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S[k]);
+            vst1q_f32(&myMCRADest->S[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S_min[k]);
-            _mm_store_ps(&myMCRADest->S_min[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S_min[k]);
+            vst1q_f32(&myMCRADest->S_min[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S_min_prev[k]);
-            _mm_store_ps(&myMCRADest->S_min_prev[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S_min_prev[k]);
+            vst1q_f32(&myMCRADest->S_min_prev[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S_prev[k]);
-            _mm_store_ps(&myMCRADest->S_prev[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S_prev[k]);
+            vst1q_f32(&myMCRADest->S_prev[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S_tmp[k]);
-            _mm_store_ps(&myMCRADest->S_tmp[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S_tmp[k]);
+            vst1q_f32(&myMCRADest->S_tmp[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->S_tmp_prev[k]);
-            _mm_store_ps(&myMCRADest->S_tmp_prev[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->S_tmp_prev[k]);
+            vst1q_f32(&myMCRADest->S_tmp_prev[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->Sf[k]);
-            _mm_store_ps(&myMCRADest->Sf[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->Sf[k]);
+            vst1q_f32(&myMCRADest->Sf[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->lambdaD[k]);
-            _mm_store_ps(&myMCRADest->lambdaD[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->lambdaD[k]);
+            vst1q_f32(&myMCRADest->lambdaD[k], regA);
 
-            regA.m128 = _mm_load_ps(&myMCRASource->lambdaD_next[k]);
-            _mm_store_ps(&myMCRADest->lambdaD_next[k], regA.m128);
+            regA = vld1q_f32(&myMCRASource->lambdaD_next[k]);
+            vst1q_f32(&myMCRADest->lambdaD_next[k], regA);
 
         }
 
@@ -323,7 +327,7 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
 
 #ifdef USE_SIMD
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
 #endif
 
     /***************************************************************************
@@ -385,36 +389,39 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
     myMCRA->S[myMCRA->MICST_HALFFRAMESIZE] = myMCRA->MCRA_ALPHAS * myMCRA->S_prev[myMCRA->MICST_HALFFRAMESIZE] + (1 - myMCRA->MCRA_ALPHAS) * myMCRA->Sf[myMCRA->MICST_HALFFRAMESIZE];
 
     // Load the constant alphaS in regA
-    regA.m128_f32[0] = myMCRA->MCRA_ALPHAS;
-    regA.m128_f32[1] = myMCRA->MCRA_ALPHAS;
-    regA.m128_f32[2] = myMCRA->MCRA_ALPHAS;
-    regA.m128_f32[3] = myMCRA->MCRA_ALPHAS;
+    //regA_f32[0] = myMCRA->MCRA_ALPHAS;
+    //regA_f32[1] = myMCRA->MCRA_ALPHAS;
+    //regA_f32[2] = myMCRA->MCRA_ALPHAS;
+    //regA_f32[3] = myMCRA->MCRA_ALPHAS;
+    regA = (float32x4_t) {myMCRA->MCRA_ALPHAS,myMCRA->MCRA_ALPHAS,myMCRA->MCRA_ALPHAS,myMCRA->MCRA_ALPHAS};
 
     // Load the constant (1-alphaS) in regB
-    regB.m128_f32[0] = 1 - myMCRA->MCRA_ALPHAS;
-    regB.m128_f32[1] = 1 - myMCRA->MCRA_ALPHAS;
-    regB.m128_f32[2] = 1 - myMCRA->MCRA_ALPHAS;
-    regB.m128_f32[3] = 1 - myMCRA->MCRA_ALPHAS;
+    //regB_f32[0] = 1 - myMCRA->MCRA_ALPHAS;
+    //regB_f32[1] = 1 - myMCRA->MCRA_ALPHAS;
+    //regB_f32[2] = 1 - myMCRA->MCRA_ALPHAS;
+    //regB_f32[3] = 1 - myMCRA->MCRA_ALPHAS;
+    regB = (float32x4_t) {1 - myMCRA->MCRA_ALPHAS, 1 - myMCRA->MCRA_ALPHAS, 1 - myMCRA->MCRA_ALPHAS, 1 - myMCRA->MCRA_ALPHAS};
+    
 
     for (k = 0; k < myMCRA->MICST_HALFFRAMESIZE; k+= 4)
     {
         // Load S_prev[k] in regC
-        regC.m128 = _mm_load_ps(&myMCRA->S_prev[k]);
+        regC = vld1q_f32(&myMCRA->S_prev[k]);
 
         // Load Sf[k] in regD
-        regD.m128 = _mm_load_ps(&myMCRA->Sf[k]);
+        regD = vld1q_f32(&myMCRA->Sf[k]);
 
         // alphaS * S_prev[k]
-        regE.m128 = _mm_mul_ps(regA.m128,regC.m128);
+        regE = vmulq_f32(regA,regC);
 
         // (1 - alphaS) * Sf[k]
-        regF.m128 = _mm_mul_ps(regB.m128,regD.m128);
+        regF = vmulq_f32(regB,regD);
 
         // alphaS * S_prev[k] + (1 - alphaS) * Sf[k]
-        regG.m128 = _mm_add_ps(regE.m128,regF.m128);
+        regG = vaddq_f32(regE,regF);
 
         // Store results in S[k]
-        _mm_store_ps(&myMCRA->S[k],regG.m128);
+        vst1q_f32(&myMCRA->S[k],regG);
 
     }
 
@@ -497,31 +504,33 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
         {
 
             // Load Stmp(k,l-1) in regA
-            regA.m128 = _mm_load_ps(&myMCRA->S_tmp_prev[k]);
+            regA = vld1q_f32(&myMCRA->S_tmp_prev[k]);
 
             // Load S(k,l) in regB
-            regB.m128 = _mm_load_ps(&myMCRA->S[k]);
+            regB = vld1q_f32(&myMCRA->S[k]);
 
             // Stmp(k,l-1) <= S(k,l)
-            regC.m128 = _mm_cmple_ps(regA.m128, regB.m128);
+            //regC = _mm_cmple_ps(regA, regB);
 
             // (Stmp(k,l-1) <= S(k,l)) & Stmp(k,l-1)
-            regD.m128 = _mm_and_ps(regC.m128, regA.m128);
+            //regD = _mm_and_ps(regC, regA);
 
             // Stmp(k,l-1) > S(k,l)
-            regC.m128 = _mm_cmpgt_ps(regA.m128, regB.m128);
+            //regC = _mm_cmpgt_ps(regA, regB);
 
             // (Stmp(k,l-1) > S(k,l)) & S(k,l)
-            regE.m128 = _mm_and_ps(regC.m128, regB.m128);
+            //regE = _mm_and_ps(regC, regB);
 
             // min{Stmp(k,l-1),S(k,l)} = (Stmp(k,l-1) <= S(k,l)) & Stmp(k,l-1) + (Stmp(k,l-1) > S(k,l)) & S(k,l)
-            regF.m128 = _mm_add_ps(regD.m128,regE.m128);
+            //regF = vaddq_f32(regD,regE);
+
+            regF = vminq_f32(regA,regB);
 
             // Smin(k,l) = min{Stmp(k,l-1),S(k,l)}
-            _mm_store_ps(&myMCRA->S_min[k], regF.m128);
+            vst1q_f32(&myMCRA->S_min[k], regF);
 
             // Stmp(k,l) = S(k,l)
-            _mm_store_ps(&myMCRA->S_tmp[k], regB.m128);
+            vst1q_f32(&myMCRA->S_tmp[k], regB);
 
         }
 
@@ -540,49 +549,55 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
         {
 
             // Load Stmp(k,l-1) in regA
-            regA.m128 = _mm_load_ps(&myMCRA->S_tmp_prev[k]);
+            regA = vld1q_f32(&myMCRA->S_tmp_prev[k]);
 
             // Load S(k,l) in regB
-            regB.m128 = _mm_load_ps(&myMCRA->S[k]);
+            regB = vld1q_f32(&myMCRA->S[k]);
 
             // Load Smin(k,l-1) in regC
-            regC.m128 = _mm_load_ps(&myMCRA->S_min_prev[k]);
+            regC = vld1q_f32(&myMCRA->S_min_prev[k]);
 
+/*
             // Smin(k,l-1) <= S(k,l)
-            regD.m128 = _mm_cmple_ps(regC.m128, regB.m128);
+            regD = _mm_cmple_ps(regC, regB);
 
             // (Smin(k,l-1) <= S(k,l)) & Smin(k,l-1)
-            regE.m128 = _mm_and_ps(regD.m128, regC.m128);
+            regE = _mm_and_ps(regD, regC);
 
             // Smin(k,l-1) > S(k,l)
-            regD.m128 = _mm_cmpgt_ps(regC.m128, regB.m128);
+            regD = _mm_cmpgt_ps(regC, regB);
 
             // (Smin(k,l-1) > S(k,l)) & S(k,l)
-            regF.m128 = _mm_and_ps(regD.m128, regB.m128);
+            regF = _mm_and_ps(regD, regB);
 
             // min{Smin(k,l-1),S(k,l)} = (Smin(k,l-1) <= S(k,l)) & Smin(k,l-1) + (Smin(k,l-1) > S(k,l)) & S(k,l)
-            regG.m128 = _mm_add_ps(regE.m128,regF.m128);
+            regG = vaddq_f32(regE,regF);
+*/
+            regG = vminq_f32(regC,regB);
 
+/*
             // Stmp(k,l-1) <= S(k,l)
-            regD.m128 = _mm_cmple_ps(regA.m128, regB.m128);
+            regD = _mm_cmple_ps(regA, regB);
 
             // (Stmp(k,l-1) <= S(k,l)) & Stmp(k,l-1)
-            regE.m128 = _mm_and_ps(regD.m128, regA.m128);
+            regE = _mm_and_ps(regD, regA);
 
             // Stmp(k,l-1) > S(k,l)
-            regD.m128 = _mm_cmpgt_ps(regA.m128, regB.m128);
+            regD = _mm_cmpgt_ps(regA, regB);
 
             // (Stmp(k,l-1) > S(k,l)) & S(k,l)
-            regF.m128 = _mm_and_ps(regD.m128, regB.m128);
+            regF = _mm_and_ps(regD, regB);
 
             // min{Stmp(k,l-1),S(k,l)} = (Stmp(k,l-1) <= S(k,l)) & Stmp(k,l-1) + (Stmp(k,l-1) > S(k,l)) & S(k,l)
-            regH.m128 = _mm_add_ps(regE.m128,regF.m128);
+            regH = vaddq_f32(regE,regF);
+*/
+            regH = vminq_f32(regA,regB);
 
             // Smin(k,l) = min{Stmp(k,l-1),S(k,l)}
-            _mm_store_ps(&myMCRA->S_min[k], regG.m128);
+            vst1q_f32(&myMCRA->S_min[k], regG);
 
             // Stmp(k,l) = min(Stmp(k,l-1),S(k,l)}
-            _mm_store_ps(&myMCRA->S_tmp[k], regH.m128);
+            vst1q_f32(&myMCRA->S_tmp[k], regH);
 
         }
 
@@ -602,7 +617,7 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
     // 2) S(k,l) < (Smin(k,l) * delta)
     // 3) lambdaD(k,l) > |Y(k,l)|^2
 
-#ifndef USE_SIMD
+//#ifndef USE_SIMD
 
     // +-----------------------------------------------------------------------+
     // | No hardware acceleration                                              |
@@ -639,76 +654,80 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
 
     }
 
-#else
+//#else
+#if 0
 
     if (myMCRA->firstProcessing != 1)
     {
 
         // Load MCRA_DELTA in regA
-        regA.m128_f32[0] = myMCRA->MCRA_DELTA;
-        regA.m128_f32[1] = myMCRA->MCRA_DELTA;
-        regA.m128_f32[2] = myMCRA->MCRA_DELTA;
-        regA.m128_f32[3] = myMCRA->MCRA_DELTA;
+        //regA_f32[0] = myMCRA->MCRA_DELTA;
+        //regA_f32[1] = myMCRA->MCRA_DELTA;
+        //regA_f32[2] = myMCRA->MCRA_DELTA;
+        //regA_f32[3] = myMCRA->MCRA_DELTA;
+        regA = (float32x4_t) {myMCRA->MCRA_DELTA,myMCRA->MCRA_DELTA,myMCRA->MCRA_DELTA,myMCRA->MCRA_DELTA};
 
         // Load MCRA_ALPHAD in regB
-        regB.m128_f32[0] = myMCRA->MCRA_ALPHAD;
-        regB.m128_f32[1] = myMCRA->MCRA_ALPHAD;
-        regB.m128_f32[2] = myMCRA->MCRA_ALPHAD;
-        regB.m128_f32[3] = myMCRA->MCRA_ALPHAD;
+        //regB_f32[0] = myMCRA->MCRA_ALPHAD;
+        //regB_f32[1] = myMCRA->MCRA_ALPHAD;
+        //regB_f32[2] = myMCRA->MCRA_ALPHAD;
+        //regB_f32[3] = myMCRA->MCRA_ALPHAD;
+        regB = (float32x4_t) {myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD};
 
         // Load 1 - MCRA_ALPHAD in regC
-        regC.m128_f32[0] = 1 - myMCRA->MCRA_ALPHAD;
-        regC.m128_f32[1] = 1 - myMCRA->MCRA_ALPHAD;
-        regC.m128_f32[2] = 1 - myMCRA->MCRA_ALPHAD;
-        regC.m128_f32[3] = 1 - myMCRA->MCRA_ALPHAD;
+        //regC_f32[0] = 1 - myMCRA->MCRA_ALPHAD;
+        //regC_f32[1] = 1 - myMCRA->MCRA_ALPHAD;
+        //regC_f32[2] = 1 - myMCRA->MCRA_ALPHAD;
+        //regC_f32[3] = 1 - myMCRA->MCRA_ALPHAD;
+        regC = (float32x4_t) {1 - myMCRA->MCRA_ALPHAD,1 - myMCRA->MCRA_ALPHAD,1 - myMCRA->MCRA_ALPHAD,1 - myMCRA->MCRA_ALPHAD};
 
         for (k = 0; k < myMCRA->MICST_HALFFRAMESIZE; k+= 4)
         {
 
             // Load S(k,l) in regD
-            regD.m128 = _mm_load_ps(&myMCRA->S[k]);
+            regD = vld1q_f32(&myMCRA->S[k]);
 
             // Load Smin(k,l) in regE
-            regE.m128 = _mm_load_ps(&myMCRA->S_min[k]);
+            regE = vld1q_f32(&myMCRA->S_min[k]);
 
             // Load lambdaD(k,l) in regF
-            regF.m128 = _mm_load_ps(&myMCRA->lambdaD[k]);
+            regF = vld1q_f32(&myMCRA->lambdaD[k]);
 
             // Load |Y(k,l)|^2 in regG
-            regG.m128 = _mm_load_ps(&xPower[k]);
+            regG = vld1q_f32(&xPower[k]);
 
             // (Smin(k,l) * delta)
-            regH.m128 = _mm_mul_ps(regE.m128,regA.m128);
+            regH = vmulq_f32(regE,regA);
 
             // S(k,l) < (Smin(k,l) * delta)
-            regH.m128 = _mm_cmplt_ps(regE.m128,regH.m128);
+            regH = _mm_cmplt_ps(regE,regH);
 
             // lambdaD(k,l) > |Y(k,l)|^2
-            regD.m128 = _mm_cmpgt_ps(regF.m128, regG.m128);
+            regD = _mm_cmpgt_ps(regF, regG);
 
             // [S(k,l) < (Smin(k,l) * delta)] || [lambdaD(k,l) > |Y(k,l)|^2]
-            regH.m128 = _mm_or_ps(regH.m128,regD.m128);
+            regH = _mm_or_ps(regH,regD);
 
             // (1 - alphaD) * |Y(k,l)|^2
-            regG.m128 = _mm_mul_ps(regC.m128,regG.m128);
+            regG = vmulq_f32(regC,regG);
 
             // alphaD * lambdaD(k,l)
-            regD.m128 = _mm_mul_ps(regB.m128, regF.m128);
+            regD = vmulq_f32(regB, regF);
 
             // alphaD * lambdaD(k,l) + (1 - alphaD) * |Y(k,l)|^2
-            regD.m128 = _mm_add_ps(regD.m128, regG.m128);
+            regD = vaddq_f32(regD, regG);
 
             // If conditions matched: lambdaD(k,l+1) = alphaD * lambdaD(k,l) + (1 - alphaD) * |Y(k,l)|^2
             // else: lambdaD(k,l+1) = lambdaD(k,l)
-            regD.m128 = _mm_and_ps(regD.m128, regH.m128);
-            regH.m128 = _mm_andnot_ps(regH.m128, regF.m128);
-            regH.m128 = _mm_add_ps(regD.m128,regH.m128);
+            regD = _mm_and_ps(regD, regH);
+            regH = _mm_andnot_ps(regH, regF);
+            regH = vaddq_f32(regD,regH);
 
             // Store the noise
-            _mm_store_ps(&myMCRA->lambdaD_next[k], regH.m128);
+            vst1q_f32(&myMCRA->lambdaD_next[k], regH);
 
             // Store in lambdaD as well for next iteration
-            //_mm_store_ps(&myMCRA->lambdaD[k], regG.m128);
+            //vst1q_f32(&myMCRA->lambdaD[k], regG);
 
         }
 
@@ -721,32 +740,36 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
         {
 
             // Load (1.0 / l) in regA
-            regA.m128_f32[0] = (1.0 / myMCRA->l);
-            regA.m128_f32[1] = (1.0 / myMCRA->l);
-            regA.m128_f32[2] = (1.0 / myMCRA->l);
-            regA.m128_f32[3] = (1.0 / myMCRA->l);
+            //regA_f32[0] = (1.0 / myMCRA->l);
+            //regA_f32[1] = (1.0 / myMCRA->l);
+            //regA_f32[2] = (1.0 / myMCRA->l);
+            //regA_f32[3] = (1.0 / myMCRA->l);
+            regA = (float32x4_t) {(1.0 / myMCRA->l), (1.0 / myMCRA->l), (1.0 / myMCRA->l), (1.0 / myMCRA->l)};
 
             // Load 1 - (1.0 / l) in regB
-            regB.m128_f32[0] = 1 - (1.0 / myMCRA->l);
-            regB.m128_f32[1] = 1 - (1.0 / myMCRA->l);
-            regB.m128_f32[2] = 1 - (1.0 / myMCRA->l);
-            regB.m128_f32[3] = 1 - (1.0 / myMCRA->l);
-
+            //regB_f32[0] = 1 - (1.0 / myMCRA->l);
+            //regB_f32[1] = 1 - (1.0 / myMCRA->l);
+            //regB_f32[2] = 1 - (1.0 / myMCRA->l);
+            //regB_f32[3] = 1 - (1.0 / myMCRA->l);
+            regB = (float32x4_t) {1 - (1.0 / myMCRA->l), 1 - (1.0 / myMCRA->l), 1 - (1.0 / myMCRA->l), 1 - (1.0 / myMCRA->l)};
         }
         else
         {
 
             // Load MCRA_ALPHAD in regA
-            regA.m128_f32[0] = myMCRA->MCRA_ALPHAD;
-            regA.m128_f32[1] = myMCRA->MCRA_ALPHAD;
-            regA.m128_f32[2] = myMCRA->MCRA_ALPHAD;
-            regA.m128_f32[3] = myMCRA->MCRA_ALPHAD;
+            //regA_f32[0] = myMCRA->MCRA_ALPHAD;
+            //regA_f32[1] = myMCRA->MCRA_ALPHAD;
+            //regA_f32[2] = myMCRA->MCRA_ALPHAD;
+            //regA_f32[3] = myMCRA->MCRA_ALPHAD;
+            regA = (float32x4_t) {myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD,myMCRA->MCRA_ALPHAD};
+
 
             // Load 1 - MCRA_ALPHAD in regB
-            regB.m128_f32[0] = 1 - myMCRA->MCRA_ALPHAD;
-            regB.m128_f32[1] = 1 - myMCRA->MCRA_ALPHAD;
-            regB.m128_f32[2] = 1 - myMCRA->MCRA_ALPHAD;
-            regB.m128_f32[3] = 1 - myMCRA->MCRA_ALPHAD;
+            //regB_f32[0] = 1 - myMCRA->MCRA_ALPHAD;
+            //regB_f32[1] = 1 - myMCRA->MCRA_ALPHAD;
+            //regB_f32[2] = 1 - myMCRA->MCRA_ALPHAD;
+            //regB_f32[3] = 1 - myMCRA->MCRA_ALPHAD;
+            regB = (float32x4_t) {1 - myMCRA->MCRA_ALPHAD, 1 - myMCRA->MCRA_ALPHAD, 1 - myMCRA->MCRA_ALPHAD, 1 - myMCRA->MCRA_ALPHAD};
 
         }
 
@@ -754,25 +777,25 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
         {
 
             // Load lambdaD(k,l) in regC
-            regC.m128 = _mm_load_ps(&myMCRA->lambdaD[k]);
+            regC = vld1q_f32(&myMCRA->lambdaD[k]);
 
             // Load |Y(k,l)|^2 in regD
-            regD.m128 = _mm_load_ps(&xPower[k]);
+            regD = vld1q_f32(&xPower[k]);
 
             // (1 - alphaD) * |Y(k,l)|^2
-            regE.m128 = _mm_mul_ps(regB.m128,regD.m128);
+            regE = vmulq_f32(regB,regD);
 
             // alphaD * lambdaD(k,l)
-            regF.m128 = _mm_mul_ps(regA.m128, regC.m128);
+            regF = vmulq_f32(regA, regC);
 
             // alphaD * lambdaD(k,l) + (1 - alphaD) * |Y(k,l)|^2
-            regG.m128 = _mm_add_ps(regF.m128, regE.m128);
+            regG = vaddq_f32(regF, regE);
 
             // Store the noise
-            _mm_store_ps(&myMCRA->lambdaD_next[k], regG.m128);
+            vst1q_f32(&myMCRA->lambdaD_next[k], regG);
 
             // Store in lambdaD as well for next iteration
-            _mm_store_ps(&myMCRA->lambdaD[k], regG.m128);
+            vst1q_f32(&myMCRA->lambdaD[k], regG);
 
         }
 
@@ -800,9 +823,9 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
     {
         myMCRA->lambdaD_next[myMCRA->MICST_HALFFRAMESIZE] = myMCRA->lambdaD[myMCRA->MICST_HALFFRAMESIZE];
     }
-
-
 #endif
+
+//#endif
 
 
     /***************************************************************************
@@ -865,24 +888,24 @@ void mcraProcessFrame(struct objMcra *myMCRA, float *xPower, float *sigma)
     {
 
         // Load Smin(k,l) in regA
-        regA.m128 = _mm_load_ps(&myMCRA->S_min[k]);
+        regA = vld1q_f32(&myMCRA->S_min[k]);
         // Store regA in Smin(k,l-1)
-        _mm_store_ps(&myMCRA->S_min_prev[k], regA.m128);
+        vst1q_f32(&myMCRA->S_min_prev[k], regA);
 
         // Load S(k,l) in regA
-        regA.m128 = _mm_load_ps(&myMCRA->S[k]);
+        regA = vld1q_f32(&myMCRA->S[k]);
         // Store regA in  S(k,l-1)
-        _mm_store_ps(&myMCRA->S_prev[k], regA.m128);
+        vst1q_f32(&myMCRA->S_prev[k], regA);
 
         // Load Stmp(k,l) in regA
-        regA.m128 = _mm_load_ps(&myMCRA->S_tmp[k]);
+        regA = vld1q_f32(&myMCRA->S_tmp[k]);
         // Store regA in Stmp(k,l-1)
-        _mm_store_ps(&myMCRA->S_tmp_prev[k], regA.m128);
+        vst1q_f32(&myMCRA->S_tmp_prev[k], regA);
 
         // Load lambdaD(k,l+1) in regA
-        regA.m128 = _mm_load_ps(&myMCRA->lambdaD_next[k]);
+        regA = vld1q_f32(&myMCRA->lambdaD_next[k]);
         // Store regA in lambdaD(k,l)
-        _mm_store_ps(&myMCRA->lambdaD[k], regA.m128);
+        vst1q_f32(&myMCRA->lambdaD[k], regA);
 
     }
 

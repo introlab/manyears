@@ -89,6 +89,10 @@
 
 #include "Preprocessing/micst.h"
 
+#ifdef __ARM_NEON__
+#define USE_SIMD
+#endif
+
 /*******************************************************************************
  * micstInitNormal                                                             *
  * --------------------------------------------------------------------------- *
@@ -243,7 +247,7 @@ void micstProcessFrame(struct objMicST *myMicST)
 
 #ifdef USE_SIMD
     // SIMD registers
-    __m128_mod regA, regB, regC, regD, regE, regF, regG, regH;
+    float32x4_t regA, regB, regC, regD, regE, regF, regG, regH;
 #endif
 
     /***************************************************************************
@@ -283,20 +287,20 @@ void micstProcessFrame(struct objMicST *myMicST)
     for (k = 0; k < myMicST->MICST_FRAMESIZE; k+=4)
     {
         // Load xfreqReal in regA
-        regA.m128 = _mm_load_ps(&myMicST->xfreqReal[k]);
+        regA = vld1q_f32(&myMicST->xfreqReal[k]);
         // Load xfreqImag in regB
-        regB.m128 = _mm_load_ps(&myMicST->xfreqImag[k]);
+        regB = vld1q_f32(&myMicST->xfreqImag[k]);
 
         // xfreqReal * xfreqReal
-        regC.m128 = _mm_mul_ps(regA.m128,regA.m128);
+        regC = vmulq_f32(regA,regA);
         // xfreqImag * xfreqImag
-        regD.m128 = _mm_mul_ps(regB.m128,regB.m128);
+        regD = vmulq_f32(regB,regB);
 
         // xfreqReal * xfreqReal + xfreqImag * xfreqImag
-        regE.m128 = _mm_add_ps(regC.m128,regD.m128);
+        regE = vaddq_f32(regC,regD);
 
         // Store in xpower
-        _mm_store_ps(&myMicST->xpower[k],regE.m128);
+        vst1q_f32(&myMicST->xpower[k],regE);
 
     }
 
@@ -341,43 +345,48 @@ void micstProcessFrame(struct objMicST *myMicST)
     // lambda_rev_n,i[k] = gamma * lambda_rev_n-1,i[k] + (1 - gamma) * delta * | zeta_n-1_i[k] * X_n-1_i[k] |^2
 
     // Load the constant gamma in regA
-    regA.m128_f32[0] = myMicST->MICST_GAMMA;
-    regA.m128_f32[1] = myMicST->MICST_GAMMA;
-    regA.m128_f32[2] = myMicST->MICST_GAMMA;
-    regA.m128_f32[3] = myMicST->MICST_GAMMA;
+    //regA_f32[0] = myMicST->MICST_GAMMA;
+    //regA_f32[1] = myMicST->MICST_GAMMA;
+    //regA_f32[2] = myMicST->MICST_GAMMA;
+    //regA_f32[3] = myMicST->MICST_GAMMA;
+    regA = (float32x4_t) {myMicST->MICST_GAMMA,myMicST->MICST_GAMMA,myMicST->MICST_GAMMA,myMicST->MICST_GAMMA};
 
     // Load the constant (1-gamma)*delta in regB
-    regB.m128_f32[0] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
-    regB.m128_f32[1] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
-    regB.m128_f32[2] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
-    regB.m128_f32[3] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
+    //regB_f32[0] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
+    //regB_f32[1] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
+    //regB_f32[2] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
+    //regB_f32[3] = (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA;
+    regB = (float32x4_t) {(1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA,
+                        (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA,
+                        (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA,
+                        (1 - myMicST->MICST_GAMMA) * myMicST->MICST_DELTA};
 
     for (k = 0; k < myMicST->MICST_HALFFRAMESIZE; k+=4)
     {
         // Load lambda_rev_n-1,i[k] in regC
-        regC.m128 = _mm_load_ps(&myMicST->lambda_prev[k]);
+        regC = vld1q_f32(&myMicST->lambda_prev[k]);
         // Load zeta_n-1_i[k] in regD
-        regD.m128 = _mm_load_ps(&myMicST->zeta_prev[k]);
+        regD = vld1q_f32(&myMicST->zeta_prev[k]);
         // Load |X_n-1_i[k]|^2 in regE
-        regE.m128 = _mm_load_ps(&myMicST->xpower_prev[k]);
+        regE = vld1q_f32(&myMicST->xpower_prev[k]);
 
         // gamma * lambda_rev_n-1,i[k]
-        regF.m128 = _mm_mul_ps(regA.m128,regC.m128);
+        regF = vmulq_f32(regA,regC);
 
         // |zeta_n-1_i[k]|^2
-        regD.m128 = _mm_mul_ps(regD.m128,regD.m128);
+        regD = vmulq_f32(regD,regD);
 
         // |zeta_n-1_i[k]|^2 * |X_n-1_i[k]|^2
-        regD.m128 = _mm_mul_ps(regD.m128,regE.m128);
+        regD = vmulq_f32(regD,regE);
 
         // (1 - gamma) * delta * |zeta_n-1_i[k]|^2 * |X_n-1_i[k]|^2
-        regD.m128 = _mm_mul_ps(regB.m128,regD.m128);
+        regD = vmulq_f32(regB,regD);
 
         // gamma * lambda_rev_n-1,i[k] + (1 - gamma) * delta * |zeta_n-1_i[k]|^2 * |X_n-1_i[k]|^2
-        regD.m128 = _mm_add_ps(regF.m128,regD.m128);
+        regD = vaddq_f32(regF,regD);
 
         // Store result
-        _mm_store_ps(&myMicST->lambda[k],regD.m128);
+        vst1q_f32(&myMicST->lambda[k],regD);
 
     }
 
@@ -388,9 +397,6 @@ void micstProcessFrame(struct objMicST *myMicST)
     /***************************************************************************
      * Step 4: Compute the estimate of the a priori SNR                        *
      **************************************************************************/
-
-#ifndef USE_SIMD
-
     // +-----------------------------------------------------------------------+
     // | No hardware acceleration                                              |
     // +-----------------------------------------------------------------------+
@@ -424,108 +430,11 @@ void micstProcessFrame(struct objMicST *myMicST)
         myMicST->ksi[myMicST->MICST_FRAMESIZE - k] = myMicST->ksi[k];
     }
 
-#else
 
-    // +-----------------------------------------------------------------------+
-    // | With SSE instructions                                                 |
-    // +-----------------------------------------------------------------------+
-
-    // post[k] = | X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k]
-    // ksi_n_i[k] = {(1 - alphaD) * [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2 + alphaD * post[k]} / (sigma_2_i[k] + lambda_rev_n,i[k] + 1E-20)
-
-    // Load the constant 1 - alphaD in regB
-    regB.m128_f32[0] = 1 - myMicST->MICST_ALPHAD;
-    regB.m128_f32[1] = 1 - myMicST->MICST_ALPHAD;
-    regB.m128_f32[2] = 1 - myMicST->MICST_ALPHAD;
-    regB.m128_f32[3] = 1 - myMicST->MICST_ALPHAD;
-
-    // Load the constant 1E-20 in regC
-    regC.m128_f32[0] = 1E-20;
-    regC.m128_f32[1] = 1E-20;
-    regC.m128_f32[2] = 1E-20;
-    regC.m128_f32[3] = 1E-20;
-
-    for (k = 0; k < myMicST->MICST_HALFFRAMESIZE; k+=4)
-    {
-
-        // Load the constant alphaD in regA
-        regA.m128_f32[0] = myMicST->MICST_ALPHAD;
-        regA.m128_f32[1] = myMicST->MICST_ALPHAD;
-        regA.m128_f32[2] = myMicST->MICST_ALPHAD;
-        regA.m128_f32[3] = myMicST->MICST_ALPHAD;
-
-        // Load zeta_n-1_i[k] in regD
-        regD.m128 = _mm_load_ps(&myMicST->zeta_prev[k]);
-        // Load | X_n-1_i[k] |^2 in regE
-        regE.m128 = _mm_load_ps(&myMicST->xpower_prev[k]);
-        // Load | X_n_i[k] |^2 in regF
-        regF.m128 = _mm_load_ps(&myMicST->xpower[k]);
-        // Load sigma_2_i[k] in regG
-        regG.m128 = _mm_load_ps(&myMicST->sigma[k]);
-        // Load lambda_rev_n,i[k] in regH
-        regH.m128 = _mm_load_ps(&myMicST->lambda[k]);
-
-        // [ zeta_n-1_i[k] ]^2
-        regD.m128 = _mm_mul_ps(regD.m128,regD.m128);
-
-        // [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2
-        regD.m128 = _mm_mul_ps(regD.m128, regE.m128);
-
-        // (1 - alphaD) * [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2
-        regD.m128 = _mm_mul_ps(regB.m128,regD.m128);
-
-        // | X_n_i[k] |^2 - sigma_2_i[k]
-        regF.m128 = _mm_sub_ps(regF.m128, regG.m128);
-
-        // | X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k]
-        regF.m128 = _mm_sub_ps(regF.m128, regH.m128);
-
-        // alphaD * (| X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k])
-        regF.m128 = _mm_mul_ps(regA.m128, regF.m128);
-
-        // Load the constant 0 in regA
-        regA.m128_f32[0] = 0;
-        regA.m128_f32[1] = 0;
-        regA.m128_f32[2] = 0;
-        regA.m128_f32[3] = 0;
-
-        // If alphaD * (| X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k]) < 0
-        // then = 0
-        regA.m128 = _mm_cmpgt_ps(regF.m128, regA.m128);
-        regF.m128 = _mm_and_ps(regF.m128, regA.m128);
-
-        // (1 - alphaD) * [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2 + alphaD * (| X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k])
-        regF.m128 = _mm_add_ps(regF.m128, regD.m128);
-
-        // sigma_2_i[k] + lambda_rev_n,i[k]
-        regH.m128 = _mm_add_ps(regG.m128, regH.m128);
-
-        // sigma_2_i[k] + lambda_rev_n,i[k] + 1E-20
-        regH.m128 = _mm_add_ps(regC.m128, regH.m128);
-
-        // {(1 - alphaD) * [ zeta_n-1_i[k] ]^2 * | X_n-1_i[k] |^2 + alphaD * (| X_n_i[k] |^2 - sigma_2_i[k] - lambda_rev_n,i[k])} / (sigma_2_i[k] + lambda_rev_n,i[k] + 1E-20)
-        regH.m128 = _mm_div_ps(regF.m128, regH.m128);
-
-        // Store result in ksi_n_i[k]
-        _mm_store_ps(&myMicST->ksi[k], regH.m128);
-
-    }
-
-    post = myMicST->xpower[myMicST->MICST_HALFFRAMESIZE] - myMicST->sigma[myMicST->MICST_HALFFRAMESIZE] - myMicST->lambda[myMicST->MICST_HALFFRAMESIZE];
-    if (post < 0.0)
-    {
-        post = 0.0;
-    }
-    myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] = ((1 - myMicST->MICST_ALPHAD) * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * fabs(myMicST->zeta_prev[myMicST->MICST_HALFFRAMESIZE]) * myMicST->xpower_prev[myMicST->MICST_HALFFRAMESIZE] + myMicST->MICST_ALPHAD * post) / (myMicST->sigma[myMicST->MICST_HALFFRAMESIZE] + myMicST->lambda[myMicST->MICST_HALFFRAMESIZE] + 1E-20);
-
-#endif
 
     /***************************************************************************
      * Step 5: Compute the weighting function                                  *
      **************************************************************************/
-
-#ifndef USE_SIMD
-
     // +-----------------------------------------------------------------------+
     // | No hardware acceleration                                              |
     // +-----------------------------------------------------------------------+
@@ -543,46 +452,11 @@ void micstProcessFrame(struct objMicST *myMicST)
 
     }
 
-#else
 
-    // +-----------------------------------------------------------------------+
-    // | With SSE instructions                                                 |
-    // +-----------------------------------------------------------------------+
-
-    // zeta_n_i[k] = ksi_n_i[k] / (ksi_n_i[k] + 1)
-
-    // Load the constant 1 in regA
-    regA.m128_f32[0] = 1;
-    regA.m128_f32[1] = 1;
-    regA.m128_f32[2] = 1;
-    regA.m128_f32[3] = 1;
-
-    for (k = 0; k < myMicST->MICST_HALFFRAMESIZE; k+=4)
-    {
-        // Load ksi_n_i[k] in regB
-        regB.m128 = _mm_load_ps(&myMicST->ksi[k]);
-
-        // ksi_n_i[k] + 1
-        regC.m128 = _mm_add_ps(regB.m128, regA.m128);
-
-        // ksi_n_i[k] / (ksi_n_i[k] + 1)
-        regD.m128 = _mm_div_ps(regB.m128,regC.m128);
-
-        // Store in zeta_n_i[k]
-        _mm_store_ps(&myMicST->zeta[k], regD.m128);
-
-    }
-
-    myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] = myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] / (myMicST->ksi[myMicST->MICST_HALFFRAMESIZE] + 1);
-
-#endif
 
     /***************************************************************************
      * Step 6: Compute the weighted spectrum                                   *
      **************************************************************************/
-
-#ifndef USE_SIMD
-
     // +-----------------------------------------------------------------------+
     // | No hardware acceleration                                              |
     // +-----------------------------------------------------------------------+
@@ -612,60 +486,7 @@ void micstProcessFrame(struct objMicST *myMicST)
 
     }
 
-#else
 
-    // +-----------------------------------------------------------------------+
-    // | With SSE instructions                                                 |
-    // +-----------------------------------------------------------------------+
-
-    // | zeta_i[k] | / | X_i[k] |
-
-    // Load the constant 1E-20 in regA
-    regA.m128_f32[0] = 1E-20;
-    regA.m128_f32[1] = 1E-20;
-    regA.m128_f32[2] = 1E-20;
-    regA.m128_f32[3] = 1E-20;
-
-    for (k = 0; k < myMicST->MICST_HALFFRAMESIZE; k+=4)
-    {
-        // Load zeta_i[k] in regC
-        regC.m128 = _mm_load_ps(&myMicST->zeta[k]);
-        // Load | X_i[k] |^2 in regD
-        regD.m128 = _mm_load_ps(&myMicST->xpower[k]);
-        // Load Re{X_i[k]} in regG
-        regG.m128 = _mm_load_ps(&myMicST->xfreqReal[k]);
-        // Load Im{X_i[k]} in regH
-        regH.m128 = _mm_load_ps(&myMicST->xfreqImag[k]);
-
-        // | X_i[k] |
-        regE.m128 = _mm_sqrt_ps(regD.m128);
-        regE.m128 = _mm_add_ps(regE.m128,regA.m128);
-
-        // zeta_i[k] / | X_i[k] |
-        regF.m128 = _mm_div_ps(regC.m128,regE.m128);
-
-        // zeta_i[k] * X_i[k] / | X_i[k] |
-        regG.m128 = _mm_mul_ps(regG.m128,regF.m128);
-        regH.m128 = _mm_mul_ps(regH.m128,regF.m128);
-
-        // Store in weightedResult
-        _mm_store_ps(&myMicST->weightedResultReal[k],regG.m128);
-        _mm_store_ps(&myMicST->weightedResultImag[k],regH.m128);
-
-    }
-
-    tmpSqrt = sqrt(myMicST->xpower[myMicST->MICST_HALFFRAMESIZE]);
-
-    myMicST->weightedResultReal[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqReal[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20);
-    myMicST->weightedResultImag[myMicST->MICST_HALFFRAMESIZE] = myMicST->zeta[myMicST->MICST_HALFFRAMESIZE] * myMicST->xfreqImag[myMicST->MICST_HALFFRAMESIZE] / (tmpSqrt + 1E-20);
-
-    for (k = 1; k < myMicST->MICST_HALFFRAMESIZE; k++)
-    {
-        myMicST->weightedResultReal[myMicST->MICST_FRAMESIZE - k] = myMicST->weightedResultReal[k];
-        myMicST->weightedResultImag[myMicST->MICST_FRAMESIZE - k] = -1.0 * myMicST->weightedResultImag[k];
-    }
-
-#endif
 
 
     /***************************************************************************
