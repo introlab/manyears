@@ -5,5 +5,6 @@
         <file>Images/logoonly.png</file>
         <file>Images/logo5_bgwhite.png</file>
         <file>Configuration_Vectors/default.mes</file>
+	<file>Configuration_Vectors/HRIDemo.mes</file>
     </qresource>
 </RCC>

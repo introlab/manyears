@@ -36,7 +36,7 @@ MDIWindow::MDIWindow()
     this->rootSystem = this->parametersManager->initSystem();
     this->rootView = this->parametersManager->initView();
     this->parametersManager->loadSystemDefault();
-    this->parametersManager->openParametersSystem(":/Configuration_Vectors/default.mes");
+    this->parametersManager->openParametersSystem(":/Configuration_Vectors/HRIDemo.mes");
     this->parametersManager->loadViewDefault();  
 
     this->runningThread->loadParameters(this->parametersManager->getParametersSystem());
@@ -217,7 +217,8 @@ MDIWindow::MDIWindow()
         windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
         windowStreamOutput->setWindowTitle("Stream Output Control");
         windowStreamOutput->setGeometry(0,subWindowHeight*2,subWindowWidth,subWindowHeight);
-        mdiArea->addSubWindow(windowStreamOutput);		
+        QMdiSubWindow *sub = mdiArea->addSubWindow(windowStreamOutput);
+	sub->setWindowTitle("Separated Stream Output");		
         windowStreamOutput->show();
         //Stream Output Window End
 

@@ -22,6 +22,7 @@ public:
 
 protected slots:
 
+    void enabledButtonClicked(bool enabled);
     void startButtonClicked();
     void stopButtonClicked();
     void clearButtonClicked();
@@ -39,6 +40,7 @@ protected:
     QTimer *m_timer;
     QAudioOutput *m_audioOutput;
     QIODevice *m_IODevice;
+    bool m_enabled;
 };
 
 
