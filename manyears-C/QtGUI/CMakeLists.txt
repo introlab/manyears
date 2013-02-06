@@ -88,9 +88,13 @@ INCLUDE_DIRECTORIES(${QT_INCLUDE_DIR}
                     ${PROJECT_SOURCE_DIR}/dsplib
                     ${PROJECT_SOURCE_DIR}/RTAudio
                     ${CMAKE_CURRENT_BINARY_DIR}
-		            #This is for Linux Ubuntu 12.04 & Qt Mobility
-		            ${QTMOBILITY_INCLUDE_DIRS}
                     )
+
+#This is for Linux Ubuntu 12.04 & Qt Mobility
+IF(QTMOBILITY_FOUND)
+	INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${QTMOBILITY_INCLUDE_DIRS})
+ENDIF(QTMOBILITY_FOUND)
+
 
 #include files
 IF (WIN32)
@@ -129,4 +133,7 @@ IF (UNIX)
 	ENDIF(APPLE)
    
 ENDIF(UNIX)
+
+include(DeployQt4)
+install_qt4_executable(bin/ManyEars)
 

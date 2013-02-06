@@ -17,6 +17,7 @@ SET(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION
 #SET THE BUILD TYPE HERE, Release, Debug
 SET(CMAKE_BUILD_TYPE Release)
 
+
 #Additional modules
 SET(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/macros)
 
@@ -106,13 +107,13 @@ IF (NOT MANYEARS_GUI_DISABLED)
     ENDIF (QTMOBILITY_FOUND)
     
     
-    if(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
+    if(QT4_FOUND AND (QT_QTMULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
 	include(${QT_USE_FILE})
-    else(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
+    else(QT4_FOUND AND (QT_QTMULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
         MESSAGE("WARNING : ManyEars GUI will not be compiled because Qt4 not found or obsolete. You need Qt 4.8 or higher.Try using the latest QtSDK from http://qt-project.org")
-        MESSAGE("DEBUG: QT4_FOUND: ${QT4_FOUND} QT_MULTIMEDIA_FOUND: ${QT_MULTIMEDIA_FOUND}  QT_MOBILITY_FOUND: ${QTMOBILITY_FOUND}")
+        MESSAGE("DEBUG: QT4_FOUND: ${QT4_FOUND} QT_MULTIMEDIA_FOUND: ${QT_QTMULTIMEDIA_FOUND}  QT_MOBILITY_FOUND: ${QTMOBILITY_FOUND}")
         SET(MANYEARS_GUI_DISABLED TRUE)
-    endif(QT4_FOUND AND (QT_MULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
+    endif(QT4_FOUND AND (QT_QTMULTIMEDIA_FOUND OR QTMOBILITY_FOUND))
 
 ELSE (NOT MANYEARS_GUI_DISABLED)
     MESSAGE("ManyEars GUI disabled.")
@@ -133,22 +134,22 @@ set(CPACK_SOURCE_IGNORE_FILES
 IF (WIN32)
 
     SET (QT_DLL
-	    "${QT_BINARY_DIR}/Qt3Support4.dll"
-	    "${QT_BINARY_DIR}/QtCore4.dll"
-	    "${QT_BINARY_DIR}/QtDesigner4.dll"
-	    "${QT_BINARY_DIR}/QtDesignerComponents4.dll"
+	"${QT_BINARY_DIR}/Qt3Support4.dll"
+	"${QT_BINARY_DIR}/QtCore4.dll"
+	"${QT_BINARY_DIR}/QtDesigner4.dll"
+	"${QT_BINARY_DIR}/QtDesignerComponents4.dll"
         "${QT_BINARY_DIR}/QtCLucene4.dll"
         "${QT_BINARY_DIR}/QtScriptTools4.dll"
-	    "${QT_BINARY_DIR}/QtGui4.dll"
-	    "${QT_BINARY_DIR}/QtHelp4.dll"
-	    "${QT_BINARY_DIR}/QtNetwork4.dll"
-	    "${QT_BINARY_DIR}/QtOpenGL4.dll"
-	    "${QT_BINARY_DIR}/QtScript4.dll"
-	    "${QT_BINARY_DIR}/QtSql4.dll"
-	    "${QT_BINARY_DIR}/QtSvg4.dll"
-	    "${QT_BINARY_DIR}/QtTest4.dll"
-	    "${QT_BINARY_DIR}/QtWebKit4.dll"
-	    "${QT_BINARY_DIR}/QtXml4.dll"
+	"${QT_BINARY_DIR}/QtGui4.dll"
+	"${QT_BINARY_DIR}/QtHelp4.dll"
+	"${QT_BINARY_DIR}/QtNetwork4.dll"
+	"${QT_BINARY_DIR}/QtOpenGL4.dll"
+	"${QT_BINARY_DIR}/QtScript4.dll"
+	"${QT_BINARY_DIR}/QtSql4.dll"
+	"${QT_BINARY_DIR}/QtSvg4.dll"
+	"${QT_BINARY_DIR}/QtTest4.dll"
+	"${QT_BINARY_DIR}/QtWebKit4.dll"
+	"${QT_BINARY_DIR}/QtXml4.dll"
         "${QT_BINARY_DIR}/QtXmlPatterns4.dll"
         "${QT_BINARY_DIR}/QtDeclarative4.dll"
         "${QT_BINARY_DIR}/QtMultimedia4.dll"
