@@ -134,6 +134,9 @@ IF (UNIX)
    
 ENDIF(UNIX)
 
-include(DeployQt4)
-install_qt4_executable(bin/ManyEars)
+
+#include(DeployQt4)
+#install_qt4_executable(bin/ManyEars)
+
+
 
