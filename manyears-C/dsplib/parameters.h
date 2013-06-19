@@ -414,6 +414,11 @@ struct ParametersStruct{
     // Size of the wave header
     int P_OUT_WAVEHEADERSIZE;
 
+    // Minimum duration of a separated signal
+    int P_OUT_MINDURATION;
+
+    // Interval of separated signal
+    int P_OUT_INTERVALDURATION;
 
 };
 

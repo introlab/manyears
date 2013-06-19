@@ -3,6 +3,7 @@
 #add source here
 SET(SRCS
    manyears_console.c
+   manyears_live.c
 )
 
 
@@ -26,6 +27,11 @@ target_link_libraries(manyears_console ManyEarsLib -lm)
 add_executable(manyears_live manyears_live.cpp)
 set_target_properties(manyears_live PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
 target_link_libraries(manyears_live ManyEarsLib RTAudioLib -lm)
+
+#Iterative separation application
+add_executable(manyears_iterative manyears_iterative.c)
+set_target_properties(manyears_iterative PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS})
+target_link_libraries(manyears_iterative ManyEarsLib -lm)
 
 #INSTALL DEMONSTRATION FILES
 INSTALL(FILES ${SRCS} DESTINATION example)

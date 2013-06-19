@@ -125,6 +125,9 @@ struct objOverall createEmptyOverallContext()
     tmp.myOutputSeparated = (struct objOutput*) malloc(sizeof(struct objOutput));
     tmp.myOutputPostfiltered = (struct objOutput*) malloc(sizeof(struct objOutput));
 
+    tmp.myOutputChunkSeparated = (struct objOutputChunk*) malloc(sizeof(struct objOutputChunk));
+    tmp.myOutputChunkPostfiltered = (struct objOutputChunk*) malloc(sizeof(struct objOutputChunk));
+
     tmp.myParameters = (struct ParametersStruct*) malloc(sizeof(struct ParametersStruct));
 
     return tmp;
@@ -162,6 +165,9 @@ void deleteOverallContext(struct objOverall myContext)
 
     free((void*) myContext.myOutputSeparated);
     free((void*) myContext.myOutputPostfiltered);
+
+    free((void*) myContext.myOutputChunkSeparated);
+    free((void*) myContext.myOutputChunkPostfiltered);
 
     free((void*) myContext.myParameters);
 

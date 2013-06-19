@@ -18,6 +18,7 @@ SET(ManyEarsLib_SRCS
     Separation/postfilteredSources.c
     Separation/separatedSources.c
     Output/output.c
+    Output/outputChunk.c
     Output/outputSingleStream.c
     Postprocessing/postprocessor.c
     Utilities/linearCorrelation.c
@@ -51,6 +52,7 @@ SET(ManyEarsLib_HEADERS
     Separation/postfilteredSources.h
     Separation/separatedSources.h
     Output/output.h
+    Output/outputChunk.h
     Output/outputSingleStream.h
     Postprocessing/postprocessor.h
     Utilities/linearCorrelation.h

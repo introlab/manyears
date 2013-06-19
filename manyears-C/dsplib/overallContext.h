@@ -117,6 +117,7 @@
 #include "Separation/postfilteredSources.h"
 #include "Postprocessing/postprocessor.h"
 #include "Output/output.h"
+#include "Output/outputChunk.h"
 
 
 /*******************************************************************************
@@ -148,6 +149,9 @@
 
         struct objOutput* myOutputSeparated;
         struct objOutput* myOutputPostfiltered;
+
+        struct objOutputChunk* myOutputChunkSeparated;
+        struct objOutputChunk* myOutputChunkPostfiltered;
 
     };
 

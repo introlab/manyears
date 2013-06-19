@@ -549,5 +549,12 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
             // Size of the wave header
             parametersStruct->P_OUT_WAVEHEADERSIZE = 100;
 
+
+            // Minimum duration of a separated signal
+            parametersStruct->P_OUT_MINDURATION = 5 * GLOBAL_FS;
+
+            // Interval of separated signal
+            parametersStruct->P_OUT_INTERVALDURATION = 1 * GLOBAL_FS;
+
 }
 
