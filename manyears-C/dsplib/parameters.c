@@ -544,7 +544,7 @@ void ParametersLoadDefault(struct ParametersStruct* parametersStruct)
     // +-----------------------------------------------------------------------+
 
             // Gain
-            parametersStruct->P_OUT_GAIN = 50.0f;
+            parametersStruct->P_OUT_GAIN = 5.0f;
 
             // Size of the wave header
             parametersStruct->P_OUT_WAVEHEADERSIZE = 100;
