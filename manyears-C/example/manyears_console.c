@@ -9,7 +9,10 @@
 #include <string.h>
 
 //Manyears includes
+//extern "C"
+
 #include "overallContext.h"
+
 
 #define SAMPLES_PER_FRAME 512
 #define NB_MICROPHONES 8

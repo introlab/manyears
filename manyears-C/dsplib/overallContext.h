@@ -103,6 +103,10 @@
 
 // =============================================================================
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hardware.h"
 #include "parameters.h"
 #include "Geometry/microphones.h"
@@ -164,5 +168,10 @@
     void deleteOverallContext(struct objOverall myContext);
 
 // =============================================================================
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

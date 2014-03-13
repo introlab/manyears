@@ -9,6 +9,7 @@
 #include <string.h>
 #include <iostream>
 #include <RtAudio.h>
+#include <unistd.h>
 
 #define SAMPLING_RATE 48000
 #define SAMPLES_PER_FRAME 512

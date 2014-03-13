@@ -153,7 +153,7 @@ typedef union {
 #ifdef __GNUC__
     #define MSVC_ALIGN_PREFIX
     #define GCC_ALIGN_SUFFIX  __attribute__ ((aligned (16)))
-    #define INLINE_PREFIX inline
+    #define INLINE_PREFIX
 #else
     #define MSVC_ALIGN_PREFIX __declspec(align(16))
     #define GCC_ALIGN_SUFFIX
