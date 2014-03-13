@@ -27,7 +27,7 @@ SET(ManyEars_SRCS
     sphereObj.cpp
     parametersManager.cpp
     graph2D.cpp
-    graph3D.cpp
+#    graph3D.cpp
     mdiWindow.cpp
     mdiSubWindow.cpp
     propertyEditor.cpp
@@ -47,7 +47,7 @@ SET(ManyEars_HEADERS
     sphereObj.h
     parametersManager.h
     graph2D.h
-    graph3D.h
+#    graph3D.h
     mdiWindow.h
     mdiSubWindow.h
     propertyEditor.h

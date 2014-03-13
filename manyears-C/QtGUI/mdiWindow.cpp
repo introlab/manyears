@@ -110,7 +110,7 @@ MDIWindow::MDIWindow()
                 this->action_windows_show_potential_longitude = new QAction("Longitude of potential sources", this);
                 this->action_windows_show_tracked_latitude = new QAction("Latitude of tracked sources", this);
                 this->action_windows_show_tracked_longitude = new QAction("Longitude of tracked sources", this);
-                this->action_windows_show_tracked_sphere = new QAction("3D Sphere of tracked sources", this);
+               // this->action_windows_show_tracked_sphere = new QAction("3D Sphere of tracked sources", this);
                 this->action_help_about = new QAction("&About", this);
 
                 QObject::connect(this->action_action_start, SIGNAL(triggered()), this, SLOT(action_start_slot()));
@@ -177,7 +177,7 @@ MDIWindow::MDIWindow()
         this->graphPotentialLongitude = new Graph2D(Graph2D::LONGITUDE, Graph2D::POTENTIAL);
         this->graphTrackedLatitude = new Graph2D(Graph2D::LATITUDE, Graph2D::TRACKED);
         this->graphTrackedLongitude = new Graph2D(Graph2D::LONGITUDE, Graph2D::TRACKED);
-        this->graphTrackedSphere = new Graph3D(3,2,1,0.1);
+        //this->graphTrackedSphere = new Graph3D(3,2,1,0.1);
 
         // Create subwindows
 
@@ -221,14 +221,14 @@ MDIWindow::MDIWindow()
 	sub->setWindowTitle("Separated Stream Output");		
         windowStreamOutput->show();
         //Stream Output Window End
-
+/*
         this->windowTrackedSphere = new MdiSubWindow(this);
         this->windowTrackedSphere->setWidget(this->graphTrackedSphere);
         this->windowTrackedSphere->setWindowTitle("Tracked sources: 3D Sphere");
         this->windowTrackedSphere->setGeometry(subWindowWidth,subWindowHeight*2,subWindowWidth,subWindowHeight);
         this->mdiArea->addSubWindow(this->windowTrackedSphere);
         this->windowTrackedSphere->hide();
-
+*/
 
 
 
@@ -263,7 +263,7 @@ MDIWindow::MDIWindow()
         this->potentialSourcesManager->pushEventReceiver(this->graphPotentialLongitude);
         this->trackedSourcesManager->pushEventReceiver(this->graphTrackedLatitude);
         this->trackedSourcesManager->pushEventReceiver(this->graphTrackedLongitude);
-        this->trackedSourcesManager->pushEventReceiver(this->graphTrackedSphere);
+        //this->trackedSourcesManager->pushEventReceiver(this->graphTrackedSphere);
 
         // Property editors -> Parameters
 

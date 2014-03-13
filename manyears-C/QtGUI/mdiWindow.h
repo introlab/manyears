@@ -17,7 +17,7 @@
 #include "graph2D.h"
 #include "parametersManager.h"
 #include "propertyEditor.h"
-#include "graph3D.h"
+//#include "graph3D.h"
 #include "mdiSubWindow.h"
 #include "aboutDialog.h"
 #include "coreThread.h"
@@ -178,10 +178,10 @@ private:
 
         Graph2D* graphPotentialLatitude;
         Graph2D* graphPotentialLongitude;
-        Graph3D* graphEnergySphere;
+        //Graph3D* graphEnergySphere;
         Graph2D* graphTrackedLatitude;
         Graph2D* graphTrackedLongitude;
-        Graph3D* graphTrackedSphere;
+        //Graph3D* graphTrackedSphere;
 
         MdiSubWindow* windowPotentialLatitude;
         MdiSubWindow* windowPotentialLongitude;
