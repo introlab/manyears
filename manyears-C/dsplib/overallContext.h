@@ -103,6 +103,10 @@
 
 // =============================================================================
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "hardware.h"
 #include "parameters.h"
 #include "Geometry/microphones.h"
@@ -117,6 +121,7 @@
 #include "Separation/postfilteredSources.h"
 #include "Postprocessing/postprocessor.h"
 #include "Output/output.h"
+#include "Output/outputChunk.h"
 
 
 /*******************************************************************************
@@ -149,6 +154,9 @@
         struct objOutput* myOutputSeparated;
         struct objOutput* myOutputPostfiltered;
 
+        struct objOutputChunk* myOutputChunkSeparated;
+        struct objOutputChunk* myOutputChunkPostfiltered;
+
     };
 
 /*******************************************************************************
@@ -160,5 +168,10 @@
     void deleteOverallContext(struct objOverall myContext);
 
 // =============================================================================
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

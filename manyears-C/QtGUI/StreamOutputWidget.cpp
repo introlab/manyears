@@ -10,7 +10,7 @@
 #define MAX_BUFFER_SIZE 10000
 
 StreamOutputWidget::StreamOutputWidget(QWidget *parent)
-    : QWidget(parent), m_mutex(QMutex::Recursive), m_audioOutput(NULL), m_IODevice(NULL)
+    : QWidget(parent), m_mutex(QMutex::Recursive), m_audioOutput(NULL), m_IODevice(NULL), m_enabled(false)
 
 {
     //Create GUI components
@@ -23,6 +23,7 @@ StreamOutputWidget::StreamOutputWidget(QWidget *parent)
     connect(m_ui.m_stopButton,SIGNAL(clicked()),this,SLOT(stopButtonClicked()));
     connect(m_ui.m_clearButton,SIGNAL(clicked()),this,SLOT(clearButtonClicked()));
     connect(m_timer,SIGNAL(timeout()),this,SLOT(refreshTimeout()));
+    connect(m_ui.m_enabledCheckbox,SIGNAL(toggled(bool)),this,SLOT(enabledButtonClicked(bool)));
 
     //Scan audio output devices
     scanOutputDevice();
@@ -37,11 +38,21 @@ StreamOutputWidget::~StreamOutputWidget()
 
 }
 
+void StreamOutputWidget::enabledButtonClicked(bool enabled)
+{
+	m_enabled = m_ui.m_enabledCheckbox->isChecked();
+
+	if (!m_enabled)
+        {
+		stopButtonClicked();
+		clearButtonClicked();
+	}
+}
+
 void StreamOutputWidget::scanOutputDevice()
 {
-    //Get available output devices...
-	/*
-	QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+    //Get available output devices...	
+    QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
 
 
     for (int i =0; i < myList.size(); i++)
@@ -49,9 +60,8 @@ void StreamOutputWidget::scanOutputDevice()
         m_ui.m_comboDeviceSelection->addItem(myList[i].deviceName());
         //qDebug() << " Adding item " << myList[i].deviceName();
     }
-	*/
-
-	m_ui.m_comboDeviceSelection->addItem(QAudioDeviceInfo::defaultOutputDevice().deviceName());
+	
+    //m_ui.m_comboDeviceSelection->addItem(QAudioDeviceInfo::defaultOutputDevice().deviceName());
 
 	
 
@@ -65,7 +75,7 @@ void StreamOutputWidget::notify()
     QString myString = time.toString("hh:mm:ss.zzz");
     //qDebug() << myString << " StreamOutputWidget::notify()";
 
-    if (m_audioOutput && m_IODevice)
+    if (m_audioOutput && m_IODevice && m_enabled)
     {
         //qDebug("StreamOutputWidget::notify() bytesFree : %i interval: %i",m_audioOutput->bytesFree(),m_audioOutput->notifyInterval());
         while(m_frames.size() > 0)
@@ -117,19 +127,17 @@ void StreamOutputWidget::startButtonClicked()
     qDebug("void StreamOutputWidget::startButtonClicked()");
 
     //Get available output devices...
-    //QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
+    QList<QAudioDeviceInfo>	myList = QAudioDeviceInfo::availableDevices(QAudio::AudioOutput);
 
     if (m_audioOutput)
     {
         delete m_audioOutput;
         m_audioOutput = NULL;
     }
-#if 0
     for (int i =0; i < myList.size(); i++)
     {
         if (myList[i].deviceName() == m_ui.m_comboDeviceSelection->currentText())
         {
-#endif
             //QAudioFormat
             QAudioFormat format;
 
@@ -140,15 +148,15 @@ void StreamOutputWidget::startButtonClicked()
             format.setCodec("audio/pcm");
             format.setByteOrder(QAudioFormat::LittleEndian);
             format.setSampleType(QAudioFormat::SignedInt);
-            //m_audioOutput = new QAudioOutput(myList[i],format,this);
-			m_audioOutput = new QAudioOutput(QAudioDeviceInfo::defaultOutputDevice(),format,this);
+            m_audioOutput = new QAudioOutput(myList[i],format,this);
+	    //m_audioOutput = new QAudioOutput(QAudioDeviceInfo::defaultOutputDevice(),format,this);
 
             //We have 10ms frames, this should be enough
             m_audioOutput->setNotifyInterval(5);
-#if 0
+
         }
     }
-#endif
+
     if (m_audioOutput)
     {
         connect(m_audioOutput,SIGNAL(stateChanged(QAudio::State)),this,SLOT(audioStateChanged(QAudio::State)));
@@ -203,8 +211,11 @@ bool StreamOutputWidget::event(QEvent* event)
         if (sepEvent)
         {
             //qDebug("Writing to stack...");
-            pushFrame(sepEvent->m_data);
-            notify();
+            if(m_enabled) 
+            {
+                pushFrame(sepEvent->m_data);
+                notify();
+            }
             return true;
         }
 

@@ -1,18 +1,10 @@
-/**
-
-
-
-  */
 //Standard C includes
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 //Manyears includes
-//extern "C"
-
 #include "overallContext.h"
-
 
 #define SAMPLES_PER_FRAME 512
 #define NB_MICROPHONES 8
@@ -118,12 +110,12 @@ int main (int argc, char* argv[])
 
     struct objOverall workspace;
 
-    const char* sepFileName = "separated*****.wav";
-    const char* postFileName = "postfiltered*****.wav";
+    const char* sepFileName = "separated*****_part$$$$$.wav";
+    const char* postFileName = "postfiltered*****_part$$$$$.wav";
     const char* separator = "-";
     char* sepPath;
     char* postPath;
-	FILE* filePtr = NULL;
+        FILE* filePtr = NULL;
 
     // Create the workspace
     workspace = createEmptyOverallContext();
@@ -201,8 +193,8 @@ int main (int argc, char* argv[])
         postfilteredSourcesInit(workspace.myPostfilteredSources, workspace.myParameters);
 
         // Initialize the output
-        outputInit(workspace.myOutputSeparated, workspace.myParameters, NULL, NULL, sepPath, '*');
-        outputInit(workspace.myOutputPostfiltered, workspace.myParameters, NULL, NULL, postPath, '*');
+        outputChunkInit(workspace.myOutputChunkSeparated, workspace.myParameters, NULL, NULL, sepPath, '*','$');
+        outputChunkInit(workspace.myOutputChunkPostfiltered, workspace.myParameters, NULL, NULL, postPath, '*','$');
 
         //reset frame number
         frame_number = 0;
@@ -246,8 +238,8 @@ int main (int argc, char* argv[])
             postprocessorProcessFramePostfiltered(workspace.myPostprocessorPostfiltered, workspace.myTrackedSources, workspace.myPostfilteredSources);
 
             //#7 Output results in files
-            outputProcess(workspace.myOutputSeparated, workspace.myPostprocessorSeparated);
-            outputProcess(workspace.myOutputPostfiltered, workspace.myPostprocessorPostfiltered);
+            outputChunkProcess(workspace.myOutputChunkSeparated, workspace.myPostprocessorSeparated);
+            outputChunkProcess(workspace.myOutputChunkPostfiltered, workspace.myPostprocessorPostfiltered);
 
             //#8 Output results in terminal
 
@@ -291,8 +283,8 @@ int main (int argc, char* argv[])
         separatedSourcesTerminate(workspace.mySeparatedSources);
         postfilteredSourcesTerminate(workspace.myPostfilteredSources);
 
-        outputTerminate(workspace.myOutputSeparated);
-        outputTerminate(workspace.myOutputPostfiltered);
+        outputChunkTerminate(workspace.myOutputChunkSeparated);
+        outputChunkTerminate(workspace.myOutputChunkPostfiltered);
 
         //Close file (will cleanup memory)
         fclose(filePtr);

@@ -1,5 +1,9 @@
 MESSAGE( STATUS "Buiding RTAudio Library...")
 
+
+find_package(Jack)
+
+
 IF (WIN32)
 
     ADD_DEFINITIONS(-D__WINDOWS_ASIO__)
@@ -49,26 +53,41 @@ IF (UNIX)
 		ginclude.h
 	)
 	
+	
+
+	
 	IF (APPLE)
         ADD_DEFINITIONS(-D__MACOSX_CORE__ -DMAC)
 		INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/RTAudio)
-                add_library(RTAudioLib SHARED ${RTAudioLib_SRCS} ${RTAudioLib_HEADERS} )
+        add_library(RTAudioLib SHARED ${RTAudioLib_SRCS} ${RTAudioLib_HEADERS} )
 		target_link_libraries(RTAudioLib)
 		set_target_properties(RTAudioLib PROPERTIES LINK_FLAGS "-framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox" OUTPUT_NAME rtaudio) 
 	ELSE(APPLE)
-        ADD_DEFINITIONS(-D__LINUX_ALSA__)
-		#find_package(ALSA REQUIRED)
+	
+		IF (JACK_FOUND)
+	        ADD_DEFINITIONS(-D__UNIX_JACK__)
+	        INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${JACK_INCLUDE_DIR})	    	
+	    ENDIF(JACK_FOUND)
+	
+	    #find_package(ALSA REQUIRED)
+        ADD_DEFINITIONS(-D__LINUX_ALSA__)		
 		SET(ALSA_LIBRARY "-lasound -lpthread")
-		INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/RTAudio ${ALSA_INCLUDE_DIR} )		
-                add_library(RTAudioLib SHARED ${RTAudioLib_SRCS} ${RTAudioLib_HEADERS} )
-		target_link_libraries(RTAudioLib ${ALSA_LIBRARY})
-		MESSAGE("ALSA lib : ${ALSA_LIBRARY}")
+		INCLUDE_DIRECTORIES(${INCLUDE_DIRECTORIES} ${PROJECT_SOURCE_DIR}/RTAudio ${ALSA_INCLUDE_DIR} )		
+        add_library(RTAudioLib SHARED ${RTAudioLib_SRCS} ${RTAudioLib_HEADERS} )
+        
+        IF (JACK_FOUND)
+            target_link_libraries(RTAudioLib ${ALSA_LIBRARY} ${JACK_LIBRARIES})
+        ELSE(JACK_FOUND)
+		    target_link_libraries(RTAudioLib ${ALSA_LIBRARY})
+		ENDIF(JACK_FOUND)
+		
+		MESSAGE("ALSA lib : ${ALSA_LIBRARY}")	
 		set_target_properties(RTAudioLib PROPERTIES LINK_FLAGS ${MANYEARS_LINK_FLAGS} OUTPUT_NAME rtaudio) 
 	ENDIF(APPLE)
 	
 	#Installation directory
 	INSTALL(TARGETS RTAudioLib DESTINATION rtaudio/lib)	
-        INSTALL(FILES ${RTAudioLib_HEADERS} DESTINATION rtaudio/include)
+    INSTALL(FILES ${RTAudioLib_HEADERS} DESTINATION rtaudio/include)
     
 ENDIF(UNIX)
 

@@ -33,6 +33,13 @@
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
+       <widget class="QCheckBox" name="m_enabledCheckbox">
+        <property name="text">
+         <string>Enabled</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QComboBox" name="m_comboDeviceSelection">
         <property name="maxVisibleItems">
          <number>10</number>

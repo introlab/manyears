@@ -3,6 +3,7 @@
 #add source here
 SET(SRCS
    manyears_console.c
+   manyears_iterative.c
 )
 
 
