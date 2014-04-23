@@ -131,6 +131,8 @@
  ******************************************************************************/
 
     void sphereInit(struct objSphere *mySphere, unsigned int numberLevels);
+    
+    void sphereArcInit(struct objSphere *mySphere, float angleInDegreeStart, float angleInDegreeStop, unsigned int nPoints);
 
     void sphereClone(struct objSphere *sourceSphere, struct objSphere *destSphere);
 

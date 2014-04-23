@@ -670,6 +670,62 @@ void sphereInit(struct objSphere *mySphere, unsigned int numberLevels)
 
 }
 
+void sphereArcInit(struct objSphere *mySphere, float angleInDegreeStart, float angleInDegreeStop, unsigned int nPoints) {
+    
+    unsigned int indexPoint;
+    
+    float angleInDegreeStartMod;
+    float angleInDegreeStopMod;
+    float theta;
+    float x,y,z;
+    
+    // *************************************************************************
+    // * STEP 1: Initialize context                                            *
+    // *************************************************************************
+
+    // Number of recursive levels to generate the points on the sphere
+    // We set it to zero here because it is a special case
+    mySphere->SPHERE_NUMBERLEVELS = 0;
+
+    // Number of triangles according to the number of levels
+    // No triangle in this specific case
+    mySphere->SPHERE_NUMBERTRIANGLES = 0;
+
+    // Number of points on the arc
+    mySphere->SPHERE_NUMBERPOINTS = nPoints;
+
+    // Sphere
+    mySphere->spherePoints = (float **) newTable2D(mySphere->SPHERE_NUMBERPOINTS,3,sizeof(float));    
+    
+    // *************************************************************************
+    // * STEP 2: Generate points                                               *
+    // *************************************************************************    
+    
+    angleInDegreeStartMod = angleInDegreeStart - floorf(angleInDegreeStart / 360.0f) * 360.0f;
+    angleInDegreeStopMod = angleInDegreeStop - floorf(angleInDegreeStop / 360.0f) * 360.0f;
+    
+    if (angleInDegreeStopMod <= angleInDegreeStartMod) {
+        angleInDegreeStopMod = angleInDegreeStop + 360.0f;
+    }
+    
+    for (indexPoint = 0; indexPoint < mySphere->SPHERE_NUMBERPOINTS; indexPoint++) {
+        
+        theta = angleInDegreeStartMod + indexPoint * (angleInDegreeStopMod - angleInDegreeStartMod) / (mySphere->SPHERE_NUMBERPOINTS - 1);
+        
+        x = cosf(2*M_PI*theta/360.0f);
+        y = sinf(2*M_PI*theta/360.0f);
+        z = 0;
+        
+        mySphere->spherePoints[indexPoint][0] = x;
+        mySphere->spherePoints[indexPoint][1] = y;
+        mySphere->spherePoints[indexPoint][2] = z;
+        
+        printf("%u: %f %f %f\n",indexPoint,x,y,z);
+        
+    }
+    
+}
+
 /*******************************************************************************
  * sphereClone                                                                 *
  * --------------------------------------------------------------------------- *
