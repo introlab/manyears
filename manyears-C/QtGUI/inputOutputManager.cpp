@@ -123,47 +123,66 @@ void InputOutputManager::stopThread()
 // | Sound card / File                                     |
 // +-------------------------------------------------------+
 
-void InputOutputManager::streamCallBack(signed short* inputBuffer)
+void InputOutputManager::streamCallBack(signed short* inputBuffer, int size)
 {
 
-    float** newBufferToFill;
-    signed short* bufferToCopy;
 
-    // Point to the buffer to copy
-    bufferToCopy = inputBuffer;
+    //Append data at end of old buffer
+    int old_size = tempBuffer.size();
+    tempBuffer.resize(tempBuffer.size() + size * getNumberChannels());
+    memcpy(&tempBuffer.data()[old_size], inputBuffer, size * getNumberChannels());
 
-    // Get an unused buffer to fill
-    newBufferToFill = this->getUnusedBuffer();
+    //qDebug("Temp buffer size : %i",tempBuffer.size());
 
-    // Fill the buffer
-    for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
+    while (tempBuffer.size() >= this->getHopSize() * this->getNumberChannels())
     {
-        for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
-        {
-            newBufferToFill[indexChannel][indexSample] = ((float) *(bufferToCopy++)) / 32768.0;
-        }
-    }
 
-    // Point to the buffer to copy
-    bufferToCopy = inputBuffer;
+        //qDebug("Processing temp buffer");
 
-    // Write in file if required
-    if (this->toFile == true)
-    {
+        float** newBufferToFill;
+        signed short* bufferToCopy;
+
+        // Point to the buffer to copy
+        bufferToCopy = tempBuffer.data();
+
+        // Get an unused buffer to fill
+        newBufferToFill = this->getUnusedBuffer();
+
+        // Fill the buffer
         for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
         {
             for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
             {
-                //fwrite(bufferToCopy++, sizeof(short), 1, this->outputFile);
-				outputFile.write((char*) bufferToCopy,sizeof(short));
-				bufferToCopy++;
+                newBufferToFill[indexChannel][indexSample] = ((float) *(bufferToCopy++)) / 32768.0;
             }
         }
-    }
 
-    // Add the filled buffer to the stack of buffers
-    // ready to be processed
-    this->pushFilledBuffer(newBufferToFill);
+        // Point to the buffer to copy
+        bufferToCopy = tempBuffer.data();
+
+        // Write in file if required
+        if (this->toFile == true)
+        {
+            for (unsigned int indexSample = 0; indexSample < this->getHopSize(); indexSample++)
+            {
+                for (unsigned int indexChannel = 0; indexChannel < this->getNumberChannels(); indexChannel++)
+                {
+                    //fwrite(bufferToCopy++, sizeof(short), 1, this->outputFile);
+                    outputFile.write((char*) bufferToCopy,sizeof(short));
+                    bufferToCopy++;
+                }
+            }
+        }
+
+        // Add the filled buffer to the stack of buffers
+        // ready to be processed
+        this->pushFilledBuffer(newBufferToFill);
+
+        //Erase full frame from tempBuffer
+
+        tempBuffer.erase(tempBuffer.begin(), tempBuffer.begin() + (this->getHopSize() * this->getNumberChannels()));
+
+    }
 
 }
 
@@ -1823,7 +1842,7 @@ void InputOutputManager::fileCallBack()
     // Then call the general callback if end has not been reached
     if (endHasBeenReached == false)
     {
-        this->streamCallBack(this->inputFileBuffer);
+        this->streamCallBack(this->inputFileBuffer,this->getHopSize());
     }
     else
     {
@@ -1839,15 +1858,13 @@ void InputOutputManager::fileCallBack()
 int rtAudioCallBack(void* outputBuffer, void* inputBuffer, unsigned int nBufferFrames, double streamTime, RtAudioStreamStatus status, void* inputOutputManager)
 {
     
-    if (nBufferFrames != INPUT_HOPSIZE)
+    if (nBufferFrames >= 0 && inputBuffer)
     {
-        qDebug("Received  nBufferFrames %i outputBuffer=%p, inputBuffer=%p streamTime=%f",nBufferFrames,outputBuffer,inputBuffer,streamTime);
-    }
-    else
-    {
+        //qDebug("Received  nBufferFrames %i outputBuffer=%p, inputBuffer=%p streamTime=%f",nBufferFrames,outputBuffer,inputBuffer,streamTime);
+
         // Call the general callback
         InputOutputManager* inputOutputManagerPtr = reinterpret_cast<InputOutputManager*>(inputOutputManager);
-        inputOutputManagerPtr->streamCallBack((signed short*) inputBuffer);
+        inputOutputManagerPtr->streamCallBack((signed short*) inputBuffer, nBufferFrames);
     }
     return 0;
 

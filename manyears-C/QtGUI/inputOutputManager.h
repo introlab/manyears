@@ -76,7 +76,7 @@ public:
     // | Sound card / File                                     |
     // +-------------------------------------------------------+
 
-    void streamCallBack(signed short* inputBuffer);
+    void streamCallBack(signed short* inputBuffer, int size);
 
     /***********************************************************
     * External buffers management                              *
@@ -274,6 +274,7 @@ private:
 
     QVector<float**> unusedBuffersStack;
     QVector<float**> filledBuffersStack;
+    QVector<short> tempBuffer;
     QMutex unusedBuffersStackIsUsed;
     QMutex filledBuffersStackIsUsed;
     QSemaphore waitingFilledBuffers;
