@@ -133,36 +133,21 @@ set(CPACK_SOURCE_IGNORE_FILES
 #include files
 IF (WIN32)
 
-    SET (QT_DLL
-	"${QT_BINARY_DIR}/Qt3Support4.dll"
-	"${QT_BINARY_DIR}/QtCore4.dll"
-	"${QT_BINARY_DIR}/QtDesigner4.dll"
-	"${QT_BINARY_DIR}/QtDesignerComponents4.dll"
-        "${QT_BINARY_DIR}/QtCLucene4.dll"
-        "${QT_BINARY_DIR}/QtScriptTools4.dll"
-	"${QT_BINARY_DIR}/QtGui4.dll"
-	"${QT_BINARY_DIR}/QtHelp4.dll"
-	"${QT_BINARY_DIR}/QtNetwork4.dll"
-	"${QT_BINARY_DIR}/QtOpenGL4.dll"
-	"${QT_BINARY_DIR}/QtScript4.dll"
-	"${QT_BINARY_DIR}/QtSql4.dll"
-	"${QT_BINARY_DIR}/QtSvg4.dll"
-	"${QT_BINARY_DIR}/QtTest4.dll"
-	"${QT_BINARY_DIR}/QtWebKit4.dll"
-	"${QT_BINARY_DIR}/QtXml4.dll"
-        "${QT_BINARY_DIR}/QtXmlPatterns4.dll"
-        "${QT_BINARY_DIR}/QtDeclarative4.dll"
-        "${QT_BINARY_DIR}/QtMultimedia4.dll"
-        "${QT_BINARY_DIR}/phonon4.dll"
-)
+    #EXECUTE QT_QMAKE TO FIND ALL NECESSARY LIBRARY WE NEED TO INSTALL
+    EXEC_PROGRAM(${QT_QMAKE_EXECUTABLE} ARGS "-query QT_INSTALL_BINS" OUTPUT_VARIABLE QTBINS)
+    SET(QT_BINARY_DIR ${QTBINS} CACHE INTERNAL "" FORCE)
+    FILE(GLOB QT_DLL "${QT_BINARY_DIR}/*.dll")
+    FILE(GLOB QT_DEBUG_DLL "${QT_BINARY_DIR}/*d4.dll")
+    list(REMOVE_ITEM QT_DLL ${QT_DEBUG_DLL})
 
-	IF(MINGW)
-		SET (QT_DLL ${QT_DLL}
-                "C:/QtSDK/mingw/bin/mingwm10.dll"
-                "C:/QtSDK/mingw/bin/libgcc_s_dw2-1.dll"
-		)
-	ENDIF(MINGW)
-	
+
+    #WE NEED TO CORRECT THE PATH OF EACH REMAINING LIBRARY SINCE "\" IS CONSIDER AN ESCAPE SEQUENCE FOR CMAKE
+    FOREACH(LIB ${QT_DLL})
+        STRING(REGEX REPLACE "\\\\" "/" NEWLIB ${LIB})
+        list(REMOVE_ITEM QT_DLL ${LIB})
+        list(APPEND QT_DLL ${NEWLIB})
+    ENDFOREACH(LIB)
+
     INSTALL(FILES ${QT_DLL} DESTINATION bin)
 
     #############################
