@@ -11,6 +11,7 @@
 #include <QFileDialog>
 #include <QPixmap>
 #include <QSplashScreen>
+#include <QWebView>
 
 #include "potentialSourceManager.h"
 #include "trackedSourceManager.h"
@@ -77,6 +78,11 @@ private slots:
     void action_windows_show_tracked_sphere_slot();
     void action_help_about_slot();
 
+    void action_params_description_slot();
+    void action_faq_slot();
+    void action_wiki_slot();
+
+
     void dock_view_changes();
     void dock_system_changes();
     void window_potential_longitude_changes();
@@ -138,6 +144,7 @@ private:
         QMenu* menu_parameters;
         QMenu* menu_windows;
         QMenu* menu_help;
+        QMenu* menu_documentation;
 
         QAction* action_action_start;
         QAction* action_action_stop;
@@ -156,6 +163,10 @@ private:
         QAction* action_windows_show_tracked_sphere;
         QAction* action_help_about;
 
+
+        QAction* action_params_description;
+        QAction* action_faq;
+        QAction* action_wiki;
 
     // +-------------------------------------------------------+
     // | Core                                                  |
@@ -190,6 +201,12 @@ private:
         MdiSubWindow* windowTrackedLongitude;
         MdiSubWindow* windowTrackedSphere;
         MdiSubWindow* windowStreamOutput;
+
+
+        //Documentation sub windows / HTML viewer
+        MdiSubWindow* windowWebView;
+        QWebView* webView;
+
 
         // +---------------------------------------------------+
         // | Dialogs                                           |

@@ -155,8 +155,29 @@ MDIWindow::MDIWindow()
                 this->menu_windows->addAction(this->action_windows_show_tracked_latitude);
                 this->menu_windows->addAction(this->action_windows_show_tracked_longitude);
                 this->menu_windows->addAction(this->action_windows_show_tracked_sphere);
+
                 this->menu_help = this->menuBar()->addMenu("&Help");
                 this->menu_help->addAction(this->action_help_about);
+
+
+                //Documentation menu & actions
+                this->menu_documentation = this->menuBar()->addMenu("&Documentation");
+                this->action_params_description = new QAction("Parameters description", this);
+                this->action_faq = new QAction("FAQ",this);
+                this->action_wiki = new QAction("Wiki",this);
+                this->menu_documentation->addAction(this->action_params_description);
+                this->menu_documentation->addAction(this->action_faq);
+                this->menu_documentation->addAction(this->action_wiki);
+
+
+                QObject::connect(this->action_params_description,
+                                 SIGNAL(triggered()), this, SLOT(action_params_description_slot()));
+
+                QObject::connect(this->action_faq,
+                                 SIGNAL(triggered()), this, SLOT(action_faq_slot()));
+
+                QObject::connect(this->action_wiki,
+                                 SIGNAL(triggered()), this, SLOT(action_wiki_slot()));
 
 
     // +-------------------------------------------------------+
@@ -218,7 +239,7 @@ MDIWindow::MDIWindow()
         windowStreamOutput->setWindowTitle("Stream Output Control");
         windowStreamOutput->setGeometry(0,subWindowHeight*2,subWindowWidth,subWindowHeight);
         QMdiSubWindow *sub = mdiArea->addSubWindow(windowStreamOutput);
-	sub->setWindowTitle("Separated Stream Output");		
+        sub->setWindowTitle("Separated Stream Output");
         windowStreamOutput->show();
         //Stream Output Window End
 
@@ -230,8 +251,6 @@ MDIWindow::MDIWindow()
         this->windowTrackedSphere->hide();
 
 
-
-
         QObject::connect(this->dockConfigSystem, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_system_changes()));
         QObject::connect(this->dockConfigView, SIGNAL(visibilityChanged(bool)), this, SLOT(dock_view_changes()));
         QObject::connect(this->windowPotentialLatitude, SIGNAL(windowIsHidden()), this, SLOT(window_potential_latitude_changes()));
@@ -239,6 +258,17 @@ MDIWindow::MDIWindow()
         QObject::connect(this->windowTrackedLatitude, SIGNAL(windowIsHidden()), this, SLOT(window_tracked_latitude_changes()));
         QObject::connect(this->windowTrackedLongitude, SIGNAL(windowIsHidden()), this, SLOT(window_tracked_longitude_changes()));
         QObject::connect(this->windowTrackedSphere, SIGNAL(windowIsHidden()), this, SLOT(window_tracked_sphere_changes()));
+
+
+        //Documentation window
+        windowWebView = new MdiSubWindow(this);
+        webView = new QWebView();
+        webView->load(QUrl("http://sourceforge.net/p/manyears/wiki/SoftwareDocumentation/"));
+        windowWebView->setWidget(webView);
+        windowWebView->setWindowTitle("Documentation");
+        windowWebView->setGeometry(subWindowWidth,subWindowHeight*2,subWindowWidth,subWindowHeight);
+        this->mdiArea->addSubWindow(windowWebView);
+        //windowWebView->hide();
 
         // +---------------------------------------------------+
         // | Dialogs                                           |
@@ -594,6 +624,24 @@ void MDIWindow::action_windows_show_tracked_sphere_slot()
 void MDIWindow::action_help_about_slot()
 {
     this->aboutDialog->show();
+}
+
+void MDIWindow::action_params_description_slot()
+{
+    windowWebView->show();
+    webView->load(QUrl("http://sourceforge.net/p/manyears/wiki/SoftwareDocumentation/"));
+}
+
+void MDIWindow::action_faq_slot()
+{
+    windowWebView->show();
+    webView->load(QUrl("http://sourceforge.net/p/manyears/wiki/SoftwareFAQ/"));
+}
+
+void MDIWindow::action_wiki_slot()
+{
+    windowWebView->show();
+    webView->load(QUrl("http://sourceforge.net/p/manyears/wiki/Main_Page/"));
 }
 
 void MDIWindow::dock_view_changes()

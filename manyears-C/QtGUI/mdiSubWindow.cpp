@@ -34,7 +34,7 @@ bool MdiSubWindow::event(QEvent *event)
 
     }
 
-    return QWidget::event(event);
+    return QMdiSubWindow::event(event);
 
 }
 

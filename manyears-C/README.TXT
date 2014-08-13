@@ -19,6 +19,7 @@ CHANGES
 * Make sure buffers are the right size before processing, 
   the Windows driver did not always return the requested frame size. 
 * Updated installer.
+* Added documentation menu and sub window. Fixed sub windows titles.
 
 1.1.2
 -----
