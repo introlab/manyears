@@ -115,8 +115,7 @@ IF (UNIX)
 	IF(APPLE)
             #ManyEars Executable
             add_executable(ManyEars MACOSX_BUNDLE main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC} )
-            set_target_properties(ManyEars PROPERTIES LINK_FLAGS "-framework OpenGL -framework CoreFoundation -framework CoreAudio -framework AudioUnit -framework AudioToolbox")
-            target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib )
+            target_link_libraries(ManyEars ${QT_LIBRARIES} ${OPENGL_LIBRARIES} ManyEarsLib RTAudioLib)
 
             #Create a custom app package
             #INSTALL(TARGETS ManyEars DESTINATION ${MACOSX_BUNDLE_BUNDLE_NAME}/Contents/Resources/bin)
