@@ -128,7 +128,7 @@ IF (UNIX)
 	    #ManyEars Executable
             add_executable(ManyEars main.cpp ${ManyEars_SRCS} ${ManyEars_HEADERS} ${ManyEars_MOC_SRCS} ${ManyEars_UI_SRCS} ${SRCS_QRC})
 	        #Added QtMobility
-	        target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib ${QTMOBILITY_LIBRARIES}) 
+	        target_link_libraries(ManyEars ${QT_LIBRARIES} ManyEarsLib RTAudioLib ${QTMOBILITY_LIBRARIES} ${OPENGL_LIBRARIES}) 
 	        INSTALL(TARGETS ManyEars DESTINATION bin)
 	ENDIF(APPLE)
    
