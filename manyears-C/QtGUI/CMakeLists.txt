@@ -6,11 +6,8 @@
 # -> this will cause cmake to include and link against the OpenGL module
 
 SET(QT_USE_QTNETWORK TRUE)
-SET(QT_USE_QTSVG TRUE)
 SET(QT_USE_QTXML TRUE)
-SET(QT_USE_QTSCRIPT TRUE)
 SET(QT_USE_QTOPENGL TRUE)
-SET(QT_USE_QTMULTIMEDIA TRUE)
 SET(QT_USE_QTWEBKIT TRUE)
 
 find_package(Qt4 REQUIRED)
@@ -37,7 +34,7 @@ SET(ManyEars_SRCS
     inputOutputManager.cpp
     coreThread.cpp
     sourceEvents.cpp
-    StreamOutputWidget.cpp
+    #StreamOutputWidget.cpp
 )
 
 SET(ManyEars_HEADERS 
@@ -57,7 +54,7 @@ SET(ManyEars_HEADERS
     inputOutputManager.h
     coreThread.h
     sourceEvents.h
-    StreamOutputWidget.h
+    #StreamOutputWidget.h
 )
 
 SET(ManyEars_UIS

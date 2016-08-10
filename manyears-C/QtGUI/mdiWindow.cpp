@@ -234,13 +234,13 @@ MDIWindow::MDIWindow()
         this->windowTrackedLongitude->hide();
 
 		///Stream Output Window Begin
-		windowStreamOutput = new MdiSubWindow(this);
-        windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
-        windowStreamOutput->setWindowTitle("Stream Output Control");
-        windowStreamOutput->setGeometry(0,subWindowHeight*2,subWindowWidth,subWindowHeight);
-        QMdiSubWindow *sub = mdiArea->addSubWindow(windowStreamOutput);
-        sub->setWindowTitle("Separated Stream Output");
-        windowStreamOutput->show();
+        //windowStreamOutput = new MdiSubWindow(this);
+        //windowStreamOutput->setWidget(new StreamOutputWidget(windowStreamOutput));
+        //windowStreamOutput->setWindowTitle("Stream Output Control");
+        //windowStreamOutput->setGeometry(0,subWindowHeight*2,subWindowWidth,subWindowHeight);
+        //QMdiSubWindow *sub = mdiArea->addSubWindow(windowStreamOutput);
+        //sub->setWindowTitle("Separated Stream Output");
+        //windowStreamOutput->show();
         //Stream Output Window End
 
         this->windowTrackedSphere = new MdiSubWindow(this);
@@ -314,7 +314,7 @@ MDIWindow::MDIWindow()
         runningThread->pushTrackedSourceEventReceiver(this->trackedSourcesManager);
 		
 		//DL SeparatedStream receiver...
-		runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
+        //runningThread->pushSeparatedSourceEventReceiver(this->windowStreamOutput->widget());
 
 
         // Input/Output Manager -> Main Window

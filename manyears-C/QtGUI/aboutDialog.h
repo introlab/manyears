@@ -35,6 +35,10 @@
 #define DEF_PACKAGE_DESCRIPTION_FILE ""
 #endif
 
+#ifndef DEF_PROJECT_SOURCE_DIR
+#define DEF_PROJECT_SOURCE_DIR ""
+#endif
+
 class AboutDialog: public QDialog
 {
 
