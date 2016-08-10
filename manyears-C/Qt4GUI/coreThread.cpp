@@ -558,8 +558,11 @@ void CoreThread::singleStreamSeparation()
 
             // Position
             x = myPostprocessor->sourcesPosition[indexSource][0];
+            Q_UNUSED(x);
             y = myPostprocessor->sourcesPosition[indexSource][1];
+            Q_UNUSED(y);
             z = myPostprocessor->sourcesPosition[indexSource][2];
+            Q_UNUSED(z);
 
             // Extract the frame
             // qDebug("Extract the frame");
@@ -569,6 +572,7 @@ void CoreThread::singleStreamSeparation()
             for (indexSample = 0; indexSample < 512; indexSample++)
             {
                 currentSample = (signed short) floor((separated_data[indexSample] * 30.0) * 32768.0 + 0.5);
+                Q_UNUSED(currentSample);
                 //TODO Apply Saturation...
                 //S16LEdata[indexSample] += currentSample;
 				output_data[indexSample] += separated_data[indexSample];

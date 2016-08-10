@@ -558,7 +558,7 @@ void outputGenerateWave(struct objOutput* myOutput, ID_TYPE id)
     unsigned short audioFormat;
     unsigned int byteRate;
     unsigned short blockAlign;
-    unsigned short bitsPerSample;
+    unsigned short bitsPerSample;    
 
     // *************************************************************************
     // * STEP 1: Open data to check the length                                 *

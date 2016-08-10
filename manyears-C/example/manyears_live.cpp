@@ -105,7 +105,7 @@ public:
             static float audio_float_data[NB_MICROPHONES][SAMPLES_PER_FRAME];
 
             //#1 - Let's create the float data for processing
-            for (unsigned int channel = 0; channel < nb_channels; channel++)
+            for (int channel = 0; channel < nb_channels; channel++)
             {
                 for (unsigned int frame_index = 0; frame_index < frame_size; frame_index++)
                 {

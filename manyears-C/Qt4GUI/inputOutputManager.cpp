@@ -134,7 +134,7 @@ void InputOutputManager::streamCallBack(signed short* inputBuffer, int size)
 
     //qDebug("Temp buffer size : %i",tempBuffer.size());
 
-    while (tempBuffer.size() >= this->getHopSize() * this->getNumberChannels())
+    while ((unsigned int)tempBuffer.size() >= this->getHopSize() * this->getNumberChannels())
     {
 
         //qDebug("Processing temp buffer");

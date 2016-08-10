@@ -99,22 +99,24 @@ IF (UNIX)
 
         ELSE(APPLE)
             ##########################
-                    # Packaging stuff for Linux
-                    ##########################
-                    SET(CPACK_GENERATOR DEB)
-                    SET(CPACK_DEBIAN_PACKAGE_NAME "Manyears")
-                    SET(CPACK_DEBIAN_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
-                    SET(CPACK_DEBIAN_ARCHITECTURE i686)
-                    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "")
-                    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "dominic.letourneau@usherbrooke.ca")
-                    SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Manyears Software package.")
-                    SET(CPACK_DEBIAN_PACKAGE_SECTION "devel")
-                    SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
-                    SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS "")
-                    SET(CPACK_DEBIAN_PACKAGE_SUGGESTS "")
+            # Packaging stuff for Linux
+            ##########################
+            SET(CPACK_GENERATOR DEB)
+            SET(CPACK_DEBIAN_PACKAGE_NAME "Manyears")
+            SET(CPACK_DEBIAN_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
+            SET(CPACK_DEBIAN_ARCHITECTURE i686)
+            SET(CPACK_DEBIAN_PACKAGE_DEPENDS "")
+            SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "dominic.letourneau@usherbrooke.ca")
+            SET(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Manyears Software package.")
+            SET(CPACK_DEBIAN_PACKAGE_SECTION "devel")
+            SET(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+            SET(CPACK_DEBIAN_PACKAGE_RECOMMENDS "")
+            SET(CPACK_DEBIAN_PACKAGE_SUGGESTS "")
 
         ENDIF(APPLE)
 ENDIF(UNIX)
+
+
 
 ##########################
 # Definitions
@@ -126,7 +128,6 @@ ADD_DEFINITIONS(-DDEF_NSIS_URL_INFO_ABOUT="${CPACK_NSIS_URL_INFO_ABOUT}")
 ADD_DEFINITIONS(-DDEF_RESOURCE_FILE_LICENSE="${CPACK_RESOURCE_FILE_LICENSE}")
 ADD_DEFINITIONS(-DDEF_PACKAGE_DESCRIPTION_FILE="${CPACK_PACKAGE_DESCRIPTION_FILE}")
 ADD_DEFINITIONS(-DDEF_PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}")
-
 
 
 add_custom_target(dist COMMAND ${CMAKE_MAKE_PROGRAM} package_source)

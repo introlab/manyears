@@ -611,14 +611,14 @@ void filterPredict(struct objFilter *myFilter)
 {
 
     // Index to loop for each particle
-    unsigned int indexParticle;
+    unsigned int indexParticle = 0;
 
     // Receives a random value to check if a state needs to be updated
-    float rndValue;
+    float rndValue = 0;
 
     // Parameters to use
-    float newA;
-    float newB;
+    float newA = 0;
+    float newB = 0;
 
     // Loop for each particle
     for (indexParticle = 0; indexParticle < myFilter->FILTER_NBPARTICLES; indexParticle++)
@@ -726,13 +726,13 @@ void filterEstimatePosition(struct objFilter *myFilter, float *positionX, float 
 {
 
     // Index to loop for each particle
-    unsigned int indexParticle;
+    unsigned int indexParticle = 0;
 
     // Sum of all weights
-    float sumWeights;
+    float sumWeights = 0;
 
     // Inverse of the magnitude
-    float magnitudeInv;
+    float magnitudeInv = 0;
 
     // Reset all the sums
     sumWeights = 0;

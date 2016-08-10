@@ -30,6 +30,7 @@ SET(ManyEarsLib_SRCS
     Utilities/randGen.c
     Utilities/transcendental.c
     Utilities/window.c
+    Utilities/mathadvanced.c
     parameters.c
     overallContext.c
 )

@@ -659,11 +659,11 @@ void matrixInsertCol(struct objMatrix* matrix, unsigned int newColIndex)
 void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
 {
 
-    struct objMatrix* oldMatrix;
+    struct objMatrix* oldMatrix = NULL;
 
-    unsigned int indexRow;
-    unsigned int indexCol;
-    unsigned int k;
+    unsigned int indexRow = 0;
+    unsigned int indexCol = 0;
+    unsigned int k = 0;
 
 #ifdef USE_SIMD
 
@@ -780,11 +780,11 @@ void matrixDeleteRow(struct objMatrix* matrix, unsigned int deleteRowIndex)
 void matrixDeleteCol(struct objMatrix* matrix, unsigned int deleteColIndex)
 {
 
-    struct objMatrix* oldMatrix;
+    struct objMatrix* oldMatrix = NULL;
 
-    unsigned int indexRow;
-    unsigned int indexCol;
-    unsigned int k;
+    unsigned int indexRow = 0;
+    unsigned int indexCol = 0;
+    unsigned int k = 0;
 
 #ifdef USE_SIMD
 
@@ -2107,8 +2107,8 @@ void matrixPrint(struct objMatrix* matrix)
 void matrixPrintOneFrame(struct objMatrix* matrix, unsigned int k)
 {
 
-    unsigned int indexRow;
-    unsigned int indexCol;
+    unsigned int indexRow = 0;
+    unsigned int indexCol = 0;
 
     if ((matrix->nRows == 0) || (matrix->nCols == 0) || (matrix->nFrames == 0))
     {
