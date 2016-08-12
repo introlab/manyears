@@ -1,5 +1,17 @@
 # ManyEars
 
+ManyEars implements real-time microphone array processing to perform sound source localisation, tracking and separation. It was designed for mobile robot audition in dynamic environments.
+
+# Features
+
+* Real-Time
+* Sound Source Localisation
+* Sound Source Tracking
+* Sound Source Separation
+* Tuning GUI
+* Microphone Array
+* Beamforming
+
 LICENSE                                                                     
 -------
 
