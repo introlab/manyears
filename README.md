@@ -27,7 +27,8 @@ ManyEars is free software: you can redistribute it and/or modify it under the te
 PUBLICATIONS
 ------------
 
-1) F. Grondin, D. Létourneau, F. Ferland, V. Rousseau, F.Michaud, "The ManyEars open framework", Autonomous Robots, 1-16, 2013.                                                                        
+1) F. Grondin, D. Létourneau, F. Ferland, V. Rousseau, F.Michaud, "The ManyEars open framework", Autonomous Robots, 1-16, 2013.
+
 2) S. Briere, J.-M. Valin, F. Michaud, Dominic Letourneau, Embedded Auditory System for Small Mobile Robots, Proc. International Conference on Robotics and Automation (ICRA), 2008.
 
 3) J.-M. Valin, S. Yamamoto, J. Rouat, F. Michaud, K. Nakadai, H. G. Okuno, Robust Recognition of Simultaneous Speech By a Mobile Robot, IEEE Transactions on Robotics, Vol. 23, No. 4, pp. 742-752, 2007.
@@ -48,9 +49,8 @@ PUBLICATIONS
 
 11) J.-M. Valin, J. Rouat, F. Michaud, Enhanced Robot Audition Based on Microphone Array Source Separation with Post-Filter. Proc. IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pp. 2123-2128, 2004.                                       
 
-12) J.-M. Valin, F. Michaud, J. Rouat, D. Letourneau, Robust Sound Source Localization Using a Microphone Array on a Mobile Robot. Proc. IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pp. 1228-1233, 2003.                                                    
+12) J.-M. Valin, F. Michaud, J. Rouat, D. Letourneau, Robust Sound Source Localization Using a Microphone Array on a Mobile Robot. Proc. IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), pp. 1228-1233, 2003.
+
 13) J.-M. Valin, F. Michaud, B. Hadjou, J. Rouat, Localization of Simultaneous Moving Sound Sources for Mobile Robot Using a Frequency-Domain Steered Beamformer Approach. Proc. IEEE International Conference on Robotics and Automation (ICRA), pp. 1033-1038, 2004.                             
 
-14) J.-M. Valin, J. Rouat, F. Michaud, Microphone Array Post-Filter for Separation of Simultaneous Non-Stationary Sources. Proc. IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp. 221-224, 2004.                                            
-                                                                              
- 
+14) J.-M. Valin, J. Rouat, F. Michaud, Microphone Array Post-Filter for Separation of Simultaneous Non-Stationary Sources. Proc. IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP), pp. 221-224, 2004. 
