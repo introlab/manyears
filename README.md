@@ -4,10 +4,10 @@ ManyEars implements real-time microphone array processing to perform sound sourc
 
 # Authors
 
-Author: Francois Grondin                                                    
+Author: François Grondin                                                    
 Original Code: Jean-Marc Valin                                              
-Modified Code: Simon Briere                                                 
-Support : Dominic Letourneau (@doumdi)
+Modified Code: Simon Brière                                                 
+Support : Dominic Létourneau (@doumdi)
 
 # Features
 
