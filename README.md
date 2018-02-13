@@ -2,6 +2,10 @@
 
 ManyEars implements real-time microphone array processing to perform sound source localisation, tracking and separation. It was designed for mobile robot audition in dynamic environments. This project was started at IntRoLab, Université de Sherbrooke, Sherbrooke, Québec, Canada.
 
+# New ODAS implementation
+
+Please have a look at our new implentation called [ODAS](https://github.com/introlab/odas).
+
 # Authors
 
 Author: François Grondin                                                    
